@@ -1,5 +1,3 @@
-using ProjectBeta.Utils;
-
 namespace ProjectBeta.CI;
 
 public abstract class TerminalInterface
@@ -16,12 +14,12 @@ public abstract class TerminalInterface
 
     public void Write(string text)
     {
-        Console.Write(StringColor.Colorize(text));
+        Console.Write(text);
     }
 
     public void WriteLine(string text)
     {
-        Console.WriteLine(StringColor.Colorize(text));
+        Console.WriteLine(text);
     }
     
     public void Clear()

@@ -35,17 +35,22 @@ public class UserServiceTests
     [TestMethod]
     public void Register_NewUser_ReturnsTrue()
     {
-        var result = _service.Register("testuser", "pw");
+        var service = _service!;
+        var context = _context!;
+
+        var result = service.Register("testuser", "pw");
         Assert.IsTrue(result);
         // 3 user in total with seeded users
-        Assert.AreEqual(3, _context.Users.Count());
+        Assert.AreEqual(3, context.Users.Count());
     }
 
     [TestMethod]
     public void Register_ExistingUser_ReturnsFalse()
     {
-        _service.Register("testuser", "pw");
-        var result = _service.Register("testuser", "pw2");
+        var service = _service!;
+
+        service.Register("testuser", "pw");
+        var result = service.Register("testuser", "pw2");
         Assert.IsFalse(result);
     }
 }
