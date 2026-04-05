@@ -38,9 +38,17 @@ public class UserServiceTests
         var service = _service!;
         var context = _context!;
 
-        var result = service.Register("testuser", "pw");
-        Assert.IsTrue(result);
-        // 3 user in total with seeded users
+        var result = service.Register(
+            "testuser",
+            "testuser@example.com",
+            "pw",
+            "Test",
+            "User",
+            new DateOnly(2000, 1, 1)
+        );
+        Assert.IsTrue(result.Success);
+        Assert.IsNull(result.FieldErrors);
+        // 3 users in total with seeded users
         Assert.AreEqual(3, context.Users.Count());
     }
 
@@ -49,8 +57,29 @@ public class UserServiceTests
     {
         var service = _service!;
 
-        service.Register("testuser", "pw");
-        var result = service.Register("testuser", "pw2");
-        Assert.IsFalse(result);
+        // First registration should succeed
+        var first = service.Register(
+            "testuser",
+            "testuser@example.com",
+            "pw",
+            "Test",
+            "User",
+            new DateOnly(2000, 1, 1)
+        );
+        Assert.IsTrue(first.Success);
+        Assert.IsNull(first.FieldErrors);
+
+        // Second registration with same username/email should fail
+        var second = service.Register(
+            "testuser",
+            "testuser@example.com",
+            "pw2",
+            "Test2",
+            "User2",
+            new DateOnly(2001, 2, 2)
+        );
+        Assert.IsFalse(second.Success);
+        Assert.IsNotNull(second.FieldErrors);
+        Assert.IsTrue(second.FieldErrors!.ContainsKey("Username") || second.FieldErrors!.ContainsKey("Email"));
     }
 }

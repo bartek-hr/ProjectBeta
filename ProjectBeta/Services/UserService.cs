@@ -1,7 +1,9 @@
+using System.ComponentModel.DataAnnotations;
 using ProjectBeta.Data;
 using ProjectBeta.Model;
 
 namespace ProjectBeta.Services;
+
 
 public class UserService
 {
@@ -12,15 +14,72 @@ public class UserService
         _context = context;
     }
 
-    public bool Register(string username, string password)
+    public (bool Success, Dictionary<string, string[]>? FieldErrors) Register(
+        string username,
+        string email,
+        string password,
+        string firstName,
+        string lastName,
+        DateOnly? dateOfBirth
+    )
     {
-        bool exists = _context.Users.Any(u => u.Username == username);
-        if (exists) return false;
+        if (Utils.ValidationHelper.AnyNullOrWhiteSpace(username, email, password, firstName, lastName) || dateOfBirth is null)
+        {
+            return (false, new Dictionary<string, string[]> { { "General", ["Please fill in all required fields."] } });
+        }
 
-        var user = new User { Username = username, PasswordHash = password };
-        _context.Users.Add(user);
-        _context.SaveChanges();
-        return true;
+        // Uniqueness checks
+        if (_context.Users.Any(u => u.Username == username))
+        {
+            return (false, new Dictionary<string, string[]> { { "Username", ["Username is already taken. Please choose another."] } });
+        }
+        if (_context.Users.Any(u => u.Email == email))
+        {
+            return (false, new Dictionary<string, string[]> { { "Email", ["Email is already registered. Please use a different email."] } });
+        }
+
+        // TODO: Hash password securely
+        var user = new User
+        {
+            Username = username,
+            Email = email,
+            PasswordHash = password,
+            FirstName = firstName,
+            LastName = lastName,
+            DateOfBirth = dateOfBirth,
+            IsActive = true,
+            Role = "User" // enforce regular user role
+        };
+
+        // Model annotation validation
+        var validationResults = new List<System.ComponentModel.DataAnnotations.ValidationResult>();
+        var validationContext = new System.ComponentModel.DataAnnotations.ValidationContext(user);
+        bool isValid = System.ComponentModel.DataAnnotations.Validator.TryValidateObject(
+            user, validationContext, validationResults, true
+        );
+        if (!isValid)
+        {
+            var fieldErrors = validationResults
+                .SelectMany(r => r.MemberNames.Select(m => new { Field = m, Error = r.ErrorMessage }))
+                .GroupBy(x => x.Field)
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.Where(x => x.Error != null).Select(x => x.Error!).ToArray()
+                );
+            return (false, fieldErrors);
+        }
+
+        try
+        {
+            _context.Users.Add(user);
+            _context.SaveChanges();
+            return (true, null);
+        }
+        catch (Exception ex)
+        {
+            // Optionally log ex
+            return (false, new Dictionary<string, string[]> { { "General", new[] { "An error occurred while saving the user. Please try again." } } });
+        }
     }
 
     public List<User> GetAllUsers()
