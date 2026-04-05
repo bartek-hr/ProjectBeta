@@ -1,30 +1,22 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using ProjectBeta.Data;
-using ProjectBeta.Screens;
-using ProjectBeta.Services;
+﻿using ProjectBeta.CI;
+using ProjectBeta.CI.Views;
 
 namespace ProjectBeta
 {
-    internal class Program
+    internal static class Program
     {
-        static void Main(string[] args)
+        private static readonly AppLoop App = new();
+
+        public static void Display(TerminalInterface terminalInterface)
         {
-            // Register services and db context 
-            var services = new ServiceCollection();
-            services.AddDbContext<AppDbContext>();
-            services.AddScoped<UserService>();
-            services.AddScoped<UserScreen>();
-            services.AddScoped<MainScreen>();
+            App.Display(terminalInterface);
+        }
 
-            var provider = services.BuildServiceProvider();
-
-            // Initialize DB
-            using var context = provider.GetRequiredService<AppDbContext>();
-            context.Database.EnsureCreated();
-
-            // Start the app
-            var mainMenu = provider.GetRequiredService<MainScreen>();
-            mainMenu.Show();
+        private static void Main(string[] args)
+        {
+            Console.Clear();
+            Display(new DemoView());
+            App.Run();
         }
     }
 }

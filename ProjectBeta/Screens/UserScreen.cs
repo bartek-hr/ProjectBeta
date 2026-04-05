@@ -1,3 +1,4 @@
+using ProjectBeta.CI.Components;
 using ProjectBeta.Services;
 
 namespace ProjectBeta.Screens;
@@ -38,21 +39,43 @@ public class UserScreen
 
     private void AddUser()
     {
-        Console.Write("Username: ");
-        string username = Console.ReadLine()!;
+        string? statusMessage = null;
 
-        Console.Write("Password: ");
-        string password = Console.ReadLine()!;
+        var usernameInput = new InputText("Username").Placeholder("Enter username").Required();
+        var passwordInput = new InputText("Password").Placeholder("Enter password").Required().Masked();
 
-        bool success = _userService.Register(username, password);
+        var addUserForm = new Form()
+            .Add(new Label("=== Add User ==="))
+            .Add(new Label("Tab moves focus. Enter submits. Escape returns to the menu."))
+            .Add(usernameInput)
+            .Add(passwordInput)
+            .Add(new Message(() => statusMessage))
+            .Add(new Button("Create User").OnClick(() =>
+            {
+                if (string.IsNullOrWhiteSpace(usernameInput.Value))
+                {
+                    statusMessage = "Username is required.";
+                    return;
+                }
 
-        if (success)
-            Console.WriteLine("User added!");
-        else
-            Console.WriteLine("Username already exists.");
+                if (string.IsNullOrWhiteSpace(passwordInput.Value))
+                {
+                    statusMessage = "Password is required.";
+                    return;
+                }
 
-        Console.WriteLine("Press any key...");
-        Console.ReadKey();
+                if (_userService.Register(usernameInput.Value, passwordInput.Value))
+                {
+                    statusMessage = "User added! Press Escape to return or keep editing to add another user.";
+                    usernameInput.Value = string.Empty;
+                    passwordInput.Value = string.Empty;
+                    return;
+                }
+
+                statusMessage = "Username already exists.";
+            }));
+
+        addUserForm.Display();
     }
 
     private void ListUsers()
