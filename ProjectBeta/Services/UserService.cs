@@ -81,6 +81,36 @@ public class UserService
             return (false, new Dictionary<string, string[]> { { "General", new[] { "An error occurred while saving the user. Please try again." } } });
         }
     }
+    public (bool Success, User? User, Dictionary<string, string[]>? FieldErrors) SearchUser(
+    string username,
+    string email,
+    string password
+)
+{
+        // Validation for inputs
+        if (Utils.ValidationHelper.AnyNullOrWhiteSpace(username, email, password))
+        {
+            return (false, null, new Dictionary<string, string[]> { { "General", new[] { "Please fill in all required fields." } } });
+        }
+
+        // Try to find user by either username or email
+        var user = _context.Users
+            .FirstOrDefault(u => u.Username == username || u.Email == email);
+
+        if (user == null)
+        {
+            return (false, null, new Dictionary<string, string[]> { { "General", new[] { "User not found." } } });
+        }
+
+        // TODO: Compare the hashed password here
+        if (user.PasswordHash != password) // In real use, you should compare hashed passwords, not plaintext.
+        {
+            return (false, null, new Dictionary<string, string[]> { { "General", new[] { "Invalid password." } } });
+        }
+
+        // Return user if all conditions are satisfied
+        return (true, user, null);
+    }
 
     public List<User> GetAllUsers()
     {

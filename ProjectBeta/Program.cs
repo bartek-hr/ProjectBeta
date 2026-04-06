@@ -24,16 +24,23 @@ namespace ProjectBeta
             //Display(new DemoView());
 
             var services = new ServiceCollection();
+            services.AddSingleton(App); 
             services.AddDbContext<AppDbContext>();
             services.AddScoped<UserService>();
             services.AddScoped<UserView>();
+            services.AddScoped<LoginView>();
+            services.AddScoped<MainView>();
             var provider = services.BuildServiceProvider();
 
             // Initialize DB
             using var context = provider.GetRequiredService<AppDbContext>();
             context.Database.EnsureCreated();
 
-            Display(provider.GetRequiredService<UserView>());
+            var loginView = provider.GetRequiredService<LoginView>(); // DI will inject AppLoop here
+
+            // Display the LoginView
+            Display(loginView);
+            //Display(provider.GetRequiredService<UserView>());
             App.Run();
         }
     }
