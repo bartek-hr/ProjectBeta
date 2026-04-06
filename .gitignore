@@ -28,11 +28,6 @@ project.lock.json
 project.fragment.lock.json
 artifacts/
 
-# SQLite database files
-*.db
-*.db-shm
-*.db-wal
-
 # ASP.NET Scaffolding
 ScaffoldingReadMe.txt
 
@@ -57,5 +52,3 @@ CodeCoverage/
 *.VisualState.xml
 TestResult.xml
 nunit-*.xml
-
-.idea/
