@@ -8,6 +8,8 @@ public class AppDbContext : DbContext
 {
     // Add Models below
     public DbSet<User> Users { get; set; }
+    public DbSet<Booking> Bookings { get; set; }
+    public DbSet<Receipt> Receipts { get; set; }
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
