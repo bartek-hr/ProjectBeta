@@ -169,4 +169,11 @@ public class Form : RootComponent
         Add(c);
         return c;
     }
+
+    protected LogoutButton LogoutButton(AppLoop appLoop, IServiceProvider serviceProvider)
+    {
+        var c = new LogoutButton(appLoop, serviceProvider);
+        Add(c);
+        return c;
+    }
 }

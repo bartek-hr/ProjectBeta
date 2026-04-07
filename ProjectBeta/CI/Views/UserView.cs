@@ -1,15 +1,21 @@
+using Microsoft.Extensions.DependencyInjection;
+using ProjectBeta.CI;
 using ProjectBeta.CI.Components;
 using ProjectBeta.Logic;
 
 public sealed class UserView : Form
 {
     private readonly UserLogic _userLogic;
+    private readonly AppLoop _appLoop;
+    private readonly IServiceProvider _serviceProvider;
     private string? _statusMessage;
     private Dictionary<string, string[]>? _fieldErrors;
 
-    public UserView(UserLogic userLogic)
+    public UserView(UserLogic userLogic, AppLoop appLoop, IServiceProvider serviceProvider)
     {
         _userLogic = userLogic;
+        _appLoop = appLoop;
+        _serviceProvider = serviceProvider;
         _statusMessage = null;
         _fieldErrors = null;
         InitializeForm();
@@ -26,7 +32,7 @@ public sealed class UserView : Form
 
         Label("Account Info");
         TextInput("Username").Placeholder("jane_doe").Required().Min(3).Max(20);
-        // Username error
+        // Username     
         Message(() => _fieldErrors != null && _fieldErrors.ContainsKey("Username") ? string.Join("\n", _fieldErrors["Username"]) : null);
 
         TextInput("Email").Placeholder("jane@example.com").Required()
@@ -38,7 +44,6 @@ public sealed class UserView : Form
         // Password error
         Message(() => _fieldErrors != null && _fieldErrors.ContainsKey("Password") ? string.Join("\n", _fieldErrors["Password"]) : null);
 
-        Label("Personal Info");
         TextInput("First Name").Placeholder("Jane").Required();
         Message(() => _fieldErrors != null && _fieldErrors.ContainsKey("First Name") ? string.Join("\n", _fieldErrors["First Name"]) : null);
 
@@ -58,6 +63,11 @@ public sealed class UserView : Form
         Message(() => _statusMessage);
         Button("Submit").OnClick(OnSubmit);
         Button("Reset").OnClick(OnReset);
+        Button("Cancel").OnClick(() =>
+        {
+            Console.Clear();
+            _appLoop.Display(_serviceProvider.GetRequiredService<LoginView>());
+        });
     }
 
     private void OnSubmit(Form form)
@@ -76,11 +86,11 @@ public sealed class UserView : Form
 
         // Use injected UserService
         var result = _userLogic.Register(
-            username,
-            email,
-            password,
-            firstName,
-            lastName,
+            username!,
+            email!,
+            password!,
+            firstName!,
+            lastName!,
             dateOfBirth
         );
 
@@ -91,15 +101,19 @@ public sealed class UserView : Form
         }
         else
         {
-            _statusMessage = "User registered successfully.";
+            _statusMessage = "User registered successfully. Redirecting to Login screen.";
             _fieldErrors = null;
+            Invalidate();
+            Render();
+            Thread.Sleep(1500);
+            Console.Clear();
+            _appLoop.Display(_serviceProvider.GetRequiredService<LoginView>());
         }
     }
 
     private void OnReset()
     {
-        _statusMessage = "Form reset.";
-        _fieldErrors = null;
-        //TODO: Clear Form, by setting fields empty
+        Console.Clear();
+        _appLoop.Display(_serviceProvider.GetRequiredService<UserView>());
     }
 }

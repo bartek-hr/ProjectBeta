@@ -49,6 +49,12 @@ public abstract class RootComponent : StaticTerminalInterface
         return AddRange(children.AsEnumerable());
     }
 
+    public void ClearChildren()
+    {
+        _children.Clear();
+        _focusedChild = null;
+    }
+
     public void Close()
     {
         if (_closed)
@@ -158,6 +164,18 @@ public abstract class RootComponent : StaticTerminalInterface
         return _focusedChild is { IsHidden: false }
             ? _focusedChild.ProcessKey(key)
             : false;
+    }
+
+    public void FocusChild(Component child)
+    {
+        if (!_children.Contains(child) || !child.IsFocusable || child.IsHidden)
+            return;
+
+        if (_focusedChild != null)
+            _focusedChild.IsFocused = false;
+
+        _focusedChild = child;
+        child.IsFocused = true;
     }
 
     private void EnsureFocusValid()

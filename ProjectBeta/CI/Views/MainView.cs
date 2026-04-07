@@ -29,6 +29,7 @@ public sealed class MainView : Form
     public void SetUser(User user)
     {
         _user = user;
+        ClearChildren();
         InitializeForm();
     }
 
@@ -43,18 +44,19 @@ public sealed class MainView : Form
         string statusMessage = null;
         Button("Movies(TBD)").OnClick(form => { statusMessage = "TBD"; });//Reservation goes within MoviesView
         Button("Settings(TBD)").OnClick(form => { statusMessage = "TBD"; });
+        Button("Account Details").OnClick(() =>
+        {
+            Console.Clear();
+            var accountView = _serviceProvider.GetRequiredService<AccountView>();
+            accountView.SetUser(_user);
+            _appLoop.Display(accountView);
+        });
         if (_user.Role == "Admin")
         {
             Button("Rapports(TBD)").OnClick(form => { statusMessage = "TBD"; });
             Button("Users(TBD)").OnClick(form => { statusMessage = "TBD"; });
             Button("Cinemas(TBD)").OnClick(form => { statusMessage = "TBD"; });
         }
-        Button("Log Out").OnClick(OnLogout);
-    }
-
-    private void OnLogout(Form form)
-    {
-        // If you want to log out and return to login:
-        _appLoop.Display(_serviceProvider.GetRequiredService<LoginView>());
+        LogoutButton(_appLoop, _serviceProvider);
     }
 }

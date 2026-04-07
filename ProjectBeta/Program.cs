@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using ProjectBeta.Data;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ProjectBeta.Logic;
+using ProjectBeta.Access;
 
 
 namespace ProjectBeta
@@ -20,15 +21,14 @@ namespace ProjectBeta
 
         private static void Main(string[] args)
         {
-            Console.Clear();
-            //Display(new DemoView());
-
             var services = new ServiceCollection();
             services.AddSingleton(App);
             services.AddDbContext<AppDbContext>();
+            services.AddScoped<UserAccess>();
             services.AddScoped<UserLogic>();
-            services.AddScoped<UserView>();
-            services.AddScoped<LoginView>();
+            services.AddTransient<UserView>();
+            services.AddTransient<LoginView>();
+            services.AddTransient<AccountView>();
             services.AddScoped<MainView>();
             var provider = services.BuildServiceProvider();
 
@@ -37,10 +37,8 @@ namespace ProjectBeta
             context.Database.EnsureCreated();
 
             var loginView = provider.GetRequiredService<LoginView>(); // DI will inject AppLoop here
-
-            // Display the LoginView
+            // Display the LoginView as entry view
             Display(loginView);
-            //Display(provider.GetRequiredService<UserView>());
             App.Run();
         }
     }

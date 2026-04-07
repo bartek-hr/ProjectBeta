@@ -23,11 +23,25 @@ public sealed class LoginView : Form
         _fieldErrors = null;
         InitializeForm();
     }
-    private void InitializeForm(bool loggingAgain = false)
+    private void InitializeForm()
     {
-        Label("Please register or login. Tab to navigate, Shift+Tab to go back, Escape to exit.");
-        Button("login").OnClick(OnLogin);
-        Button("Register").OnClick(OnRegister);
+        Heading("Login");
+        Label("Please enter credentials. Tab to navigate, Shift+Tab to go back, Escape to exit.");
+        Divider();
+
+        Message(() => _fieldErrors != null && _fieldErrors.ContainsKey("General") ? string.Join("\n", _fieldErrors["General"]) : null);
+
+        TextInput("Username or Email").Placeholder("jane_doe or jane@example.com").Required();
+        Message(() => _fieldErrors != null && _fieldErrors.ContainsKey("Username or Email") ? string.Join("\n", _fieldErrors["Username or Email"]) : null);
+
+        TextInput("Password").Placeholder("Choose a password").Required().Masked();
+        Message(() => _fieldErrors != null && _fieldErrors.ContainsKey("Password") ? string.Join("\n", _fieldErrors["Password"]) : null);
+
+        Divider();
+
+        Message(() => _statusMessage);
+        Button("Login").OnClick(OnSubmit);
+        Button("Register").OnClick(NavigateToUserView);
     }
     private void InitializeLogin(bool loggingAgain = false)
     {
@@ -59,21 +73,12 @@ public sealed class LoginView : Form
         // Password error
         Message(() => _fieldErrors != null && _fieldErrors.ContainsKey("Password") ? string.Join("\n", _fieldErrors["Password"]) : null);
 
-
-
         Divider();
 
         Message(() => _statusMessage);
         Button("Submit").OnClick(OnSubmit);
+        Button("Register").OnClick(NavigateToUserView);
         Button("Reset").OnClick(OnReset);
-    }
-    private void OnLogin(Form form)
-    {
-        InitializeLogin(false);
-    }
-    private void OnRegister(Form form)
-    {
-        NavigateToUserView();
     }
     private void OnSubmit(Form form)
     {
@@ -82,12 +87,11 @@ public sealed class LoginView : Form
         _statusMessage = null;
 
         // Get form values
-        var username = form.Get<string>("Username");
-        var email = form.Get<string>("Email");
+        var usernameOrEmail = form.Get<string>("Username or Email");
         var password = form.Get<string>("Password");
 
         // Use injected UserService
-        var result = _userLogic.SearchUser(username, email, password);
+        var result = _userLogic.SearchUser(usernameOrEmail, usernameOrEmail, password);
 
         if (!result.Success)
         {
@@ -127,8 +131,6 @@ public sealed class LoginView : Form
     {
         // Clear the console before displaying the next screen
         Console.Clear();
-
-        // Get the UserView from the DI container
 
         // Change the current view to UserView
         _appLoop.Display(_serviceProvider.GetRequiredService<UserView>());
