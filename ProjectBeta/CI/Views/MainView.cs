@@ -3,23 +3,23 @@ using ProjectBeta.CI.Components;
 using ProjectBeta.CI.Views;
 using ProjectBeta.Data;
 using ProjectBeta.Model;
-using ProjectBeta.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using ProjectBeta.Logic;
 namespace ProjectBeta.CI.Views;
 
 public sealed class MainView : Form
 {
     private User _user;
-    private readonly UserService _userService;
+    private readonly UserLogic _userLogic;
     private readonly IServiceProvider _serviceProvider;
     private string? _statusMessage;
     private readonly AppLoop _appLoop;
     private Dictionary<string, string[]>? _fieldErrors;
 
-    public MainView(UserService userService, IServiceProvider serviceProvider, AppLoop appLoop)
+    public MainView(UserLogic userLogic, IServiceProvider serviceProvider, AppLoop appLoop)
     {
-        _userService = userService;
+        _userLogic = userLogic;
         _serviceProvider = serviceProvider;
         _user = new User();
         _appLoop = appLoop;
@@ -41,12 +41,13 @@ public sealed class MainView : Form
 
 
         string statusMessage = null;
-        Button("Movies(TBD)").OnClick(form => { statusMessage = "TBD";});//Reservation goes within MoviesView
-        Button("Settings(TBD)").OnClick(form => { statusMessage = "TBD";});
-        if (_user.Role == "Admin") {
-            Button("Rapports(TBD)").OnClick(form => { statusMessage = "TBD";});
-            Button("Users(TBD)").OnClick(form => { statusMessage = "TBD";});
-            Button("Cinemas(TBD)").OnClick(form => { statusMessage = "TBD";});
+        Button("Movies(TBD)").OnClick(form => { statusMessage = "TBD"; });//Reservation goes within MoviesView
+        Button("Settings(TBD)").OnClick(form => { statusMessage = "TBD"; });
+        if (_user.Role == "Admin")
+        {
+            Button("Rapports(TBD)").OnClick(form => { statusMessage = "TBD"; });
+            Button("Users(TBD)").OnClick(form => { statusMessage = "TBD"; });
+            Button("Cinemas(TBD)").OnClick(form => { statusMessage = "TBD"; });
         }
         Button("Log Out").OnClick(OnLogout);
     }

@@ -1,15 +1,15 @@
 using ProjectBeta.CI.Components;
-using ProjectBeta.Services;
+using ProjectBeta.Logic;
 
 public sealed class UserView : Form
 {
-    private readonly UserService _userService;
+    private readonly UserLogic _userLogic;
     private string? _statusMessage;
     private Dictionary<string, string[]>? _fieldErrors;
 
-    public UserView(UserService userService)
+    public UserView(UserLogic userLogic)
     {
-        _userService = userService;
+        _userLogic = userLogic;
         _statusMessage = null;
         _fieldErrors = null;
         InitializeForm();
@@ -75,7 +75,7 @@ public sealed class UserView : Form
         var dateOfBirth = form.Get<DateOnly?>("Date of Birth");
 
         // Use injected UserService
-        var result = _userService.Register(
+        var result = _userLogic.Register(
             username,
             email,
             password,

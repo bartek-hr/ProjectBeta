@@ -1,17 +1,18 @@
-using System.ComponentModel.DataAnnotations;
 using ProjectBeta.Data;
 using ProjectBeta.Model;
 
-namespace ProjectBeta.Services;
+namespace ProjectBeta.Logic;
 
 
-public class UserService
+using ProjectBeta.Access;
+
+public class UserLogic
 {
-    private readonly AppDbContext _context;
+    private readonly UserAccess _userAccess;
 
-    public UserService(AppDbContext context)
+    public UserLogic(UserAccess userAccess)
     {
-        _context = context;
+        _userAccess = userAccess;
     }
 
     public (bool Success, Dictionary<string, string[]>? FieldErrors) Register(
@@ -29,11 +30,11 @@ public class UserService
         }
 
         // Uniqueness checks
-        if (_context.Users.Any(u => u.Username == username))
+        if (_userAccess.UsernameExists(username))
         {
             return (false, new Dictionary<string, string[]> { { "Username", ["Username is already taken. Please choose another."] } });
         }
-        if (_context.Users.Any(u => u.Email == email))
+        if (_userAccess.EmailExists(email))
         {
             return (false, new Dictionary<string, string[]> { { "Email", ["Email is already registered. Please use a different email."] } });
         }
@@ -71,49 +72,33 @@ public class UserService
 
         try
         {
-            _context.Users.Add(user);
-            _context.SaveChanges();
+            _userAccess.AddUser(user);
             return (true, null);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            // Optionally log ex
             return (false, new Dictionary<string, string[]> { { "General", new[] { "An error occurred while saving the user. Please try again." } } });
         }
     }
-    public (bool Success, User? User, Dictionary<string, string[]>? FieldErrors) SearchUser(
-    string username,
-    string email,
-    string password
-)
-{
-        // Validation for inputs
-        if (Utils.ValidationHelper.AnyNullOrWhiteSpace(username, email, password))
-        {
-            return (false, null, new Dictionary<string, string[]> { { "General", new[] { "Please fill in all required fields." } } });
-        }
 
-        // Try to find user by either username or email
-        var user = _context.Users
-            .FirstOrDefault(u => u.Username == username || u.Email == email);
-
-        if (user == null)
-        {
-            return (false, null, new Dictionary<string, string[]> { { "General", new[] { "User not found." } } });
-        }
-
-        // TODO: Compare the hashed password here
-        if (user.PasswordHash != password) // In real use, you should compare hashed passwords, not plaintext.
-        {
-            return (false, null, new Dictionary<string, string[]> { { "General", new[] { "Invalid password." } } });
-        }
-
-        // Return user if all conditions are satisfied
-        return (true, user, null);
-    }
-
-    public List<User> GetAllUsers()
+    public (bool Success, Dictionary<string, string[]>? FieldErrors, User? User) SearchUser(
+        string? username,
+        string? email,
+        string? password
+    )
     {
-        return _context.Users.ToList();
+        if (username is null || email is null || password is null || Utils.ValidationHelper.AnyNullOrWhiteSpace(username, email, password))
+        {
+            return (false, new Dictionary<string, string[]> { { "General", ["Please fill in all required fields."] } }, null);
+        }
+
+        var user = _userAccess.FindUserByUsernameOrEmail(username!, email!);
+
+        if (user is null || user.PasswordHash != password)
+        {
+            return (false, new Dictionary<string, string[]> { { "General", ["Invalid credentials."] } }, null);
+        }
+
+        return (true, null, user);
     }
 }

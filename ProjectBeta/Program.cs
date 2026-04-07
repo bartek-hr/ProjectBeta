@@ -3,8 +3,8 @@ using ProjectBeta.CI.Views;
 using ProjectBeta.Model;
 using Microsoft.Extensions.DependencyInjection;
 using ProjectBeta.Data;
-using ProjectBeta.Services;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using ProjectBeta.Logic;
 
 
 namespace ProjectBeta
@@ -24,9 +24,9 @@ namespace ProjectBeta
             //Display(new DemoView());
 
             var services = new ServiceCollection();
-            services.AddSingleton(App); 
+            services.AddSingleton(App);
             services.AddDbContext<AppDbContext>();
-            services.AddScoped<UserService>();
+            services.AddScoped<UserLogic>();
             services.AddScoped<UserView>();
             services.AddScoped<LoginView>();
             services.AddScoped<MainView>();

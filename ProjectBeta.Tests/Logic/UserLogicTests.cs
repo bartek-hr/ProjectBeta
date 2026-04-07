@@ -1,15 +1,17 @@
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using ProjectBeta.Access;
 using ProjectBeta.Data;
-using ProjectBeta.Services;
+using ProjectBeta.Logic;
 
 namespace ProjectBeta.Tests;
 
 [TestClass]
-public class UserServiceTests
+public class UserLogicTests
 {
     private AppDbContext? _context;
-    private UserService? _service;
+    private UserAccess? _userAccess;
+    private UserLogic? _logic;
     private SqliteConnection? _connection;
 
     [TestInitialize]
@@ -22,7 +24,8 @@ public class UserServiceTests
         _connection.Open();
         _context = new AppDbContext(options);
         _context.Database.EnsureCreated();
-        _service = new UserService(_context);
+        _userAccess = new UserAccess(_context);
+        _logic = new UserLogic(_userAccess);
     }
 
     [TestCleanup]
@@ -35,7 +38,7 @@ public class UserServiceTests
     [TestMethod]
     public void Register_NewUser_ReturnsTrue()
     {
-        var service = _service!;
+        var service = _logic!;
         var context = _context!;
 
         var result = service.Register(
@@ -55,7 +58,7 @@ public class UserServiceTests
     [TestMethod]
     public void Register_ExistingUser_ReturnsFalse()
     {
-        var service = _service!;
+        var service = _logic!;
 
         // First registration should succeed
         var first = service.Register(

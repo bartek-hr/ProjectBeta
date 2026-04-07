@@ -3,28 +3,28 @@ using ProjectBeta.CI.Components;
 using ProjectBeta.CI.Views;
 using ProjectBeta.Data;
 using ProjectBeta.Model;
-using ProjectBeta.Services;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
+using ProjectBeta.Logic;
 
 public sealed class LoginView : Form
 {
-    private readonly UserService _userService;
+    private readonly UserLogic _userLogic;
     private readonly IServiceProvider _serviceProvider;
     private string? _statusMessage;
     private readonly AppLoop _appLoop;
     private Dictionary<string, string[]>? _fieldErrors;
 
-    public LoginView(UserService userService, IServiceProvider serviceProvider, AppLoop appLoop)
+    public LoginView(UserLogic userLogic, IServiceProvider serviceProvider, AppLoop appLoop)
     {
-        _userService = userService;
+        _userLogic = userLogic;
         _serviceProvider = serviceProvider;
         _appLoop = appLoop;
         _statusMessage = null;
         _fieldErrors = null;
         InitializeForm();
     }
-    private void InitializeForm(bool loggingAgain = false) {
+    private void InitializeForm(bool loggingAgain = false)
+    {
         Label("Please register or login. Tab to navigate, Shift+Tab to go back, Escape to exit.");
         Button("login").OnClick(OnLogin);
         Button("Register").OnClick(OnRegister);
@@ -32,9 +32,12 @@ public sealed class LoginView : Form
     private void InitializeLogin(bool loggingAgain = false)
     {
         Heading("Login");
-        if (loggingAgain) {
+        if (loggingAgain)
+        {
             Label("One of credentials is wrong please try again. Tab to navigate, Shift+Tab to go back, Escape to exit.");
-        } else{
+        }
+        else
+        {
             Label("Please enter credentials. Tab to navigate, Shift+Tab to go back, Escape to exit.");
         }
         Divider();
@@ -84,7 +87,7 @@ public sealed class LoginView : Form
         var password = form.Get<string>("Password");
 
         // Use injected UserService
-        var result = _userService.SearchUser(username, email, password);
+        var result = _userLogic.SearchUser(username, email, password);
 
         if (!result.Success)
         {
@@ -97,7 +100,7 @@ public sealed class LoginView : Form
         }
         else
         {
-            _statusMessage = $"Hi {result.User.Username}.";
+            _statusMessage = $"Hi {result.User!.Username}.";
             _fieldErrors = null;
 
             // After successful login, go to MainView or another screen
@@ -109,7 +112,7 @@ public sealed class LoginView : Form
     {
         // Clear the console before displaying the next screen
         Console.Clear();
-        
+
         // Get the MainView from the DI container
         var mainView = _serviceProvider.GetRequiredService<MainView>(); // This line should work now
 
@@ -124,7 +127,7 @@ public sealed class LoginView : Form
     {
         // Clear the console before displaying the next screen
         Console.Clear();
-        
+
         // Get the UserView from the DI container
 
         // Change the current view to UserView
