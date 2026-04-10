@@ -57,6 +57,8 @@ public sealed class MainView : Form
             Button("Users(TBD)").OnClick(form => { statusMessage = "TBD"; });
             Button("Cinemas(TBD)").OnClick(form => { statusMessage = "TBD"; });
         }
+
+        Spacer();
         LogoutButton(_appLoop, _serviceProvider);
     }
 }
