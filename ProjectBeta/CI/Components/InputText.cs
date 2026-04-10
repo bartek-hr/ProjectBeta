@@ -75,6 +75,13 @@ public class InputText : Component, IValidatable, IValueComponent
         return this;
     }
 
+    public InputText Default(string value)
+    {
+        _value = value ?? string.Empty;
+        ClampCursorIndex();
+        return this;
+    }
+
     /// <summary>
     /// Adds a custom validator. Return an error message string to indicate failure, or null for success.
     /// </summary>
