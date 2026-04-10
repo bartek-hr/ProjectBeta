@@ -43,6 +43,7 @@ public class LoginView : Form
 - Display
   - [Heading](#heading)
   - [Label](#label)
+  - [Table](#table)
   - [Divider](#divider)
   - [Spacer](#spacer)
   - [Message](#message)
@@ -181,6 +182,26 @@ Heading(string text)             // bold title
 
 ```
 Label(string text)               // muted text
+```
+
+### Table
+
+Read-only tabular data with auto-sized columns.
+
+```
+Table(params string[] headers)
+    .AddColumn(string header, Align align = Align.Left)
+    .AddRow(params object?[] cells)
+    .EmptyMessage(string)
+```
+
+Example:
+
+```csharp
+Table("Movie", "Time", "Seats")
+    .AddRow("Dune: Part Two", "19:30", 42)
+    .AddRow("Arrival", "21:00", 18)
+    .AddRow("Past Lives", "22:15", 6);
 ```
 
 ### Divider

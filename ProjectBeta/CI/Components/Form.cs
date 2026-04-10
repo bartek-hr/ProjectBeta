@@ -156,6 +156,13 @@ public class Form : RootComponent
         return c;
     }
 
+    protected Table Table(params string[] headers)
+    {
+        var c = new Table(headers);
+        Add(c);
+        return c;
+    }
+
     protected Divider Divider()
     {
         var c = new Divider();

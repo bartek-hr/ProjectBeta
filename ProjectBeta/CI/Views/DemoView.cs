@@ -68,6 +68,14 @@ public sealed class DemoView : Form
 
         Divider();
 
+        Label("Table");
+        Table("Movie", "Time", "Seats")
+            .AddRow("Dune: Part Two", "19:30", 42)
+            .AddRow("The Grand Budapest Hotel", "21:00", 18)
+            .AddRow("Spider-Man: Across the Spider-Verse", "23:15", 6);
+
+        Divider();
+
         Message(() => statusMessage);
         Button("Submit").OnClick(form =>
         {

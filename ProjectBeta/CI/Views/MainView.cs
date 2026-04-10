@@ -42,7 +42,8 @@ public sealed class MainView : Form
 
 
         string statusMessage = null;
-        Button("Movies(TBD)").OnClick(form => { statusMessage = "TBD"; });//Reservation goes within MoviesView
+        Button("Movies(TBD)").OnClick(() => _appLoop.Display(new MoviesView()));
+        
         Button("Settings(TBD)").OnClick(form => { statusMessage = "TBD"; });
         Button("Account Details").OnClick(() =>
         {

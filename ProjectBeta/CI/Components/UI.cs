@@ -34,6 +34,9 @@ public static class UI
     public static Message Message(Func<string?> messageProvider)
         => new(messageProvider);
 
+    public static Table Table(params string[] headers)
+        => new(headers);
+
     public static Divider Divider()
         => new();
 
