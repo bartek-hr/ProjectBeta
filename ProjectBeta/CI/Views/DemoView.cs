@@ -68,11 +68,22 @@ public sealed class DemoView : Form
 
         Divider();
 
-        Label("Table");
-        Table("Movie", "Time", "Seats")
+        Label("Table (display-only)");
+        Table("Movie", "Time", "Seats") // only used to show data
             .AddRow("Dune: Part Two", "19:30", 42)
             .AddRow("The Grand Budapest Hotel", "21:00", 18)
             .AddRow("Spider-Man: Across the Spider-Verse", "23:15", 6);
+
+        Divider();
+
+        Label("Interactive Table (Tab to focus, arrows to navigate, Enter to select)");
+        string? selectedMovie = null;
+        Table<string>("Movie", "Time", "Seats") // only used to show data you can select
+            .AddRow("dune", "Dune: Part Two", "19:30", 42) // first parameter is the callback object
+            .AddRow("grand-budapest", "The Grand Budapest Hotel", "21:00", 18)
+            .AddRow("spider-verse", "Spider-Man: Across the Spider-Verse", "23:15", 6)
+            .OnSelect(id => { selectedMovie = id; }); // id = dune, grand-budapest, or spider-verse
+        Message(() => selectedMovie != null ? $"Selected movie: {selectedMovie}" : null);
 
         Divider();
 

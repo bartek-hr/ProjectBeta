@@ -2,11 +2,11 @@ using ProjectBeta.CI.Rendering;
 
 namespace ProjectBeta.CI.Components;
 
-public sealed class Table : Component
+public class Table : Component
 {
-    private readonly List<ColumnDefinition> _columns = [];
-    private readonly List<string[]> _rows = [];
-    private string _emptyMessage = "No rows";
+    protected readonly List<ColumnDefinition> _columns = [];
+    protected readonly List<string[]> _rows = [];
+    protected string _emptyMessage = "No rows";
 
     public Table(params string[] headers)
     {
@@ -43,6 +43,10 @@ public sealed class Table : Component
         return this;
     }
 
+    protected virtual Style GetBorderStyle() => Style.Muted;
+
+    protected virtual Style GetRowStyle(int rowIndex) => Style.Default;
+
     public override int Render(ComponentRenderContext context)
     {
         if (_columns.Count == 0)
@@ -51,31 +55,33 @@ public sealed class Table : Component
         var widths = CalculateColumnWidths(context.Width);
         var rowsWritten = 0;
         var buffer = context.Buffer;
+        var borderStyle = GetBorderStyle();
 
-        WriteSeparator(buffer, '┌', '┬', '┐', widths);
+        WriteSeparator(buffer, '┌', '┬', '┐', widths, borderStyle);
         rowsWritten++;
 
-        WriteRow(buffer, widths, _columns.Select(column => column.Header).ToArray(), Style.Primary);
+        WriteRow(buffer, widths, _columns.Select(column => column.Header).ToArray(), Style.Primary, borderStyle);
         rowsWritten++;
 
-        WriteSeparator(buffer, '├', '┼', '┤', widths);
+        WriteSeparator(buffer, '├', '┼', '┤', widths, borderStyle);
         rowsWritten++;
 
         if (_rows.Count == 0)
         {
-            WriteRow(buffer, widths, CreateEmptyRow(), Style.Muted);
+            WriteRow(buffer, widths, CreateEmptyRow(), Style.Muted, borderStyle);
             rowsWritten++;
         }
         else
         {
-            foreach (var row in _rows)
+            for (var i = 0; i < _rows.Count; i++)
             {
-                WriteRow(buffer, widths, row, Style.Default);
+                var rowStyle = GetRowStyle(i);
+                WriteRow(buffer, widths, _rows[i], rowStyle, borderStyle);
                 rowsWritten++;
             }
         }
 
-        WriteSeparator(buffer, '└', '┴', '┘', widths);
+        WriteSeparator(buffer, '└', '┴', '┘', widths, borderStyle);
         rowsWritten++;
 
         return rowsWritten;
@@ -129,26 +135,26 @@ public sealed class Table : Component
         return row;
     }
 
-    private static string FormatCell(object? value)
+    protected static string FormatCell(object? value)
     {
         return value?.ToString()?.Replace("\r", string.Empty).Replace('\n', ' ') ?? string.Empty;
     }
 
-    private static void WriteSeparator(TerminalBuffer buffer, char left, char middle, char right, IReadOnlyList<int> widths)
+    private static void WriteSeparator(TerminalBuffer buffer, char left, char middle, char right, IReadOnlyList<int> widths, Style borderStyle)
     {
-        buffer.Write(left.ToString(), Style.Muted);
+        buffer.Write(left.ToString(), borderStyle);
         for (var index = 0; index < widths.Count; index++)
         {
-            buffer.Repeat('─', widths[index] + 2, Style.Muted);
-            buffer.Write(index == widths.Count - 1 ? right.ToString() : middle.ToString(), Style.Muted);
+            buffer.Repeat('─', widths[index] + 2, borderStyle);
+            buffer.Write(index == widths.Count - 1 ? right.ToString() : middle.ToString(), borderStyle);
         }
 
         buffer.WriteLine();
     }
 
-    private void WriteRow(TerminalBuffer buffer, IReadOnlyList<int> widths, IReadOnlyList<string> cells, Style style)
+    private void WriteRow(TerminalBuffer buffer, IReadOnlyList<int> widths, IReadOnlyList<string> cells, Style style, Style borderStyle)
     {
-        buffer.Write("│", Style.Muted);
+        buffer.Write("│", borderStyle);
         for (var index = 0; index < widths.Count; index++)
         {
             var cell = index < cells.Count ? cells[index] : string.Empty;
@@ -156,11 +162,11 @@ public sealed class Table : Component
             buffer.Write(" ", style);
             buffer.WriteFixed(cell, widths[index], _columns[index].Align, style);
             buffer.Write(" ", style);
-            buffer.Write("│", Style.Muted);
+            buffer.Write("│", borderStyle);
         }
 
         buffer.WriteLine();
     }
 
-    private sealed record ColumnDefinition(string Header, Align Align);
+    protected sealed record ColumnDefinition(string Header, Align Align);
 }

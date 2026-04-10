@@ -163,6 +163,13 @@ public class Form : RootComponent
         return c;
     }
 
+    protected Table<T> Table<T>(params string[] headers) where T : class
+    {
+        var c = new Table<T>(headers);
+        Add(c);
+        return c;
+    }
+
     protected Divider Divider()
     {
         var c = new Divider();

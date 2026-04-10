@@ -186,7 +186,7 @@ Label(string text)               // muted text
 
 ### Table
 
-Read-only tabular data with auto-sized columns.
+Tabular data with auto-sized columns. Display-only by default.
 
 ```
 Table(params string[] headers)
@@ -202,6 +202,34 @@ Table("Movie", "Time", "Seats")
     .AddRow("Dune: Part Two", "19:30", 42)
     .AddRow("Arrival", "21:00", 18)
     .AddRow("Past Lives", "22:15", 6);
+```
+
+### Table\<T\>
+
+Interactive table with row selection. Each row carries a data object of type `T`.
+Focusable only when `OnSelect` is registered and rows exist.
+
+```
+Table<T>(params string[] headers)
+    .AddColumn(string header, Align align = Align.Left)
+    .AddRow(T data, params object?[] cells)
+    .OnSelect(Action<T>)
+    .EmptyMessage(string)
+```
+
+Keys: `Up`/`Down` to navigate rows (wraps around), `Enter`/`Space` to select.
+Focused table highlights borders and the current row.
+
+Example:
+
+```csharp
+Table<Movie>("Title", "Year", "Rating")
+    .AddRow(movie1, movie1.Title, movie1.Year, movie1.Rating)
+    .AddRow(movie2, movie2.Title, movie2.Year, movie2.Rating)
+    .OnSelect(movie =>
+    {
+        // handle selection
+    });
 ```
 
 ### Divider
