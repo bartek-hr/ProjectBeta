@@ -15,7 +15,6 @@ public sealed class MainView : Form
     private readonly IServiceProvider _serviceProvider;
     private string? _statusMessage;
     private readonly AppLoop _appLoop;
-    private Dictionary<string, string[]>? _fieldErrors;
 
     public MainView(UserLogic userLogic, IServiceProvider serviceProvider, AppLoop appLoop)
     {
@@ -24,7 +23,6 @@ public sealed class MainView : Form
         _user = new User();
         _appLoop = appLoop;
         _statusMessage = null;
-        _fieldErrors = null;
     }
     public void SetUser(User user)
     {
@@ -41,9 +39,8 @@ public sealed class MainView : Form
         Label("Full Name: " + _user.FirstName + " " + _user.LastName);
 
 
-        string statusMessage = null;
-        Button("Movies(TBD)").OnClick(form => { statusMessage = "TBD"; });//Reservation goes within MoviesView
-        Button("Settings(TBD)").OnClick(form => { statusMessage = "TBD"; });
+        Button("Movies(TBD)").OnClick(form => { _statusMessage = "TBD"; });
+        Button("Settings(TBD)").OnClick(form => { _statusMessage = "TBD"; });
         Button("Account Details").OnClick(() =>
         {
             Console.Clear();
@@ -53,10 +50,18 @@ public sealed class MainView : Form
         });
         if (_user.Role == "Admin")
         {
-            Button("Rapports(TBD)").OnClick(form => { statusMessage = "TBD"; });
-            Button("Users(TBD)").OnClick(form => { statusMessage = "TBD"; });
-            Button("Cinemas(TBD)").OnClick(form => { statusMessage = "TBD"; });
+            Button("Rapports(TBD)").OnClick(form => { _statusMessage = "TBD"; });
+            Button("Users").OnClick(form => { _statusMessage = "Will be active soon."; });
+            Button("Cinemas").OnClick(() =>
+            {
+                Console.Clear();
+                var cinemaView = _serviceProvider.GetRequiredService<CinemaView>();
+                cinemaView.SetUser(_user);
+                _appLoop.Display(cinemaView);
+            });
         }
+        Divider();
+        Message(() => _statusMessage);
         LogoutButton(_appLoop, _serviceProvider);
     }
 }
