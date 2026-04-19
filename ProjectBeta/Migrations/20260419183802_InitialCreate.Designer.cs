@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProjectBeta.Data;
 
@@ -10,9 +11,11 @@ using ProjectBeta.Data;
 namespace ProjectBeta.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260419183802_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.0");
@@ -61,9 +64,6 @@ namespace ProjectBeta.Migrations
 
                     b.Property<double?>("Rating")
                         .HasColumnType("REAL");
-
-                    b.Property<int?>("RuntimeSeconds")
-                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -143,7 +143,7 @@ namespace ProjectBeta.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2026, 4, 19, 18, 46, 3, 17, DateTimeKind.Utc).AddTicks(5490),
+                            CreatedAt = new DateTime(2026, 4, 19, 18, 38, 1, 955, DateTimeKind.Utc).AddTicks(9770),
                             DateOfBirth = new DateOnly(1990, 1, 1),
                             Email = "admin@example.com",
                             FirstName = "Admin",
@@ -156,7 +156,7 @@ namespace ProjectBeta.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2026, 4, 19, 18, 46, 3, 17, DateTimeKind.Utc).AddTicks(5500),
+                            CreatedAt = new DateTime(2026, 4, 19, 18, 38, 1, 955, DateTimeKind.Utc).AddTicks(9780),
                             DateOfBirth = new DateOnly(1995, 5, 15),
                             Email = "user1@example.com",
                             FirstName = "User",

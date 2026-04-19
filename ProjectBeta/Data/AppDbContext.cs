@@ -1,4 +1,7 @@
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.Extensions.Configuration;
 using ProjectBeta.Model;
 
@@ -10,6 +13,11 @@ public class AppDbContext : DbContext
     public DbSet<User> Users { get; set; }
     public DbSet<Booking> Bookings { get; set; }
     public DbSet<Receipt> Receipts { get; set; }
+    public DbSet<Movie> Movies { get; set; }
+
+    public AppDbContext()
+    {
+    }
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
@@ -30,6 +38,26 @@ public class AppDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        var genresConverter = new ValueConverter<List<string>, string>(
+            genres => JsonSerializer.Serialize(genres, (JsonSerializerOptions?)null),
+            genresJson => JsonSerializer.Deserialize<List<string>>(genresJson, (JsonSerializerOptions?)null) ?? new List<string>());
+
+        var genresComparer = new ValueComparer<List<string>>(
+            (left, right) => (left == null && right == null) || (left != null && right != null && left.SequenceEqual(right)),
+            genres => genres.Aggregate(0, (hash, genre) => HashCode.Combine(hash, genre.GetHashCode())),
+            genres => genres.ToList());
+
+        modelBuilder.Entity<Movie>(entity =>
+        {
+            entity.HasKey(movie => movie.Id);
+            entity.Property(movie => movie.Id).IsRequired();
+            entity.Property(movie => movie.Title).IsRequired();
+            entity.Property(movie => movie.Description).IsRequired();
+            entity.Property(movie => movie.Genres)
+                .HasConversion(genresConverter)
+                .Metadata.SetValueComparer(genresComparer);
+        });
 
         modelBuilder.Entity<User>().HasData(
             new User
