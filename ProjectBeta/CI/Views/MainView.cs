@@ -1,11 +1,9 @@
 using ProjectBeta.CI;
 using ProjectBeta.CI.Components;
-using ProjectBeta.CI.Views;
-using ProjectBeta.Data;
 using ProjectBeta.Model;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using ProjectBeta.Logic;
+
 namespace ProjectBeta.CI.Views;
 
 public sealed class MainView : Form
@@ -13,9 +11,7 @@ public sealed class MainView : Form
     private User _user;
     private readonly UserLogic _userLogic;
     private readonly IServiceProvider _serviceProvider;
-    private string? _statusMessage;
     private readonly AppLoop _appLoop;
-    private Dictionary<string, string[]>? _fieldErrors;
 
     public MainView(UserLogic userLogic, IServiceProvider serviceProvider, AppLoop appLoop)
     {
@@ -23,8 +19,6 @@ public sealed class MainView : Form
         _serviceProvider = serviceProvider;
         _user = new User();
         _appLoop = appLoop;
-        _statusMessage = null;
-        _fieldErrors = null;
     }
     public void SetUser(User user)
     {
@@ -40,11 +34,9 @@ public sealed class MainView : Form
         Label("Email: " + _user.Email);
         Label("Full Name: " + _user.FirstName + " " + _user.LastName);
 
-
-        string statusMessage = null;
-        Button("Movies(TBD)").OnClick(() => _appLoop.Display(new MoviesView()));
+        Button("Movies").OnClick(() => _appLoop.Display(_serviceProvider.GetRequiredService<MoviesView>()));
         
-        Button("Settings(TBD)").OnClick(form => { statusMessage = "TBD"; });
+        Button("Settings(TBD)").OnClick(form => { });
         Button("Account Details").OnClick(() =>
         {
             Console.Clear();
@@ -54,9 +46,9 @@ public sealed class MainView : Form
         });
         if (_user.Role == "Admin")
         {
-            Button("Rapports(TBD)").OnClick(form => { statusMessage = "TBD"; });
-            Button("Users(TBD)").OnClick(form => { statusMessage = "TBD"; });
-            Button("Cinemas(TBD)").OnClick(form => { statusMessage = "TBD"; });
+            Button("Rapports(TBD)").OnClick(form => { });
+            Button("Users(TBD)").OnClick(form => { });
+            Button("Cinemas(TBD)").OnClick(form => { });
         }
 
         Spacer();

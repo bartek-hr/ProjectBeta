@@ -14,6 +14,7 @@ public class AppDbContext : DbContext
     public DbSet<Booking> Bookings { get; set; }
     public DbSet<Receipt> Receipts { get; set; }
     public DbSet<Movie> Movies { get; set; }
+    public DbSet<MovieSchedule> MovieSchedules { get; set; }
 
     public AppDbContext()
     {
@@ -57,6 +58,21 @@ public class AppDbContext : DbContext
             entity.Property(movie => movie.Genres)
                 .HasConversion(genresConverter)
                 .Metadata.SetValueComparer(genresComparer);
+        });
+
+        modelBuilder.Entity<MovieSchedule>(entity =>
+        {
+            entity.HasKey(schedule => schedule.Id);
+            entity.Property(schedule => schedule.MovieId).IsRequired();
+            entity.Property(schedule => schedule.ScheduleDate).IsRequired();
+            entity.Property(schedule => schedule.StartTime).IsRequired();
+            entity.Property(schedule => schedule.EndTime).IsRequired();
+            entity.HasIndex(schedule => schedule.ScheduleDate);
+            entity.HasIndex(schedule => new { schedule.ScheduleDate, schedule.StartTime }).IsUnique();
+            entity.HasOne(schedule => schedule.Movie)
+                .WithMany()
+                .HasForeignKey(schedule => schedule.MovieId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<User>().HasData(

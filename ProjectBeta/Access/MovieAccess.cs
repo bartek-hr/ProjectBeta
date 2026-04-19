@@ -105,6 +105,47 @@ public class MovieAccess
         return movie;
     }
 
+    public void EnsureMoviesPersisted(IEnumerable<Movie> movies)
+    {
+        var candidates = movies
+            .Where(movie => !string.IsNullOrWhiteSpace(movie.Id))
+            .GroupBy(movie => movie.Id)
+            .Select(group => group.First())
+            .ToList();
+
+        if (candidates.Count == 0)
+        {
+            return;
+        }
+
+        var candidateIds = candidates.Select(movie => movie.Id).ToList();
+        var existingIds = _context.Movies
+            .Where(movie => candidateIds.Contains(movie.Id))
+            .Select(movie => movie.Id)
+            .ToHashSet();
+
+        var missingMovies = candidates
+            .Where(movie => !existingIds.Contains(movie.Id))
+            .Select(movie => new Movie
+            {
+                Id = movie.Id,
+                Title = movie.Title,
+                Description = movie.Description,
+                Genres = movie.Genres.ToList(),
+                Rating = movie.Rating,
+                RuntimeSeconds = movie.RuntimeSeconds
+            })
+            .ToList();
+
+        if (missingMovies.Count == 0)
+        {
+            return;
+        }
+
+        _context.Movies.AddRange(missingMovies);
+        _context.SaveChanges();
+    }
+
     private static Movie MapToMovie(TitleResponse title)
     {
         return new Movie
