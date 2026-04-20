@@ -2,7 +2,6 @@ using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Microsoft.Extensions.Configuration;
 using ProjectBeta.Model;
 
 namespace ProjectBeta.Data;
@@ -30,12 +29,7 @@ public class AppDbContext : DbContext
     {
         if (!options.IsConfigured)
         {
-            var config = new ConfigurationBuilder()
-                .SetBasePath(AppContext.BaseDirectory)
-                .AddJsonFile("appsettings.json", optional: false)
-                .Build();
-
-            options.UseSqlite(config.GetConnectionString("DefaultConnection"));
+            options.UseSqlite(SqliteConnectionStringResolver.GetResolvedConnectionString());
         }
     }
 

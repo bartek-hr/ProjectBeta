@@ -22,7 +22,8 @@ namespace ProjectBeta
             var services = new ServiceCollection();
             services.AddSingleton(App);
             services.AddSingleton(new HttpClient { BaseAddress = new Uri("https://api.imdbapi.dev/") });
-            services.AddDbContext<AppDbContext>();
+            services.AddDbContext<AppDbContext>((_, options) =>
+                options.UseSqlite(SqliteConnectionStringResolver.GetResolvedConnectionString()));
             services.AddScoped<UserAccess>();
             services.AddScoped<MovieAccess>();
             services.AddScoped<MovieScheduleAccess>();

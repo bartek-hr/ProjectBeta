@@ -9,8 +9,11 @@ A C#/.NET console application for cinema reservation management, using SQLite an
 ## Database Usage
 
 This project uses SQLite with the connection string in `appsettings.json`.
-To ensure both `dotnet run` and the VS Code "Run" button use the same `app.db` file, always run the app from the `ProjectBeta/ProjectBeta` directory.
-If you change the connection string to an absolute path, all environments will use the same database file.
+Relative SQLite paths are resolved to the project directory, so local development, IDE runs, `dotnet run`, and EF Core commands all use `ProjectBeta/app.db`.
+If you change the connection string to an absolute path, the app will use that exact database file unchanged.
+
+If you already have duplicate database files from older runs, compare the existing copies first and keep the canonical file at `ProjectBeta/app.db`.
+After confirming which one contains the data you want, you can manually remove a stray repo-root `app.db`.
 
 **Note:** Do not add comments inside `appsettings.json` (JSON does not support comments).
 
@@ -64,4 +67,3 @@ If you need to revert your database schema to a previous state (for example, if 
 3. If your database is ahead of your code (for example, you have a Movies table from a migration that does not exist in your current branch), you may get errors until you downgrade or recreate the database.
 
 4. If you want to reset everything, you can delete the database file and run `dotnet ef database update` to recreate it from the migrations present in your branch.
-
