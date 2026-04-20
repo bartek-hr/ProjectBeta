@@ -52,7 +52,13 @@ public sealed class MainView : Form
         if (_user.Role == "Admin")
         {
             Button("Rapports(TBD)").OnClick(form => { _statusMessage = "TBD"; });
-            Button("Users").OnClick(form => { _statusMessage = "Will be active soon."; });
+            Button("Users").OnClick(() =>
+            {
+                Console.Clear();
+                var usersView = _serviceProvider.GetRequiredService<UsersView>();
+                usersView.SetUser(_user);
+                _appLoop.Display(usersView);
+            });
             Button("Cinemas").OnClick(() =>
             {
                 Console.Clear();

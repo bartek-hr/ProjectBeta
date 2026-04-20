@@ -102,6 +102,31 @@ public class UserLogic
         return (true, null, user);
     }
 
+    public (bool Success, List<User>? Users, Dictionary<string, string[]>? FieldErrors) GetAllUsers()
+    {
+        try
+        {
+            var users = _userAccess.GetAllUsers();
+
+            if (users == null || !users.Any())
+            {
+                return (false, null, new Dictionary<string, string[]>
+                {
+                    { "General", new[] { "No users found." } }
+                });
+            }
+
+            return (true, users, null);
+        }
+        catch (Exception)
+        {
+            return (false, null, new Dictionary<string, string[]>
+            {
+                { "General", new[] { "An error occurred while retrieving users. Please try again." } }
+            });
+        }
+    }
+
     public (bool Success, Dictionary<string, string[]>? FieldErrors) UpdateUser(
         int id,
         string username,

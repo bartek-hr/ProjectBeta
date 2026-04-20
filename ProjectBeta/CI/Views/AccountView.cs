@@ -1,3 +1,4 @@
+using System.Reflection.Metadata;
 using Microsoft.Extensions.DependencyInjection;
 using ProjectBeta.CI;
 using ProjectBeta.CI.Components;
@@ -12,6 +13,7 @@ public sealed class AccountView : Form
     private readonly AppLoop _appLoop;
     private readonly IServiceProvider _serviceProvider;
     private User _user = null!;
+    private User _admin_user = null!;
     private string? _statusMessage;
     private bool _confirmingDelete;
     private Button? _noCancelButton;
@@ -24,9 +26,10 @@ public sealed class AccountView : Form
         _serviceProvider = serviceProvider;
     }
 
-    public void SetUser(User user)
+    public void SetUser(User user, User? admin_user = null)
     {
         _user = user;
+        _admin_user = admin_user; 
         InitializeForm();
     }
 
@@ -115,13 +118,18 @@ public sealed class AccountView : Form
         }
         else
         {
+            if (_admin_user is null){
             // Refresh local user reference
-            _user.Username = username!;
-            _user.Email = email!;
-            _user.FirstName = firstName!;
-            _user.LastName = lastName!;
-            _user.DateOfBirth = dateOfBirth;
-
+                _user.Username = username!;
+                _user.Email = email!;
+                _user.FirstName = firstName!;
+                _user.LastName = lastName!;
+                _user.DateOfBirth = dateOfBirth;
+            }
+            else
+            {
+                _user = _admin_user;
+            }
             _statusMessage = "Account updated successfully.";
             _fieldErrors = null;
             Invalidate();
