@@ -10,10 +10,13 @@ public class AppDbContext : DbContext
     public DbSet<User> Users { get; set; }
     public DbSet<Booking> Bookings { get; set; }
     public DbSet<Receipt> Receipts { get; set; }
+    public DbSet<Cinema> Cinemas {get; set; }
+    public DbSet<Auditorium> Auditoriums {get; set; }
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
     }
+    
     protected override void OnConfiguring(DbContextOptionsBuilder options)
     {
         if (!options.IsConfigured)
@@ -58,6 +61,21 @@ public class AppDbContext : DbContext
                 CreatedAt = DateTime.UtcNow,
                 IsActive = true
             }
+        );
+
+        modelBuilder.Entity<Auditorium>()
+            .HasOne(a => a.Cinema)
+            .WithMany(c => c.Auditoriums)
+            .HasForeignKey(a => a.CinemaId);
+
+        modelBuilder.Entity<Cinema>().HasData(
+            new Cinema { Id = 1, Name = "Darcy", City = "Rotterdam" }
+        );
+
+        modelBuilder.Entity<Auditorium>().HasData(
+            new Auditorium { Id = 1, Name = "Auditorium 1", CinemaId = 1, Capacity = 150 },
+            new Auditorium { Id = 2, Name = "Auditorium 2", CinemaId = 1, Capacity = 300 },
+            new Auditorium { Id = 3, Name = "Auditorium 3", CinemaId = 1, Capacity = 500 }
         );
     }
 }

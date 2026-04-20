@@ -26,9 +26,18 @@ namespace ProjectBeta
             services.AddDbContext<AppDbContext>();
             services.AddScoped<UserAccess>();
             services.AddScoped<UserLogic>();
+            services.AddScoped<AuditoriumAccess>();
+            services.AddScoped<AuditoriumLogic>();
+            services.AddScoped<CinemaAccess>();
+            services.AddScoped<CinemaLogic>();
             services.AddTransient<UserView>();
             services.AddTransient<LoginView>();
             services.AddTransient<AccountView>();
+            services.AddTransient<CinemaView>();
+            services.AddTransient<CinemaDetailView>();
+            services.AddTransient<CinemaEditView>();
+            services.AddTransient<AuditoriumListView>();
+            services.AddTransient<AuditoriumEditView>();
             services.AddScoped<MainView>();
             var provider = services.BuildServiceProvider();
 
