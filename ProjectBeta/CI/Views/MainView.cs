@@ -1,9 +1,11 @@
 using ProjectBeta.CI;
 using ProjectBeta.CI.Components;
+using ProjectBeta.CI.Views;
+using ProjectBeta.Data;
 using ProjectBeta.Model;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using ProjectBeta.Logic;
-
 namespace ProjectBeta.CI.Views;
 
 public sealed class MainView : Form
@@ -11,7 +13,9 @@ public sealed class MainView : Form
     private User _user;
     private readonly UserLogic _userLogic;
     private readonly IServiceProvider _serviceProvider;
+    private string? _statusMessage;
     private readonly AppLoop _appLoop;
+    private Dictionary<string, string[]>? _fieldErrors;
 
     public MainView(UserLogic userLogic, IServiceProvider serviceProvider, AppLoop appLoop)
     {
@@ -19,6 +23,7 @@ public sealed class MainView : Form
         _serviceProvider = serviceProvider;
         _user = new User();
         _appLoop = appLoop;
+        _statusMessage = null;
     }
     public void SetUser(User user)
     {
@@ -34,9 +39,9 @@ public sealed class MainView : Form
         Label("Email: " + _user.Email);
         Label("Full Name: " + _user.FirstName + " " + _user.LastName);
 
+
         Button("Movies").OnClick(() => _appLoop.Display(_serviceProvider.GetRequiredService<MoviesView>()));
-        
-        Button("Settings(TBD)").OnClick(form => { });
+        Button("Settings(TBD)").OnClick(form => { _statusMessage = "TBD"; });
         Button("Account Details").OnClick(() =>
         {
             Console.Clear();
@@ -46,12 +51,18 @@ public sealed class MainView : Form
         });
         if (_user.Role == "Admin")
         {
-            Button("Rapports(TBD)").OnClick(form => { });
-            Button("Users(TBD)").OnClick(form => { });
-            Button("Cinemas(TBD)").OnClick(form => { });
+            Button("Rapports(TBD)").OnClick(form => { _statusMessage = "TBD"; });
+            Button("Users").OnClick(form => { _statusMessage = "Will be active soon."; });
+            Button("Cinemas").OnClick(() =>
+            {
+                Console.Clear();
+                var cinemaView = _serviceProvider.GetRequiredService<CinemaView>();
+                cinemaView.SetUser(_user);
+                _appLoop.Display(cinemaView);
+            });
         }
-
-        Spacer();
+        Divider();
+        Message(() => _statusMessage);
         LogoutButton(_appLoop, _serviceProvider);
     }
 }
