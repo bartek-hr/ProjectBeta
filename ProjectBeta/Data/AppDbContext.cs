@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -29,6 +31,12 @@ public class AppDbContext : DbContext
     {
         if (!options.IsConfigured)
         {
+            var config = new ConfigurationBuilder()
+                .SetBasePath(AppContext.BaseDirectory)
+                .AddJsonFile("appsettings.json", optional: false)
+                .Build();
+
+            options.UseSqlite(config.GetConnectionString("DefaultConnection"));
             options.UseSqlite(SqliteConnectionStringResolver.GetResolvedConnectionString());
         }
     }
@@ -37,6 +45,9 @@ public class AppDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
+        modelBuilder.Entity<User>().HasData(
+            new User { Id = 1, Username = "admin", PasswordHash = "password" },
+            new User { Id = 2, Username = "user1", PasswordHash = "password" }
         var genresConverter = new ValueConverter<List<string>, string>(
             genres => JsonSerializer.Serialize(genres, (JsonSerializerOptions?)null),
             genresJson => JsonSerializer.Deserialize<List<string>>(genresJson, (JsonSerializerOptions?)null) ?? new List<string>());

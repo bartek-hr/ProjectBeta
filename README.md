@@ -9,6 +9,8 @@ A C#/.NET console application for cinema reservation management, using SQLite an
 ## Database Usage
 
 This project uses SQLite with the connection string in `appsettings.json`.
+To ensure both `dotnet run` and the VS Code "Run" button use the same `app.db` file, always run the app from the `ProjectBeta/ProjectBeta` directory.
+If you change the connection string to an absolute path, all environments will use the same database file.
 Relative SQLite paths are resolved to the project directory, so local development, IDE runs, `dotnet run`, and EF Core commands all use `ProjectBeta/app.db`.
 If you change the connection string to an absolute path, the app will use that exact database file unchanged.
 
