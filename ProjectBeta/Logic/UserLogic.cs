@@ -47,7 +47,7 @@ public class UserLogic
             PasswordHash = password,
             FirstName = firstName,
             LastName = lastName,
-            DateOfBirth = dateOfBirth,
+            DateOfBirth = dateOfBirth!.Value,
             IsActive = true,
             Role = "User" // enforce regular user role
         };
@@ -154,7 +154,7 @@ public class UserLogic
         user.Email = email;
         user.FirstName = firstName;
         user.LastName = lastName;
-        user.DateOfBirth = dateOfBirth;
+        user.DateOfBirth = dateOfBirth!.Value;
 
         if (!string.IsNullOrWhiteSpace(newPassword))
             user.PasswordHash = newPassword;
