@@ -28,7 +28,7 @@ public class User
     public string LastName { get; set; } = string.Empty;
 
     [Required]
-    public DateOnly? DateOfBirth { get; set; }
+    public DateOnly DateOfBirth { get; set; }
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public bool IsActive { get; set; } = true;

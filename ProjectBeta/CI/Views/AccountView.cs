@@ -13,7 +13,7 @@ public sealed class AccountView : Form
     private readonly AppLoop _appLoop;
     private readonly IServiceProvider _serviceProvider;
     private User _user = null!;
-    private User _admin_user = null!;
+    private User? _admin_user;
     private string? _statusMessage;
     private bool _confirmingDelete;
     private Button? _noCancelButton;
@@ -61,7 +61,7 @@ public sealed class AccountView : Form
         DateInput("Date of Birth").Required()
             .Min(new DateOnly(1900, 1, 1))
             .Max(DateOnly.FromDateTime(DateTime.Today))
-            .Default(_user.DateOfBirth ?? DateOnly.FromDateTime(DateTime.Today));
+            .Default(_user.DateOfBirth);
         Message(() => _fieldErrors != null && _fieldErrors.ContainsKey("Date of Birth") ? string.Join("\n", _fieldErrors["Date of Birth"]) : null);
 
         Divider();
@@ -124,7 +124,7 @@ public sealed class AccountView : Form
                 _user.Email = email!;
                 _user.FirstName = firstName!;
                 _user.LastName = lastName!;
-                _user.DateOfBirth = dateOfBirth;
+                _user.DateOfBirth = dateOfBirth!.Value;
             }
             else
             {

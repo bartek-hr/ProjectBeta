@@ -2,7 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProjectBeta.Data;
 
 #nullable disable
@@ -17,6 +17,53 @@ namespace ProjectBeta.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.0");
 
+            modelBuilder.Entity("ProjectBeta.Model.Auditorium", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Capacity")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("CinemaId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CinemaId");
+
+                    b.ToTable("Auditoriums");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Capacity = 150,
+                            CinemaId = 1,
+                            Name = "Auditorium 1"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Capacity = 300,
+                            CinemaId = 1,
+                            Name = "Auditorium 2"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Capacity = 500,
+                            CinemaId = 1,
+                            Name = "Auditorium 3"
+                        });
+                });
+
             modelBuilder.Entity("ProjectBeta.Model.Booking", b =>
                 {
                     b.Property<int>("Id")
@@ -26,24 +73,55 @@ namespace ProjectBeta.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("Discount_ID")
+                    b.Property<int?>("DiscountId")
                         .HasColumnType("INTEGER");
 
                     b.Property<bool>("Paid")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("Screening_ID")
+                    b.Property<int>("ScreeningId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<decimal>("Total_Price")
+                    b.Property<decimal>("TotalPrice")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("User_Id")
+                    b.Property<int>("UserId")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("UserId");
+
                     b.ToTable("Bookings");
+                });
+
+            modelBuilder.Entity("ProjectBeta.Model.Cinema", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Cinemas");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            City = "Rotterdam",
+                            Name = "Darcy"
+                        });
                 });
 
             modelBuilder.Entity("ProjectBeta.Model.Movie", b =>
@@ -111,7 +189,7 @@ namespace ProjectBeta.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("Booking_ID")
+                    b.Property<int>("BookingId")
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("CreatedAt")
@@ -121,6 +199,8 @@ namespace ProjectBeta.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("BookingId");
 
                     b.ToTable("Receipts");
                 });
@@ -134,8 +214,7 @@ namespace ProjectBeta.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateOnly?>("DateOfBirth")
-                        .IsRequired()
+                    b.Property<DateOnly>("DateOfBirth")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Email")
@@ -174,7 +253,7 @@ namespace ProjectBeta.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2026, 4, 19, 18, 46, 3, 17, DateTimeKind.Utc).AddTicks(5490),
+                            CreatedAt = new DateTime(2026, 5, 2, 11, 6, 12, 533, DateTimeKind.Utc).AddTicks(980),
                             DateOfBirth = new DateOnly(1990, 1, 1),
                             Email = "admin@example.com",
                             FirstName = "Admin",
@@ -187,7 +266,7 @@ namespace ProjectBeta.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2026, 4, 19, 18, 46, 3, 17, DateTimeKind.Utc).AddTicks(5500),
+                            CreatedAt = new DateTime(2026, 5, 2, 11, 6, 12, 533, DateTimeKind.Utc).AddTicks(980),
                             DateOfBirth = new DateOnly(1995, 5, 15),
                             Email = "user1@example.com",
                             FirstName = "User",
@@ -199,6 +278,28 @@ namespace ProjectBeta.Migrations
                         });
                 });
 
+            modelBuilder.Entity("ProjectBeta.Model.Auditorium", b =>
+                {
+                    b.HasOne("ProjectBeta.Model.Cinema", "Cinema")
+                        .WithMany("Auditoriums")
+                        .HasForeignKey("CinemaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Cinema");
+                });
+
+            modelBuilder.Entity("ProjectBeta.Model.Booking", b =>
+                {
+                    b.HasOne("ProjectBeta.Model.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("ProjectBeta.Model.MovieSchedule", b =>
                 {
                     b.HasOne("ProjectBeta.Model.Movie", "Movie")
@@ -208,6 +309,22 @@ namespace ProjectBeta.Migrations
                         .IsRequired();
 
                     b.Navigation("Movie");
+                });
+
+            modelBuilder.Entity("ProjectBeta.Model.Receipt", b =>
+                {
+                    b.HasOne("ProjectBeta.Model.Booking", "Booking")
+                        .WithMany()
+                        .HasForeignKey("BookingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Booking");
+                });
+
+            modelBuilder.Entity("ProjectBeta.Model.Cinema", b =>
+                {
+                    b.Navigation("Auditoriums");
                 });
 #pragma warning restore 612, 618
         }

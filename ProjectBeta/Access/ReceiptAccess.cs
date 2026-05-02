@@ -17,7 +17,7 @@ public class ReceiptAccess
             return _context.Receipts.ToList();
         }
 
-        public Receipt GetById(int id)
+        public Receipt? GetById(int id)
         {
             return _context.Receipts.FirstOrDefault(b => b.Id == id);
         }

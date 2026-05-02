@@ -34,7 +34,7 @@ public class ReceiptLogic
         if (receipt.Total <= 0)
             throw new Exception("Total price must be greater than 0");
 
-        if (receipt.Booking_ID <= 0)
+        if (receipt.BookingId <= 0)
             throw new Exception("Invalid Booking");
 
 

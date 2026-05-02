@@ -37,7 +37,7 @@ public sealed class UsersView : Form
     private void InitializeForm()
     {
         // Display users details
-        foreach (User userAccount in _users)
+        foreach (User userAccount in _users ?? [])
         {
             Divider();
             Button($"{userAccount.Username} | {userAccount.FirstName} {userAccount.LastName} | {userAccount.Email}").OnClick(() =>
@@ -50,5 +50,13 @@ public sealed class UsersView : Form
             Divider();
         }
 
+        Divider();
+        Button("Back").OnClick(() =>
+        {
+            Console.Clear();
+            var mainView = _serviceProvider.GetRequiredService<MainView>();
+            mainView.SetUser(_user);
+            _appLoop.Display(mainView);
+        });
     }
 }

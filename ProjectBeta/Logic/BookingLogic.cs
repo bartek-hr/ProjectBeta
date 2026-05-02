@@ -31,13 +31,13 @@ public class BookingLogic
 
     public void CreateBooking(Booking booking)
     {
-        if (booking.Total_Price <= 0)
+        if (booking.TotalPrice <= 0)
             throw new Exception("Total price must be greater than 0");
 
-        if (booking.User_Id <= 0)
+        if (booking.UserId <= 0)
             throw new Exception("Invalid user");
 
-        if (booking.Screening_ID <= 0)
+        if (booking.ScreeningId <= 0)
             throw new Exception("Invalid screening");
     
         booking.CreatedAt = DateTime.Now;
