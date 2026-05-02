@@ -156,6 +156,20 @@ public class Form : RootComponent
         return c;
     }
 
+    protected Table Table(params string[] headers)
+    {
+        var c = new Table(headers);
+        Add(c);
+        return c;
+    }
+
+    protected Table<T> Table<T>(params string[] headers) where T : class
+    {
+        var c = new Table<T>(headers);
+        Add(c);
+        return c;
+    }
+
     protected Divider Divider()
     {
         var c = new Divider();
@@ -166,6 +180,13 @@ public class Form : RootComponent
     protected Spacer Spacer(int lines = 1)
     {
         var c = new Spacer(lines);
+        Add(c);
+        return c;
+    }
+
+    protected LogoutButton LogoutButton(AppLoop appLoop, IServiceProvider serviceProvider)
+    {
+        var c = new LogoutButton(appLoop, serviceProvider);
         Add(c);
         return c;
     }
