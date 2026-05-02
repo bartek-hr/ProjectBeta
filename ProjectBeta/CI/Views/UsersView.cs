@@ -50,5 +50,13 @@ public sealed class UsersView : Form
             Divider();
         }
 
+        Divider();
+        Button("Back").OnClick(() =>
+        {
+            Console.Clear();
+            var mainView = _serviceProvider.GetRequiredService<MainView>();
+            mainView.SetUser(_user);
+            _appLoop.Display(mainView);
+        });
     }
 }
