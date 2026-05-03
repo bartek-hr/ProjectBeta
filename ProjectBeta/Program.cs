@@ -33,6 +33,10 @@ namespace ProjectBeta
             services.AddScoped<CinemaAccess>();
             services.AddScoped<CinemaLogic>();
             services.AddScoped<MovieLogic>();
+            services.AddScoped<SnackAccess>();
+            services.AddScoped<SnackLogic>();
+            services.AddScoped<BookingSnackAccess>();
+            services.AddScoped<BookingSnackLogic>();
             services.AddTransient<UserView>();
             services.AddTransient<UsersView>();
             services.AddTransient<LoginView>();

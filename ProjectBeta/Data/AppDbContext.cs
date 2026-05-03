@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System.Text.Json;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProjectBeta.Model;
@@ -18,6 +17,8 @@ public class AppDbContext : DbContext
     public DbSet<Auditorium> Auditoriums {get; set; }
     public DbSet<Movie> Movies { get; set; }
     public DbSet<MovieSchedule> MovieSchedules { get; set; }
+    public DbSet<Snack> Snacks { get; set; }
+    public DbSet<BookingSnack> BookingSnacks { get; set; }
 
     public AppDbContext()
     {
@@ -45,9 +46,6 @@ public class AppDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.Entity<User>().HasData(
-            new User { Id = 1, Username = "admin", PasswordHash = "password" },
-            new User { Id = 2, Username = "user1", PasswordHash = "password" }
         var genresConverter = new ValueConverter<List<string>, string>(
             genres => JsonSerializer.Serialize(genres, (JsonSerializerOptions?)null),
             genresJson => JsonSerializer.Deserialize<List<string>>(genresJson, (JsonSerializerOptions?)null) ?? new List<string>());
@@ -126,5 +124,18 @@ public class AppDbContext : DbContext
             new Auditorium { Id = 2, Name = "Auditorium 2", CinemaId = 1, Capacity = 300 },
             new Auditorium { Id = 3, Name = "Auditorium 3", CinemaId = 1, Capacity = 500 }
         );
+
+        modelBuilder.Entity<BookingSnack>(entity =>
+        {
+            entity.HasOne(bs => bs.Snack)
+                .WithMany()
+                .HasForeignKey(bs => bs.SnackId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(bs => bs.Booking)
+                .WithMany()
+                .HasForeignKey(bs => bs.BookingId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
     }
 }
