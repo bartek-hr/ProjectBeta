@@ -4,10 +4,34 @@ namespace ProjectBeta.CI.Components;
 
 public sealed class SeatMap : Component
 {
+    private const int RowsCount = 14;
+    private const int SeatCount = 12;
+
     private readonly List<List<SeatCell>> _rows = [];
     private int _selectedRow;
     private int _selectedSeat;
+    public List<string> _selectedSeats = new();
+    public List<int> _selectedTypes = new();
     private string? _statusMessage;
+    private static readonly HashSet<string> VipSeats = new()
+    {
+        "D6","D7",
+        "E5","E6","E7","E8",
+        "F4","F5","F8","F9",
+        "G4","G5","G8","G9",
+        "H4","H5","H8","H9",
+        "I4","I5","I8","I9",
+        "J5","J6","J7","J8",
+        "K6","K7"
+    };
+
+    private static readonly HashSet<string> KingSeats = new()
+    {
+        "F6","F7",
+        "G6","G7",
+        "H6","H7",
+        "I6","I7",
+    };
 
     public SeatMap(string auditoriumName, string movieTitle, string showtime)
     {
@@ -22,12 +46,51 @@ public sealed class SeatMap : Component
     public string MovieTitle { get; }
     public string Showtime { get; }
 
+    // 1 = seat exists, 0 = empty space
+    private static readonly bool[,] SeatLayout =
+    {
+        // A  B  C  D  E  F  G  H  I  J  K  L  M  N
+        {false,false,true,true,true,true,true,true,true,true,false,false}, // A
+        {false,true,true,true,true,true,true,true,true,true,true,false}, // B
+        {false,true,true,true,true,true,true,true,true,true,true,false}, // C
+        {true,true,true,true,true,true,true,true,true,true,true,true}, // D
+        {true,true,true,true,true,true,true,true,true,true,true,true}, // E
+        {true,true,true,true,true,true,true,true,true,true,true,true}, // F
+        {true,true,true,true,true,true,true,true,true,true,true,true}, // G
+        {true,true,true,true,true,true,true,true,true,true,true,true}, // H
+        {true,true,true,true,true,true,true,true,true,true,true,true}, // I
+        {true,true,true,true,true,true,true,true,true,true,true,true}, // J
+        {true,true,true,true,true,true,true,true,true,true,true,true}, // K
+        {false,true,true,true,true,true,true,true,true,true,true,false}, // L
+        {false,true,true,true,true,true,true,true,true,true,true,false}, // M
+        {false,false,true,true,true,true,true,true,true,true,false,false}, // N
+    };
+
     public SeatMap AddRow(char rowLabel, params SeatState[] seats)
     {
-        _rows.Add(seats
-            .Select((state, index) => new SeatCell(rowLabel, index + 1, state))
-            .ToList());
+        var rowIndex = rowLabel - 'A';
+        var row = new List<SeatCell>();
 
+        int seatIndex = 0;
+
+        for (int i = 0; i < SeatCount; i++)
+        {
+            bool exists = SeatLayout[rowIndex, i];
+
+            if (!exists)
+            {
+                row.Add(new SeatCell(rowLabel, i + 1, SeatState.Available, false));
+                continue;
+            }
+
+            var state = seatIndex < seats.Length
+                ? seats[seatIndex++]
+                : SeatState.Available;
+
+            row.Add(new SeatCell(rowLabel, i + 1, state, true));
+        }
+
+        _rows.Add(row);
         SnapSelectionToNearestAvailable();
         return this;
     }
@@ -45,7 +108,9 @@ public sealed class SeatMap : Component
         return this;
     }
 
-    public string? SelectedSeatCode => CurrentSeat is null ? null : $"{CurrentSeat.Row}{CurrentSeat.Number}";
+    public string? SelectedSeatCode =>
+        CurrentSeat is null ? null : $"{CurrentSeat.Row}{CurrentSeat.Number}";
+
     public string? StatusMessage => _statusMessage;
 
     public void ReserveHighlightedSeat() => TryReserveSelectedSeat();
@@ -55,6 +120,7 @@ public sealed class SeatMap : Component
         var buf = context.Buffer;
 
         var titleStyle = IsFocused ? Style.Highlight : Style.Primary;
+
         buf.WriteLine("╔══════════════════════════════════════════════════════════════════════╗", Style.Muted);
         buf.WriteLine("║                         CINEMA SEAT SELECTOR                        ║", titleStyle);
         buf.WriteLine("╚══════════════════════════════════════════════════════════════════════╝", Style.Muted);
@@ -76,27 +142,37 @@ public sealed class SeatMap : Component
         buf.WriteLine();
 
         RenderSeatNumbers(buf);
+
         foreach (var row in _rows)
             RenderRow(buf, row);
 
         buf.WriteLine();
+
         buf.Write(" Legend: ", Style.Primary);
-        WriteSeatChip(buf, "  ", SeatState.Available, false, false);
+        WriteSeatChip(buf, "  ", SeatState.Available, false, false, false);
         buf.Write(" Available   ", Style.Muted);
-        WriteSeatChip(buf, "XX", SeatState.Reserved, false, false);
+
+        WriteSeatChip(buf, "XX", SeatState.Reserved, false, false, false);
         buf.Write(" Reserved   ", Style.Muted);
-        WriteSeatChip(buf, "<>", SeatState.Selected, true, false);
+       
+        WriteSeatChip(buf, "👑", SeatState.Available, false, true, false);
+        buf.Write(" King   ", Style.Muted);
+
+        WriteSeatChip(buf, "🔥", SeatState.Available, false, false, true);
+        buf.Write(" VIP   ", Style.Muted);
+
+        WriteSeatChip(buf, "<>", SeatState.Selected, true, false, false);
         buf.Write(" Selected", Style.Muted);
+
         buf.WriteLine();
-        buf.WriteLine(" Use arrow keys to move, Enter or Space to reserve your highlighted seat.", Style.Muted);
 
         if (!string.IsNullOrWhiteSpace(_statusMessage))
         {
             buf.WriteLine();
-            buf.WriteLine($" { _statusMessage }", Style.Success.WithBold());
+            buf.WriteLine($" {_statusMessage}", Style.Success.WithBold());
         }
 
-        return Math.Max(18, _rows.Count + 15 + (string.IsNullOrWhiteSpace(_statusMessage) ? 0 : 2));
+        return Math.Max(18, _rows.Count + 15);
     }
 
     public override bool ProcessKey(ConsoleKeyInfo key)
@@ -104,22 +180,15 @@ public sealed class SeatMap : Component
         if (_rows.Count == 0)
             return false;
 
-        switch (key.Key)
+        return key.Key switch
         {
-            case ConsoleKey.LeftArrow:
-                return MoveSelection(0, -1);
-            case ConsoleKey.RightArrow:
-                return MoveSelection(0, 1);
-            case ConsoleKey.UpArrow:
-                return MoveSelection(-1, 0);
-            case ConsoleKey.DownArrow:
-                return MoveSelection(1, 0);
-            case ConsoleKey.Enter:
-            case ConsoleKey.Spacebar:
-                return TryReserveSelectedSeat();
-            default:
-                return false;
-        }
+            ConsoleKey.LeftArrow => MoveSelection(0, -1),
+            ConsoleKey.RightArrow => MoveSelection(0, 1),
+            ConsoleKey.UpArrow => MoveSelection(-1, 0),
+            ConsoleKey.DownArrow => MoveSelection(1, 0),
+            ConsoleKey.Enter or ConsoleKey.Spacebar => TryReserveSelectedSeat(),
+            _ => false
+        };
     }
 
     private SeatCell? CurrentSeat
@@ -128,8 +197,10 @@ public sealed class SeatMap : Component
         {
             if (_selectedRow < 0 || _selectedRow >= _rows.Count)
                 return null;
+
             if (_selectedSeat < 0 || _selectedSeat >= _rows[_selectedRow].Count)
                 return null;
+
             return _rows[_selectedRow][_selectedSeat];
         }
     }
@@ -137,13 +208,13 @@ public sealed class SeatMap : Component
     private bool MoveSelection(int rowDelta, int seatDelta)
     {
         var nextRow = Math.Clamp(_selectedRow + rowDelta, 0, _rows.Count - 1);
-        var nextSeat = Math.Clamp(_selectedSeat + seatDelta, 0, _rows[nextRow].Count - 1);
+        var nextSeat = Math.Clamp(_selectedSeat + seatDelta, 0, SeatCount - 1);
 
         if (FindNearestAvailableFrom(nextRow, nextSeat, out var row, out var seat))
         {
             _selectedRow = row;
             _selectedSeat = seat;
-            _statusMessage = $"Hovering {SelectedSeatCode} · premium central view";
+            _statusMessage = $"Hovering {SelectedSeatCode}";
             return true;
         }
 
@@ -153,6 +224,7 @@ public sealed class SeatMap : Component
     private bool TryReserveSelectedSeat()
     {
         var seat = CurrentSeat;
+
         if (seat == null)
             return false;
 
@@ -163,7 +235,17 @@ public sealed class SeatMap : Component
         }
 
         seat.State = SeatState.Reserved;
-        _statusMessage = $"Seat {seat.Row}{seat.Number} reserved for {MovieTitle}.";
+        _statusMessage = $"Seat {seat.Row}{seat.Number} reserved.";
+        _selectedSeats.Add($"{seat.Row}{seat.Number}");
+        if (KingSeats.Contains($"{seat.Row}{seat.Number}")){
+            _selectedTypes.Add(3);
+        }
+        else if (VipSeats.Contains($"{seat.Row}{seat.Number}")){
+            _selectedTypes.Add(2);
+        }
+        else {
+            _selectedTypes.Add(1);
+        }
         SnapSelectionToNearestAvailable();
         return true;
     }
@@ -188,7 +270,9 @@ public sealed class SeatMap : Component
         {
             for (var seat = 0; seat < _rows[row].Count; seat++)
             {
-                if (_rows[row][seat].State == SeatState.Reserved)
+                var cell = _rows[row][seat];
+
+                if (!cell.Exists || cell.State == SeatState.Reserved)
                     continue;
 
                 var distance = Math.Abs(row - startRow) * 10 + Math.Abs(seat - startSeat);
@@ -221,29 +305,42 @@ public sealed class SeatMap : Component
 
     private void RenderSeatNumbers(TerminalBuffer buf)
     {
-        buf.Write("     ");
-        for (var seatNumber = 1; seatNumber <= MaxSeatCount(); seatNumber++)
-        {
-            if (seatNumber == 5)
-                buf.Write("   ");
+        buf.Write("   ");
 
-            buf.Write($" {seatNumber:00} ", Style.Muted);
-        }
+        for (int i = 1; i <= SeatCount; i++)
+            buf.Write($" {i,2}  ", Style.Muted);
+
         buf.WriteLine();
     }
 
     private void RenderRow(TerminalBuffer buf, List<SeatCell> row)
     {
         var rowLabel = row[0].Row;
-        buf.Write($"  {rowLabel}  ", Style.Primary.WithBold());
+
+        buf.Write($" {rowLabel} ", Style.Primary.WithBold());
+        buf.Write(" ");
 
         foreach (var seat in row)
         {
-            if (seat.Number == 5)
-                buf.Write("   ");
+            if (!seat.Exists)
+            {
+                buf.Write("[  ]", Style.Muted);
+                buf.Write(" ");
+                continue;
+            }
 
             var isSelected = CurrentSeat == seat;
-            WriteSeatChip(buf, GetSeatText(seat, isSelected), isSelected ? SeatState.Selected : seat.State, isSelected, seat.IsLoveSeat);
+
+            WriteSeatChip(
+                buf,
+                GetSeatText(seat, isSelected),
+                seat.State,
+                isSelected,
+                seat.IsVIPSeat,
+                seat.IsKingSeat
+            );
+
+            buf.Write(" ");
         }
 
         buf.WriteLine();
@@ -257,35 +354,48 @@ public sealed class SeatMap : Component
         return seat.State switch
         {
             SeatState.Reserved => "XX",
-            SeatState.Available when seat.IsLoveSeat => "♥♥",
+            SeatState.Available when seat.IsVIPSeat => "🔥",
+            SeatState.Available when seat.IsKingSeat => "👑",
             _ => "  "
         };
     }
 
-    private static void WriteSeatChip(TerminalBuffer buf, string innerText, SeatState state, bool isSelected, bool isLoveSeat)
+    private static void WriteSeatChip(
+        TerminalBuffer buf,
+        string innerText,
+        SeatState state,
+        bool isSelected,
+        bool IsVIPSeat,
+        bool IsKingSeat)
     {
         var style = state switch
         {
-            SeatState.Reserved => new Style { Fg = ConsoleColor.White, Bg = ConsoleColor.DarkRed, Bold = true },
+            SeatState.Reserved => new Style { Fg = ConsoleColor.White, Bg = ConsoleColor.Black, Bold = true },
             SeatState.Selected => new Style { Fg = ConsoleColor.Black, Bg = ConsoleColor.Green, Bold = true },
-            _ when isLoveSeat => new Style { Fg = ConsoleColor.White, Bg = ConsoleColor.DarkMagenta, Bold = true },
+            _ when IsVIPSeat => new Style { Fg = ConsoleColor.White, Bg = ConsoleColor.Yellow, Bold = true },
+            _ when IsKingSeat => new Style { Fg = ConsoleColor.White, Bg = ConsoleColor.DarkRed, Bold = true },
             _ => new Style { Fg = ConsoleColor.Black, Bg = ConsoleColor.DarkCyan, Bold = true },
         };
 
         var borderStyle = isSelected ? Style.Success.WithBold() : Style.Muted;
+
         buf.Write("[", borderStyle);
-        buf.Write(innerText, style);
+        buf.Write(innerText.PadRight(2).Substring(0, 2), style);
         buf.Write("]", borderStyle);
     }
 
-    private int MaxSeatCount() => _rows.Count == 0 ? 0 : _rows.Max(r => r.Count);
-
-    private sealed class SeatCell(char row, int number, SeatState state)
+    private sealed class SeatCell(char row, int number, SeatState state, bool exists)
     {
         public char Row { get; } = row;
         public int Number { get; } = number;
         public SeatState State { get; set; } = state;
-        public bool IsLoveSeat => Row >= 'F' && Number is 4 or 5 or 8 or 9;
+        public bool Exists { get; } = exists;
+
+        public bool IsVIPSeat =>
+            VipSeats.Contains($"{Row}{Number}");
+
+        public bool IsKingSeat =>
+            KingSeats.Contains($"{Row}{Number}");    
     }
 }
 
