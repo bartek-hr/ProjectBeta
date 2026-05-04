@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System.Text.Json;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProjectBeta.Model;
@@ -18,6 +17,8 @@ public class AppDbContext : DbContext
     public DbSet<Auditorium> Auditoriums {get; set; }
     public DbSet<Movie> Movies { get; set; }
     public DbSet<MovieSchedule> MovieSchedules { get; set; }
+    public DbSet<Snack> Snacks { get; set; }
+    public DbSet<BookingSnack> BookingSnacks { get; set; }
 
     public AppDbContext()
     {
@@ -124,5 +125,18 @@ public class AppDbContext : DbContext
             new Auditorium { Id = 2, Name = "Auditorium 2", CinemaId = 1, Capacity = 300 },
             new Auditorium { Id = 3, Name = "Auditorium 3", CinemaId = 1, Capacity = 500 }
         );
+
+        modelBuilder.Entity<BookingSnack>(entity =>
+        {
+            entity.HasOne(bs => bs.Snack)
+                .WithMany()
+                .HasForeignKey(bs => bs.SnackId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(bs => bs.Booking)
+                .WithMany()
+                .HasForeignKey(bs => bs.BookingId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
     }
 }

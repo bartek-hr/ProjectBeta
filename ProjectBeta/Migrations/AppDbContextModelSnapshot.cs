@@ -278,6 +278,54 @@ namespace ProjectBeta.Migrations
                         });
                 });
 
+            modelBuilder.Entity("ProjectBeta.Model.BookingSnack", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("SnackId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("BookingId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("BookedQuantity")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("BookedAt")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SnackId");
+
+                    b.HasIndex("BookingId");
+
+                    b.ToTable("BookingSnacks");
+                });
+
+            modelBuilder.Entity("ProjectBeta.Model.Snack", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Snacks");
+                });
+
             modelBuilder.Entity("ProjectBeta.Model.Auditorium", b =>
                 {
                     b.HasOne("ProjectBeta.Model.Cinema", "Cinema")
@@ -319,6 +367,24 @@ namespace ProjectBeta.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Booking");
+                });
+
+            modelBuilder.Entity("ProjectBeta.Model.BookingSnack", b =>
+                {
+                    b.HasOne("ProjectBeta.Model.Snack", "Snack")
+                        .WithMany()
+                        .HasForeignKey("SnackId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ProjectBeta.Model.Booking", "Booking")
+                        .WithMany()
+                        .HasForeignKey("BookingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Snack");
                     b.Navigation("Booking");
                 });
 
