@@ -1,6 +1,11 @@
+using ProjectBeta.CI;
+using ProjectBeta.CI.Views;
 using ProjectBeta.CI.Components;
 using ProjectBeta.Logic;
 using ProjectBeta.Model;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+
 
 namespace ProjectBeta.CI.Views;
 
@@ -10,11 +15,17 @@ public sealed class MoviesView : Form
     private DateOnly _selectedDate;
     private IReadOnlyList<MovieSchedule> _schedule = [];
     private string? _statusMessage;
+    private User _user = null!;
+    private readonly IServiceProvider _serviceProvider;
+    private readonly AppLoop _appLoop;
 
-    public MoviesView(MovieLogic movieLogic)
+    public MoviesView(MovieLogic movieLogic, IServiceProvider serviceProvider, AppLoop appLoop)
     {
         _movieLogic = movieLogic;
         _selectedDate = DateOnly.FromDateTime(DateTime.Today);
+        _serviceProvider = serviceProvider;
+        _user = new User();
+        _appLoop = appLoop;
         LoadSchedule();
         InitializeForm();
     }
@@ -44,7 +55,13 @@ public sealed class MoviesView : Form
         ClearChildren();
         InitializeForm();
     }
-
+    public void SetUser(User user)
+    {
+        _user = user;
+        ClearChildren();
+        LoadSchedule();  
+        InitializeForm();
+    }
     private void LoadSchedule()
     {
         _schedule = _movieLogic.GetOrGenerateSchedule(_selectedDate);
@@ -53,24 +70,39 @@ public sealed class MoviesView : Form
             ? "No schedule for this date."
             : null;
     }
-
     private void InitializeForm()
     {
         Label($"Movies for date: {_selectedDate:yyyy-MM-dd}");
         Message(() => _statusMessage);
 
-        var table = Table("Movie", "Rating", "Start", "End", "Auditorium", "Space Left")
-            .EmptyMessage("No movies scheduled.");
+        var table = new Table<MovieSchedule>(
+            "Movie", "Rating", "Start", "End", "Auditorium", "Space Left"
+        )
+        .EmptyMessage("No movies scheduled.")
+        .OnSelect(OnMovieSelected);
 
         foreach (var schedule in _schedule)
         {
             table.AddRow(
+                schedule,
                 schedule.Movie.Title,
                 schedule.Movie.Rating?.ToString("0.0") ?? "-",
                 schedule.StartTime.ToString("HH:mm"),
                 schedule.EndTime.ToString("HH:mm"),
-                "?",
-                "?");
+                "1",
+                "?"
+            );
         }
+        Add(table);
+
     }
+
+    private void OnMovieSelected(MovieSchedule schedule)
+    {
+            Console.Clear();
+            var accountView = _serviceProvider.GetRequiredService<MovieSeatBookingView>();
+            accountView.SetView(_user, schedule);
+            _appLoop.Display(accountView);
+    }
+    
 }

@@ -40,8 +40,19 @@ public sealed class MainView : Form
         Label("Full Name: " + _user.FirstName + " " + _user.LastName);
 
 
-        Button("Movies").OnClick(() => _appLoop.Display(_serviceProvider.GetRequiredService<MoviesView>()));
-        Button("Settings(TBD)").OnClick(form => { _statusMessage = "TBD"; });
+        Button("Movies").OnClick(() => 
+        {    Console.Clear();
+            var moviesVies = _serviceProvider.GetRequiredService<MoviesView>();
+            moviesVies.SetUser(_user);
+            _appLoop.Display(moviesVies);
+        });
+        Button("Reservation History").OnClick(() =>
+        {
+            Console.Clear();
+            var accountView = _serviceProvider.GetRequiredService<ReservationHistoryView>();
+            accountView.SetView(_user);
+            _appLoop.Display(accountView);
+        });
         Button("Account Details").OnClick(() =>
         {
             Console.Clear();

@@ -45,9 +45,7 @@ public class AppDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.Entity<User>().HasData(
-            new User { Id = 1, Username = "admin", PasswordHash = "password" },
-            new User { Id = 2, Username = "user1", PasswordHash = "password" }
+
         var genresConverter = new ValueConverter<List<string>, string>(
             genres => JsonSerializer.Serialize(genres, (JsonSerializerOptions?)null),
             genresJson => JsonSerializer.Deserialize<List<string>>(genresJson, (JsonSerializerOptions?)null) ?? new List<string>());
