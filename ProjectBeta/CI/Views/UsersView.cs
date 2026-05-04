@@ -1,62 +1,82 @@
-using ProjectBeta.CI;
-using ProjectBeta.CI.Components;
-using ProjectBeta.CI.Views;
-using ProjectBeta.Data;
-using ProjectBeta.Model;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
+using ProjectBeta.CI.Components;
 using ProjectBeta.Logic;
-using System.Reflection.Metadata;
+using ProjectBeta.Model;
+
 namespace ProjectBeta.CI.Views;
 
 public sealed class UsersView : Form
 {
-    private User _user;
     private readonly UserLogic _userLogic;
     private readonly IServiceProvider _serviceProvider;
-    private string? _statusMessage;
     private readonly AppLoop _appLoop;
-    private List<User>? _users = [];
+    private User _user = null!;
+    private List<User> _users = [];
+    private string? _statusMessage;
 
     public UsersView(UserLogic userLogic, IServiceProvider serviceProvider, AppLoop appLoop)
     {
         _userLogic = userLogic;
         _serviceProvider = serviceProvider;
-        _users = _userLogic.GetAllUsers().Users;
-        _user = new User();
         _appLoop = appLoop;
-        _statusMessage = null;
     }
+
     public void SetUser(User user)
     {
         _user = user;
+        LoadUsers();
         ClearChildren();
         InitializeForm();
     }
 
+    private void LoadUsers()
+    {
+        var result = _userLogic.GetAllUsers();
+        _users = result.Users ?? [];
+        _statusMessage = result.FieldErrors != null &&
+                         result.FieldErrors.TryGetValue("General", out var errors)
+            ? string.Join(Environment.NewLine, errors)
+            : null;
+    }
+
     private void InitializeForm()
     {
-        // Display users details
-        foreach (User userAccount in _users ?? [])
+        Heading("Users");
+        Divider();
+        Message(() => _statusMessage);
+
+        var table = Table<User>("Username", "Name", "Email", "Role")
+            .EmptyMessage(_statusMessage ?? "No users found.")
+            .OnSelect(OpenAccount);
+
+        foreach (var userAccount in _users)
         {
-            Divider();
-            Button($"{userAccount.Username} | {userAccount.FirstName} {userAccount.LastName} | {userAccount.Email}").OnClick(() =>
-            {
-                Console.Clear();
-                var accountView = _serviceProvider.GetRequiredService<AccountView>();
-                accountView.SetUser(userAccount, _user);
-                _appLoop.Display(accountView);
-            });
-            Divider();
+            table.AddRow(
+                userAccount,
+                userAccount.Username,
+                $"{userAccount.FirstName} {userAccount.LastName}",
+                userAccount.Email,
+                userAccount.Role
+            );
         }
 
         Divider();
-        Button("Back").OnClick(() =>
-        {
-            Console.Clear();
-            var mainView = _serviceProvider.GetRequiredService<MainView>();
-            mainView.SetUser(_user);
-            _appLoop.Display(mainView);
-        });
+        Button("Back").OnClick(NavigateToMain);
+    }
+
+    private void OpenAccount(User userAccount)
+    {
+        Console.Clear();
+        var accountView = _serviceProvider.GetRequiredService<AccountView>();
+        accountView.SetUser(userAccount, _user);
+        _appLoop.Display(accountView);
+    }
+
+    private void NavigateToMain()
+    {
+        Console.Clear();
+        var mainView = _serviceProvider.GetRequiredService<MainView>();
+        mainView.SetUser(_user);
+        _appLoop.Display(mainView);
     }
 }
