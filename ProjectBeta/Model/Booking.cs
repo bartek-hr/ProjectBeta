@@ -8,7 +8,10 @@ public class Booking
     public int ScreeningId { get; set; }
     // TODO: add below when Screening model is created
     // public Screening Screening {get; set;} = null!;
+    public string Seats{get;set;}
     public int? DiscountId { get; set; }
+    public int? AuditoriumId { get; set; }
+    public string? Movie { get; set; }
     // TODO: add below when Discount model is created
     // public Discount Discount {get; set; } = null!;
     public decimal TotalPrice { get; set; }

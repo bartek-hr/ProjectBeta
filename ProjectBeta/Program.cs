@@ -26,6 +26,7 @@ namespace ProjectBeta
                 options.UseSqlite(SqliteConnectionStringResolver.GetResolvedConnectionString()));
             services.AddScoped<UserAccess>();
             services.AddScoped<MovieAccess>();
+            services.AddScoped<BookingAccess>();
             services.AddScoped<MovieScheduleAccess>();
             services.AddScoped<UserLogic>();
             services.AddScoped<AuditoriumAccess>();
@@ -37,12 +38,17 @@ namespace ProjectBeta
             services.AddScoped<SnackLogic>();
             services.AddScoped<BookingSnackAccess>();
             services.AddScoped<BookingSnackLogic>();
+            services.AddScoped<BookingLogic>();
             services.AddTransient<UserView>();
             services.AddTransient<UsersView>();
+            services.AddTransient<MovieSeatBookingView>();
+            services.AddTransient<ReservationView>();
             services.AddTransient<LoginView>();
             services.AddTransient<AccountView>();
             services.AddTransient<CinemaView>();
             services.AddTransient<CinemaDetailView>();
+            services.AddTransient<ReservationEditView>();
+            services.AddTransient<ReservationHistoryView>();
             services.AddTransient<CinemaDetailView>();
             services.AddTransient<AuditoriumListView>();
             services.AddTransient<AuditoriumEditView>();

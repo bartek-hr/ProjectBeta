@@ -46,6 +46,7 @@ public class AppDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
+
         var genresConverter = new ValueConverter<List<string>, string>(
             genres => JsonSerializer.Serialize(genres, (JsonSerializerOptions?)null),
             genresJson => JsonSerializer.Deserialize<List<string>>(genresJson, (JsonSerializerOptions?)null) ?? new List<string>());
