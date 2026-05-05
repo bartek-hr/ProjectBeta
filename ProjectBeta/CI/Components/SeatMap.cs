@@ -155,10 +155,10 @@ public sealed class SeatMap : Component
         WriteSeatChip(buf, "XX", SeatState.Reserved, false, false, false);
         buf.Write(" Reserved   ", Style.Muted);
        
-        WriteSeatChip(buf, "👑", SeatState.Available, false, true, false);
+        WriteSeatChip(buf, "👑", SeatState.Available, false, false, true);
         buf.Write(" King   ", Style.Muted);
 
-        WriteSeatChip(buf, "🔥", SeatState.Available, false, false, true);
+        WriteSeatChip(buf, "🔥", SeatState.Available, false, true, false);
         buf.Write(" VIP   ", Style.Muted);
 
         WriteSeatChip(buf, "<>", SeatState.Selected, true, false, false);
