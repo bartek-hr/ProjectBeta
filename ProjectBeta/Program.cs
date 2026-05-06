@@ -49,6 +49,7 @@ namespace ProjectBeta
             services.AddTransient<CinemaDetailView>();
             services.AddTransient<ReservationEditView>();
             services.AddTransient<ReservationHistoryView>();
+            services.AddTransient<UpcomingReservationsView>();
             services.AddTransient<CinemaDetailView>();
             services.AddTransient<AuditoriumListView>();
             services.AddTransient<AuditoriumEditView>();

@@ -7,7 +7,7 @@ using ProjectBeta.Model;
 
 namespace ProjectBeta.CI.Views;
 
-public sealed class ReservationHistoryView : Form
+public sealed class UpcomingReservationsView : Form
 {
     private readonly BookingLogic _bookingLogic;
     private readonly AppLoop _appLoop;
@@ -21,7 +21,7 @@ public sealed class ReservationHistoryView : Form
     private Button? _noCancelButton;
     private Dictionary<string, string[]>? _fieldErrors;
 
-    public ReservationHistoryView(BookingLogic bookingLogic, AppLoop appLoop, IServiceProvider serviceProvider)
+    public UpcomingReservationsView(BookingLogic bookingLogic, AppLoop appLoop, IServiceProvider serviceProvider)
     {
         _bookingLogic = bookingLogic;
         _appLoop = appLoop;
@@ -47,7 +47,7 @@ public sealed class ReservationHistoryView : Form
 
         foreach (var reservation in reservations)
         {
-            if (reservation.CreatedAt <= DateTime.Now)
+            if (reservation.CreatedAt >= DateTime.Now)
             {
                 table.AddRow(
                     reservation,
@@ -67,7 +67,6 @@ public sealed class ReservationHistoryView : Form
 
         Button("Back").OnClick(NavigateToMain).Hidden(() => _confirmingDelete);
     }
-
 
 
     private void NavigateToMain()

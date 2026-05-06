@@ -46,12 +46,21 @@ public sealed class MainView : Form
             moviesVies.SetUser(_user);
             _appLoop.Display(moviesVies);
         });
+
         Button("Reservation History").OnClick(() =>
         {
             Console.Clear();
-            var accountView = _serviceProvider.GetRequiredService<ReservationHistoryView>();
-            accountView.SetView(_user);
-            _appLoop.Display(accountView);
+            var reservationHistoryView = _serviceProvider.GetRequiredService<ReservationHistoryView>();
+            reservationHistoryView.SetView(_user);
+            _appLoop.Display(reservationHistoryView);
+        });
+
+        Button("Upcoming Reservations").OnClick(() =>
+        {
+            Console.Clear();
+            var upcomingReservationsView = _serviceProvider.GetRequiredService<UpcomingReservationsView>();
+            upcomingReservationsView.SetView(_user);
+            _appLoop.Display(upcomingReservationsView);
         });
         Button("Account Details").OnClick(() =>
         {
