@@ -46,9 +46,10 @@ public class BookingLogicTest
 
         var booking = new Booking
         {
-            Total_Price = 20,
-            User_Id = 1,
-            Screening_ID = 1
+            TotalPrice = 20,
+            UserId = 1,
+            AuditoriumId = 1,
+            Seats = "A1"
         };
 
         logic.CreateBooking(booking);
@@ -65,9 +66,9 @@ public class BookingLogicTest
 
         var booking = new Booking
         {
-            Total_Price = 0,
-            User_Id = 1,
-            Screening_ID = 1
+            TotalPrice = 0,
+            UserId = 1,
+            AuditoriumId = 1
         };
 
         logic.CreateBooking(booking);
@@ -81,9 +82,10 @@ public class BookingLogicTest
 
         var booking = new Booking
         {
-            Total_Price = 10,
-            User_Id = 1,
-            Screening_ID = 1
+            TotalPrice = 10,
+            UserId = 1,
+            AuditoriumId = 1,
+            Seats = ""
         };
 
         context.Bookings.Add(booking);
@@ -112,10 +114,11 @@ public class BookingLogicTest
 
         var booking = new Booking
         {
-            Total_Price = 15,
-            User_Id = 1,
-            Screening_ID = 1,
-            Paid = false
+            TotalPrice = 15,
+            UserId = 1,
+            AuditoriumId = 1,
+            Paid = false,
+            Seats = ""
         };
 
         context.Bookings.Add(booking);
@@ -135,9 +138,10 @@ public class BookingLogicTest
 
         var booking = new Booking
         {
-            Total_Price = 15,
-            User_Id = 1,
-            Screening_ID = 1
+            TotalPrice = 15,
+            UserId = 1,
+            AuditoriumId = 1,
+            Seats = ""
         };
 
         context.Bookings.Add(booking);
@@ -155,8 +159,8 @@ public class BookingLogicTest
         var logic = _logic!;
 
         context.Bookings.AddRange(
-            new Booking { Total_Price = 10, User_Id = 1, Screening_ID = 1 },
-            new Booking { Total_Price = 20, User_Id = 2, Screening_ID = 2 }
+            new Booking { TotalPrice = 10, UserId = 1, AuditoriumId = 1, Seats = "" },
+            new Booking { TotalPrice = 20, UserId = 2, AuditoriumId = 2, Seats = "" }
         );
         context.SaveChanges();
 
