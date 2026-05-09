@@ -1,0 +1,14 @@
+app:
+  title: Project Beta
+home:
+  welcome: Welcome
+inventory:
+  car_detailed: {0}no cars|{1}car|{2,}:count cars
+  car_simple: car|cars
+  minutes_ago: {1}:count minute ago|[2,*]:count minutes ago
+login:
+  username: Username
+messages:
+  loud_welcome: Welcome, :NAME!
+  title_welcome: Welcome, :Name!
+  welcome: Welcome, :name!

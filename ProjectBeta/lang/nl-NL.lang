@@ -1,0 +1,8 @@
+app:
+  title: Project Beta NL
+inventory:
+  car_simple: auto|autos
+login:
+  username: Gebruikersnaam
+messages:
+  welcome: Welkom, :name!
