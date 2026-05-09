@@ -1,8 +1,436 @@
 app:
   title: Project Beta NL
+  exited: Applicatie afgesloten
+home:
+  welcome: Welkom
 inventory:
-  car_simple: auto|autos
+  car_detailed: {0}geen auto's|{1}auto|{2,}:count auto's
+  car_simple: auto|auto's
+  minutes_ago: {1}:count minuut geleden|[2,*]:count minuten geleden
 login:
   username: Gebruikersnaam
 messages:
+  loud_welcome: Welkom, :NAME!
+  title_welcome: Welkom, :Name!
   welcome: Welkom, :name!
+auth:
+  login:
+    heading: Inloggen
+    instructions:
+      default: Vul je gegevens in. Tab om te navigeren, Shift+Tab om terug te gaan, Escape om af te sluiten.
+      invalid: Een van de inloggegevens is onjuist. Probeer het opnieuw. Tab om te navigeren, Shift+Tab om terug te gaan, Escape om af te sluiten.
+    fields:
+      identity:
+        label: Gebruikersnaam of e-mail
+        placeholder: jane_doe of jane@example.com
+      password:
+        label: Wachtwoord
+        placeholder: Kies een wachtwoord
+    actions:
+      submit: Inloggen
+      register: Registreren
+    status:
+      failed: Inloggen mislukt. Probeer het opnieuw.
+      success: Hoi :name.
+    errors:
+      required_fields: Vul alle verplichte velden in.
+      invalid_credentials: Ongeldige inloggegevens.
+  register:
+    heading: Gebruikersinformatie
+    instructions: Vul je gegevens in. Tab om te navigeren, Shift+Tab om terug te gaan, Escape om af te sluiten.
+    sections:
+      account: Accountinformatie
+    fields:
+      username:
+        label: Gebruikersnaam
+        placeholder: jane_doe
+      email:
+        label: E-mail
+        placeholder: jane@example.com
+      password:
+        label: Wachtwoord
+        placeholder: Kies een wachtwoord
+      first_name:
+        label: Voornaam
+        placeholder: Jane
+      last_name:
+        label: Achternaam
+        placeholder: Doe
+      date_of_birth:
+        label: Geboortedatum
+    actions:
+      submit: Verzenden
+      reset: Resetten
+      cancel: Annuleren
+    status:
+      success: Gebruiker succesvol geregistreerd. Doorsturen naar het inlogscherm.
+    errors:
+      required_fields: Vul alle verplichte velden in.
+      username_taken: Gebruikersnaam is al in gebruik. Kies een andere.
+      email_registered: E-mailadres is al geregistreerd. Gebruik een ander e-mailadres.
+      save_failed: Er is een fout opgetreden bij het opslaan van de gebruiker. Probeer het opnieuw.
+main:
+  dashboard:
+    heading: Welkom :name
+    email: E-mail: :email
+    full_name: Volledige naam: :name
+    actions:
+      movies: Films
+      reservation_history: Reserveringsgeschiedenis
+      upcoming_reservations: Aankomende reserveringen
+      account_details: Accountgegevens
+      reports: Rapporten (NOG TE DOEN)
+      users: Gebruikers
+      cinemas: Bioscopen
+    status:
+      reports_tbd: NOG TE DOEN
+movies:
+  list:
+    heading: Films voor datum: :date
+    empty: Geen films ingepland.
+    status:
+      no_schedule_for_date: Geen planning voor deze datum.
+    table:
+      movie: Film
+      rating: Beoordeling
+      start: Start
+      end: Einde
+      auditorium: Zaal
+      space_left: Plaatsen over
+    values:
+      default_auditorium: 1
+      unknown_space_left: ?
+  seat_booking:
+    heading: The Grand Cinema
+    tagline: Een premium stoelkiezer voor het reserveringsproces van films.
+    instructions: Tab om de knoppen te selecteren. Escape sluit de app af.
+    auditorium: Zaal 1 · Dolby Atmos
+    actions:
+      snacks: Snacks (NOG TE DOEN)
+      confirm: Geselecteerde stoel bevestigen
+      back: Terug
+reservations:
+  create:
+    heading: Reserveringsdetails
+    instructions: Tab om te navigeren, Shift+Tab om terug te gaan.
+    table:
+      movie: Film
+      seat: Stoel
+      date: Datum
+      start: Start
+      end: Einde
+      auditorium: Zaal
+      snacks: Snacks
+    total_price: Totale prijs: :amount
+    values:
+      default_auditorium: 1
+      no_snacks: Geen
+    actions:
+      save: Opslaan
+      back: Terug
+  edit:
+    heading: Reserveringsdetails
+    instructions: Tab om te navigeren, Shift+Tab om terug te gaan.
+    empty: Geen films ingepland.
+    table:
+      movie: Film
+      auditorium: Zaal
+      seats: Stoelen
+      date: Datum
+      paid: Betaald
+      total_price: Totale prijs
+    actions:
+      delete: Verwijderen
+      pay: Betalen
+      back: Terug
+  history:
+    heading: Reserveringsdetails
+    instructions: Tab om te navigeren, Shift+Tab om terug te gaan.
+    empty: Geen films ingepland.
+    table:
+      movie: Film
+      auditorium: Zaal
+      seats: Stoelen
+      date: Datum
+      paid: Betaald
+      total_price: Totale prijs
+    actions:
+      back: Terug
+  upcoming:
+    heading: Reserveringsdetails
+    instructions: Tab om te navigeren, Shift+Tab om terug te gaan.
+    empty: Geen films ingepland.
+    table:
+      movie: Film
+      auditorium: Zaal
+      seats: Stoelen
+      date: Datum
+      paid: Betaald
+      total_price: Totale prijs
+    actions:
+      back: Terug
+  errors:
+    booking_not_found: Reservering niet gevonden.
+    total_price_positive: Totale prijs moet groter zijn dan 0.
+    invalid_user: Ongeldige gebruiker.
+    invalid_screening: Ongeldige vertoning.
+account:
+  profile:
+    heading: Accountgegevens
+    instructions: Werk je accountinformatie bij. Tab om te navigeren, Shift+Tab om terug te gaan.
+    sections:
+      account: Accountinformatie
+    fields:
+      username:
+        label: Gebruikersnaam
+        placeholder: jane_doe
+      email:
+        label: E-mail
+        placeholder: jane@example.com
+      new_password:
+        label: Nieuw wachtwoord
+        placeholder: Laat leeg om het huidige te behouden
+      first_name:
+        label: Voornaam
+        placeholder: Jane
+      last_name:
+        label: Achternaam
+        placeholder: Doe
+      date_of_birth:
+        label: Geboortedatum
+    actions:
+      save: Opslaan
+      delete_account: Account verwijderen
+      back: Terug
+    confirm_delete:
+      message: Weet je zeker dat je je account wilt verwijderen? Dit kan niet ongedaan worden gemaakt.
+      confirm: Ja, verwijderen
+      cancel: Nee, annuleren
+    status:
+      updated: Account succesvol bijgewerkt.
+      deleted: Account verwijderd. Doorsturen naar inloggen.
+    errors:
+      required_fields: Vul alle verplichte velden in.
+      username_taken: Gebruikersnaam is al in gebruik.
+      email_registered: E-mailadres is al geregistreerd.
+      user_not_found: Gebruiker niet gevonden.
+      update_failed: Er is een fout opgetreden bij het bijwerken. Probeer het opnieuw.
+      delete_failed: Er is een fout opgetreden bij het verwijderen. Probeer het opnieuw.
+admin:
+  users:
+    heading: Gebruikers
+    empty: Geen gebruikers gevonden.
+    actions:
+      back: Terug
+    table:
+      username: Gebruikersnaam
+      name: Naam
+      email: E-mail
+      role: Rol
+    errors:
+      none_found: Geen gebruikers gevonden.
+      load_failed: Er is een fout opgetreden bij het ophalen van gebruikers. Probeer het opnieuw.
+  cinemas:
+    list:
+      heading: Bioscoopbeheer
+      instructions: Selecteer een bioscoop om te beheren.
+      cinema_button: :name — :city
+      actions:
+        back: Terug
+    detail:
+      city: Stad: :city
+      actions:
+        update: Bioscoop bijwerken
+        view_auditoriums: Zalen bekijken
+        back: Terug
+    edit:
+      heading: Bioscoop bewerken: :name
+      status:
+        updated: Bioscoop succesvol bijgewerkt.
+      fields:
+        name:
+          label: Naam
+        city:
+          label: Stad
+      actions:
+        save: Opslaan
+        back: Terug
+      errors:
+        update_name_unauthorized: Alleen beheerders mogen bioscoopnamen aanpassen.
+        update_city_unauthorized: Alleen beheerders mogen bioscoopsteden aanpassen.
+  auditoriums:
+    list:
+      heading: :cinema — Zalen
+      instructions: Selecteer een zaal om te bewerken.
+      auditorium_button: :name (Capaciteit: :capacity)
+      actions:
+        back: Terug
+    edit:
+      heading: Zaal bewerken: :name
+      cinema: Bioscoop: :cinema
+      status:
+        updated: Zaal succesvol bijgewerkt.
+      fields:
+        name:
+          label: Naam
+      actions:
+        save: Opslaan
+        back: Terug
+      errors:
+        update_name_unauthorized: Alleen beheerders mogen zaelnamen aanpassen.
+        update_capacity_unauthorized: Alleen beheerders mogen zaalcapaciteit aanpassen.
+        reassign_unauthorized: Alleen beheerders mogen zalen opnieuw toewijzen.
+components:
+  form:
+    date_placeholder: JJJJ-MM-DD
+    none: (geen)
+  table:
+    no_rows: Geen rijen
+  select:
+    no_options: (geen opties)
+  multiselect:
+    no_options: (geen opties)
+  radiogroup:
+    no_options: (geen opties)
+  toggle:
+    on: AAN
+    off: UIT
+  logout:
+    button: Uitloggen
+  seat_map:
+    title: BIOSCOOP STOELSELECTIE
+    none: Geen
+    labels:
+      movie: Film:
+      hall: Zaal:
+      time: Tijd:
+      pick: Keuze:
+      legend: Legenda:
+    legend:
+      available: Beschikbaar
+      reserved: Gereserveerd
+      king: King
+      vip: VIP
+      selected: Geselecteerd
+    status:
+      hovering: Zweeft boven :seat
+      already_taken: :seat is al bezet.
+      reserved: Stoel :seat gereserveerd.
+demo:
+  user_registration:
+    heading: Registreren
+    instructions: Demo-registratieformulier. Tab verplaatst de focus, Enter activeert de knop, Escape sluit af.
+    fields:
+      username:
+        label: Gebruikersnaam
+        placeholder: jane_doe
+      fullname:
+        label: Volledige naam
+        placeholder: Jane Doe
+      email:
+        label: E-mail
+        placeholder: jane@example.com
+      password:
+        label: Wachtwoord
+        placeholder: Kies een wachtwoord
+      confirm_password:
+        label: Bevestig wachtwoord
+        placeholder: Herhaal het wachtwoord
+      age:
+        label: Leeftijd
+        placeholder: 18
+    actions:
+      register: Registreren
+    validation:
+      email_invalid: E-mailadres is niet geldig.
+      password_mismatch: Wachtwoorden komen niet overeen.
+      age_positive: Leeftijd moet een positief getal zijn.
+    status:
+      registered: Alleen demo: :name (:username) geregistreerd met e-mail :email, leeftijd :age.
+legacy:
+  common:
+    invalid_choice: Ongeldige keuze. Druk op een toets...
+    press_any_key: Druk op een toets...
+  main_screen:
+    heading: === Hoofdmenu ===
+    prompt: Keuze:
+    options:
+      users: 1. Gebruikers
+      exit: 0. Afsluiten
+  user_screen:
+    heading: === Gebruikersmenu ===
+    prompt: Keuze:
+    options:
+      add_user: 1. Gebruiker toevoegen
+      list_users: 2. Gebruikers tonen
+      back: 0. Terug
+    fields:
+      username:
+        label: Gebruikersnaam
+        placeholder: Voer gebruikersnaam in
+      password:
+        label: Wachtwoord
+        placeholder: Voer wachtwoord in
+    add_user:
+      heading: === Gebruiker toevoegen ===
+      instructions: Tab verplaatst de focus. Enter verzendt. Escape keert terug naar het menu.
+      actions:
+        create: Gebruiker aanmaken
+      status:
+        created: Gebruiker toegevoegd! Druk op Escape om terug te gaan of blijf bewerken om nog een gebruiker toe te voegen.
+        username_exists: Gebruikersnaam bestaat al.
+    list:
+      empty: Geen gebruikers gevonden.
+      item: - :username (:role)
+snacks:
+  errors:
+    add_unauthorized: Alleen beheerders mogen snacks toevoegen.
+    update_unauthorized: Alleen beheerders mogen snacks bijwerken.
+    delete_unauthorized: Alleen beheerders mogen snacks verwijderen.
+    name_required: Naam is verplicht.
+    price_non_negative: Prijs mag niet negatief zijn.
+    quantity_non_negative: Aantal mag niet negatief zijn.
+    not_found: Snack niet gevonden.
+booking_snacks:
+  errors:
+    add_unauthorized: Alleen beheerders mogen boekingssnacks toevoegen.
+    update_unauthorized: Alleen beheerders mogen boekingssnacks bijwerken.
+    delete_unauthorized: Alleen beheerders mogen boekingssnacks verwijderen.
+    quantity_positive: Geboekt aantal moet groter zijn dan nul.
+    snack_not_found: Snack niet gevonden.
+    not_found: Boekingssnack niet gevonden.
+receipts:
+  errors:
+    not_found: Bon niet gevonden.
+    total_positive: Totale prijs moet groter zijn dan 0.
+    invalid_booking: Ongeldige boeking.
+validation:
+  common:
+    invalid: De waarde is ongeldig.
+    required: :field is verplicht
+    min_length: :field moet minimaal :min tekens bevatten
+    min_value: :field moet minimaal :min zijn
+    max_value: :field mag maximaal :max zijn
+    invalid_number: :field is geen geldig getal
+    invalid_date: :field is geen geldige datum
+    date_on_or_after: :field moet op of na :date liggen
+    date_on_or_before: :field moet op of vóór :date liggen
+    selection_required: :field vereist minimaal één selectie
+  user:
+    username:
+      required: Gebruikersnaam is verplicht.
+      length: Gebruikersnaam moet tussen 3 en 20 tekens bevatten.
+      pattern: Gebruikersnaam mag alleen letters, cijfers en underscores bevatten.
+    password:
+      required: Wachtwoord is verplicht.
+    role:
+      required: Rol is verplicht.
+    email:
+      required: E-mail is verplicht.
+      invalid: Moet een geldig e-mailadres zijn
+    first_name:
+      required: Voornaam is verplicht.
+    last_name:
+      required: Achternaam is verplicht.
+    date_of_birth:
+      required: Geboortedatum is verplicht.

@@ -6,28 +6,28 @@ public class User
 {
     public int Id { get; set; }
 
-    [Required]
-    [StringLength(20, MinimumLength = 3)]
-    [RegularExpression(@"^[a-zA-Z0-9_]+$", ErrorMessage = "Username can only contain letters, numbers, and underscores.")]
+    [Required(ErrorMessage = "validation.user.username.required")]
+    [StringLength(20, MinimumLength = 3, ErrorMessage = "validation.user.username.length")]
+    [RegularExpression(@"^[a-zA-Z0-9_]+$", ErrorMessage = "validation.user.username.pattern")]
     public string Username { get; set; } = string.Empty;
 
-    [Required]
+    [Required(ErrorMessage = "validation.user.password.required")]
     public string PasswordHash { get; set; } = string.Empty;
 
-    [Required]
+    [Required(ErrorMessage = "validation.user.role.required")]
     public string Role { get; set; } = "User";
 
-    [Required]
-    [EmailAddress]
+    [Required(ErrorMessage = "validation.user.email.required")]
+    [EmailAddress(ErrorMessage = "validation.user.email.invalid")]
     public string Email { get; set; } = string.Empty;
 
-    [Required]
+    [Required(ErrorMessage = "validation.user.first_name.required")]
     public string FirstName { get; set; } = string.Empty;
 
-    [Required]
+    [Required(ErrorMessage = "validation.user.last_name.required")]
     public string LastName { get; set; } = string.Empty;
 
-    [Required]
+    [Required(ErrorMessage = "validation.user.date_of_birth.required")]
     public DateOnly DateOfBirth { get; set; }
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

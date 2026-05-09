@@ -24,7 +24,7 @@ public class ReceiptLogic
         var receipt = _receiptAccess.GetById(id);
 
         if (receipt == null)
-            throw new Exception("receipt not found");
+            throw new Exception(l10n("receipts.errors.not_found"));
 
         return receipt;
     }
@@ -32,10 +32,10 @@ public class ReceiptLogic
     public void CreateReceipt(Receipt receipt)
     {
         if (receipt.Total <= 0)
-            throw new Exception("Total price must be greater than 0");
+            throw new Exception(l10n("receipts.errors.total_positive"));
 
         if (receipt.BookingId <= 0)
-            throw new Exception("Invalid Booking");
+            throw new Exception(l10n("receipts.errors.invalid_booking"));
 
 
         receipt.CreatedAt = DateTime.Now;
@@ -50,7 +50,7 @@ public class ReceiptLogic
         var receipt = _receiptAccess.GetById(receiptId);
 
         if (receipt == null)
-            throw new Exception("Receipt not found");
+            throw new Exception(l10n("receipts.errors.not_found"));
 
 
         _receiptAccess.Update(receipt);

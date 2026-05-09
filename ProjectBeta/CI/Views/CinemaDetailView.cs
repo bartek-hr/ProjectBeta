@@ -28,10 +28,10 @@ public sealed class CinemaDetailView : Form
     private void InitializeForm()
     {
         Heading(_cinema.Name);
-        Label($"City: {_cinema.City}");
+        Label(l10n("admin.cinemas.detail.city", new Dictionary<string, string> { ["city"] = _cinema.City }));
         Divider();
 
-        Button("Update Cinema").OnClick(() =>
+        Button(l10n("admin.cinemas.detail.actions.update")).OnClick(() =>
         {
             Console.Clear();
             var editView = _serviceProvider.GetRequiredService<CinemaEditView>();
@@ -39,7 +39,7 @@ public sealed class CinemaDetailView : Form
             _appLoop.Display(editView);
         });
 
-        Button("View Auditoriums").OnClick(() =>
+        Button(l10n("admin.cinemas.detail.actions.view_auditoriums")).OnClick(() =>
         {
             Console.Clear();
             var listView = _serviceProvider.GetRequiredService<AuditoriumListView>();
@@ -48,7 +48,7 @@ public sealed class CinemaDetailView : Form
         });
 
         Divider();
-        Button("Back").OnClick(() =>
+        Button(l10n("admin.cinemas.detail.actions.back")).OnClick(() =>
         {
             Console.Clear();
             var cinemaView = _serviceProvider.GetRequiredService<CinemaView>();

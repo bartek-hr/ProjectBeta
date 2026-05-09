@@ -83,7 +83,7 @@ public class UserLogicTests
         );
         Assert.IsFalse(second.Success);
         Assert.IsNotNull(second.FieldErrors);
-        Assert.IsTrue(second.FieldErrors!.ContainsKey("Username") || second.FieldErrors!.ContainsKey("Email"));
+        Assert.IsTrue(second.FieldErrors!.ContainsKey("username") || second.FieldErrors!.ContainsKey("email"));
     }
 
     [TestMethod]
@@ -130,7 +130,7 @@ public class UserLogicTests
 
         Assert.IsFalse(result.Success);
         Assert.IsNotNull(result.FieldErrors);
-        Assert.IsTrue(result.FieldErrors!.ContainsKey("Username"));
+        Assert.IsTrue(result.FieldErrors!.ContainsKey("username"));
     }
 
     [TestMethod]
@@ -199,6 +199,6 @@ public class UserLogicTests
 
         Assert.IsFalse(result.Success);
         Assert.IsNotNull(result.FieldErrors);
-        Assert.IsTrue(result.FieldErrors!.ContainsKey("General"));
+        Assert.IsTrue(result.FieldErrors!.ContainsKey("general"));
     }
 }

@@ -31,19 +31,19 @@ public sealed class CinemaEditView : Form
 
     private void InitializeForm()
     {
-        Message(() => $"Edit Cinema: {_cinema.Name}");
+        Message(() => l10n("admin.cinemas.edit.heading", new Dictionary<string, string> { ["name"] = _cinema.Name }));
         Divider();
 
         Message(() => _statusMessage);
-        TextInput("Name").Required().Max(100).Default(_cinema.Name);
-        TextInput("City").Required().Max(100).Default(_cinema.City);
+        TextInput(l10n("admin.cinemas.edit.fields.name.label")).Key("name").Required().Max(100).Default(_cinema.Name);
+        TextInput(l10n("admin.cinemas.edit.fields.city.label")).Key("city").Required().Max(100).Default(_cinema.City);
 
         Divider();
 
-        Button("Save").OnClick(form =>
+        Button(l10n("admin.cinemas.edit.actions.save")).OnClick(form =>
         {
-            var name = form.Get<string>("Name") ?? string.Empty;
-            var city = form.Get<string>("City") ?? string.Empty;
+            var name = form.Get<string>("name") ?? string.Empty;
+            var city = form.Get<string>("city") ?? string.Empty;
 
             try
             {
@@ -51,7 +51,7 @@ public sealed class CinemaEditView : Form
                 _cinemaLogic.UpdateCity(_cinema.Id, city, _user);
                 _cinema.Name = name;
                 _cinema.City = city;
-                _statusMessage = "Cinema updated successfully.";
+                _statusMessage = l10n("admin.cinemas.edit.status.updated");
             }
             catch (UnauthorizedAccessException ex)
             {
@@ -59,7 +59,7 @@ public sealed class CinemaEditView : Form
             }
         });
 
-        Button("Back").OnClick(() =>
+        Button(l10n("admin.cinemas.edit.actions.back")).OnClick(() =>
         {
             Console.Clear();
             var updated = _cinemaLogic.GetById(_cinema.Id) ?? _cinema;

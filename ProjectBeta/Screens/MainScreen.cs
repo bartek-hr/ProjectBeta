@@ -15,17 +15,17 @@ public class MainScreen
         while (running)
         {
             Console.Clear();
-            Console.WriteLine("=== Main Menu ===");
-            Console.WriteLine("1. Users");
-            Console.WriteLine("0. Exit");
-            Console.Write("Choice: ");
+            Console.WriteLine(l10n("legacy.main_screen.heading"));
+            Console.WriteLine(l10n("legacy.main_screen.options.users"));
+            Console.WriteLine(l10n("legacy.main_screen.options.exit"));
+            Console.Write(l10n("legacy.main_screen.prompt"));
 
             switch (Console.ReadLine())
             {
                 case "1": _userScreen.Show(); break;  // navigate to user screen
                 case "0": running = false; break;
                 default:
-                    Console.WriteLine("Invalid choice. Press any key...");
+                    Console.WriteLine(l10n("legacy.common.invalid_choice"));
                     Console.ReadKey();
                     break;
             }

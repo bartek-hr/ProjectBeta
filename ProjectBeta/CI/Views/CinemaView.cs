@@ -28,15 +28,19 @@ public sealed class CinemaView : Form
 
     private void InitializeForm()
     {
-        Heading("Cinema Management");
-        Label("Select a cinema to manage.");
+        Heading(l10n("admin.cinemas.list.heading"));
+        Label(l10n("admin.cinemas.list.instructions"));
         Divider();
 
         var cinemas = _cinemaLogic.GetAll();
         foreach (var cinema in cinemas)
         {
             var c = cinema;
-            Button($"{c.Name} — {c.City}").OnClick(() =>
+            Button(l10n("admin.cinemas.list.cinema_button", new Dictionary<string, string>
+            {
+                ["name"] = c.Name,
+                ["city"] = c.City
+            })).OnClick(() =>
             {
                 Console.Clear();
                 var detailView = _serviceProvider.GetRequiredService<CinemaDetailView>();
@@ -46,7 +50,7 @@ public sealed class CinemaView : Form
         }
 
         Divider();
-        Button("Back").OnClick(() =>
+        Button(l10n("admin.cinemas.list.actions.back")).OnClick(() =>
         {
             Console.Clear();
             var mainView = _serviceProvider.GetRequiredService<MainView>();

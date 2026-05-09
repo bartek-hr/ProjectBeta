@@ -9,6 +9,10 @@ using ProjectBeta.Access;
 public class UserLogic
 {
     private readonly UserAccess _userAccess;
+    private const string GeneralKey = "general";
+    private const string IdentityKey = "identity";
+    private const string UsernameKey = "username";
+    private const string EmailKey = "email";
 
     public UserLogic(UserAccess userAccess)
     {
@@ -26,17 +30,17 @@ public class UserLogic
     {
         if (Utils.ValidationHelper.AnyNullOrWhiteSpace(username, email, password, firstName, lastName) || dateOfBirth is null)
         {
-            return (false, new Dictionary<string, string[]> { { "General", ["Please fill in all required fields."] } });
+            return (false, CreateErrors(GeneralKey, l10n("auth.register.errors.required_fields")));
         }
 
         // Uniqueness checks
         if (_userAccess.UsernameExists(username))
         {
-            return (false, new Dictionary<string, string[]> { { "Username", ["Username is already taken. Please choose another."] } });
+            return (false, CreateErrors(UsernameKey, l10n("auth.register.errors.username_taken")));
         }
         if (_userAccess.EmailExists(email))
         {
-            return (false, new Dictionary<string, string[]> { { "Email", ["Email is already registered. Please use a different email."] } });
+            return (false, CreateErrors(EmailKey, l10n("auth.register.errors.email_registered")));
         }
 
         // TODO: Hash password securely
@@ -60,13 +64,7 @@ public class UserLogic
         );
         if (!isValid)
         {
-            var fieldErrors = validationResults
-                .SelectMany(r => r.MemberNames.Select(m => new { Field = m, Error = r.ErrorMessage }))
-                .GroupBy(x => x.Field)
-                .ToDictionary(
-                    g => g.Key,
-                    g => g.Where(x => x.Error != null).Select(x => x.Error!).ToArray()
-                );
+            var fieldErrors = NormalizeValidationErrors(validationResults);
             return (false, fieldErrors);
         }
 
@@ -77,7 +75,7 @@ public class UserLogic
         }
         catch (Exception)
         {
-            return (false, new Dictionary<string, string[]> { { "General", new[] { "An error occurred while saving the user. Please try again." } } });
+            return (false, CreateErrors(GeneralKey, l10n("auth.register.errors.save_failed")));
         }
     }
 
@@ -89,14 +87,14 @@ public class UserLogic
     {
         if (username is null || email is null || password is null || Utils.ValidationHelper.AnyNullOrWhiteSpace(username, email, password))
         {
-            return (false, new Dictionary<string, string[]> { { "General", ["Please fill in all required fields."] } }, null);
+            return (false, CreateErrors(GeneralKey, l10n("auth.login.errors.required_fields")), null);
         }
 
         var user = _userAccess.FindUserByUsernameOrEmail(username!, email!);
 
         if (user is null || user.PasswordHash != password)
         {
-            return (false, new Dictionary<string, string[]> { { "General", ["Invalid credentials."] } }, null);
+            return (false, CreateErrors(IdentityKey, l10n("auth.login.errors.invalid_credentials")), null);
         }
 
         return (true, null, user);
@@ -110,20 +108,14 @@ public class UserLogic
 
             if (users == null || !users.Any())
             {
-                return (false, null, new Dictionary<string, string[]>
-                {
-                    { "General", new[] { "No users found." } }
-                });
+                return (false, null, CreateErrors(GeneralKey, l10n("admin.users.errors.none_found")));
             }
 
             return (true, users, null);
         }
         catch (Exception)
         {
-            return (false, null, new Dictionary<string, string[]>
-            {
-                { "General", new[] { "An error occurred while retrieving users. Please try again." } }
-            });
+            return (false, null, CreateErrors(GeneralKey, l10n("admin.users.errors.load_failed")));
         }
     }
 
@@ -139,16 +131,16 @@ public class UserLogic
     {
         var user = _userAccess.GetUserById(id);
         if (user is null)
-            return (false, new Dictionary<string, string[]> { { "General", ["User not found."] } });
+            return (false, CreateErrors(GeneralKey, l10n("account.profile.errors.user_not_found")));
 
         if (Utils.ValidationHelper.AnyNullOrWhiteSpace(username, email, firstName, lastName) || dateOfBirth is null)
-            return (false, new Dictionary<string, string[]> { { "General", ["Please fill in all required fields."] } });
+            return (false, CreateErrors(GeneralKey, l10n("account.profile.errors.required_fields")));
 
         if (_userAccess.UsernameExistsForOther(username, id))
-            return (false, new Dictionary<string, string[]> { { "Username", ["Username is already taken."] } });
+            return (false, CreateErrors(UsernameKey, l10n("account.profile.errors.username_taken")));
 
         if (_userAccess.EmailExistsForOther(email, id))
-            return (false, new Dictionary<string, string[]> { { "Email", ["Email is already registered."] } });
+            return (false, CreateErrors(EmailKey, l10n("account.profile.errors.email_registered")));
 
         user.Username = username;
         user.Email = email;
@@ -167,13 +159,7 @@ public class UserLogic
         );
         if (!isValid)
         {
-            var fieldErrors = validationResults
-                .SelectMany(r => r.MemberNames.Select(m => new { Field = m, Error = r.ErrorMessage }))
-                .GroupBy(x => x.Field)
-                .ToDictionary(
-                    g => g.Key,
-                    g => g.Where(x => x.Error != null).Select(x => x.Error!).ToArray()
-                );
+            var fieldErrors = NormalizeValidationErrors(validationResults);
             return (false, fieldErrors);
         }
 
@@ -184,7 +170,7 @@ public class UserLogic
         }
         catch (Exception)
         {
-            return (false, new Dictionary<string, string[]> { { "General", ["An error occurred while updating. Please try again."] } });
+            return (false, CreateErrors(GeneralKey, l10n("account.profile.errors.update_failed")));
         }
     }
 
@@ -192,7 +178,7 @@ public class UserLogic
     {
         var user = _userAccess.GetUserById(id);
         if (user is null)
-            return (false, new Dictionary<string, string[]> { { "General", ["User not found."] } });
+            return (false, CreateErrors(GeneralKey, l10n("account.profile.errors.user_not_found")));
 
         try
         {
@@ -201,7 +187,77 @@ public class UserLogic
         }
         catch (Exception)
         {
-            return (false, new Dictionary<string, string[]> { { "General", ["An error occurred while deleting. Please try again."] } });
+            return (false, CreateErrors(GeneralKey, l10n("account.profile.errors.delete_failed")));
         }
+    }
+
+    private static Dictionary<string, string[]> CreateErrors(string key, params string[] messages)
+    {
+        return new Dictionary<string, string[]>
+        {
+            [key] = messages
+        };
+    }
+
+    private static Dictionary<string, string[]> NormalizeValidationErrors(IEnumerable<System.ComponentModel.DataAnnotations.ValidationResult> validationResults)
+    {
+        return validationResults
+            .SelectMany(result =>
+            {
+                var message = TranslateValidationError(result.ErrorMessage);
+                return result.MemberNames.Select(memberName => new
+                {
+                    Field = NormalizeFieldKey(memberName),
+                    Error = message
+                });
+            })
+            .GroupBy(item => item.Field)
+            .ToDictionary(
+                group => group.Key,
+                group => group.Select(item => item.Error).ToArray()
+            );
+    }
+
+    private static string TranslateValidationError(string? errorMessage)
+    {
+        if (string.IsNullOrWhiteSpace(errorMessage))
+        {
+            return l10n("validation.common.invalid");
+        }
+
+        return errorMessage.StartsWith("validation.", StringComparison.Ordinal)
+            ? l10n(errorMessage)
+            : errorMessage;
+    }
+
+    private static string NormalizeFieldKey(string memberName)
+    {
+        return memberName switch
+        {
+            nameof(User.PasswordHash) => "password",
+            _ => ToSnakeCase(memberName)
+        };
+    }
+
+    private static string ToSnakeCase(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return GeneralKey;
+        }
+
+        var builder = new System.Text.StringBuilder();
+        for (var i = 0; i < value.Length; i++)
+        {
+            var character = value[i];
+            if (char.IsUpper(character) && i > 0)
+            {
+                builder.Append('_');
+            }
+
+            builder.Append(char.ToLowerInvariant(character));
+        }
+
+        return builder.ToString();
     }
 }

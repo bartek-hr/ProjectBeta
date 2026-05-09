@@ -74,7 +74,7 @@ public class LocalizationTests
     [TestMethod]
     public void L10n_MissingKeyInRequestedLocale_FallsBackToEnglish()
     {
-        Assert.AreEqual("Welcome", l10n("home.welcome", "nl-NL"));
+        Assert.AreEqual("Welkom", l10n("home.welcome", "nl-NL"));
     }
 
     [TestMethod]
@@ -143,7 +143,7 @@ public class LocalizationTests
             ["count"] = "2"
         };
 
-        Assert.AreEqual("2 minutes ago", l10n("inventory.minutes_ago", replacements, "nl-NL"));
+        Assert.AreEqual("2 minuten geleden", l10n("inventory.minutes_ago", replacements, "nl-NL"));
     }
 
     [TestMethod]

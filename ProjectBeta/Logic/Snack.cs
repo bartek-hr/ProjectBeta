@@ -25,16 +25,16 @@ public class SnackLogic
     public void Add(Snack snack, User currentUser)
     {
         if (currentUser.Role != "Admin" && currentUser.Role != "SuperAdmin")
-            throw new UnauthorizedAccessException("Only admins can add snacks.");
+            throw new UnauthorizedAccessException(l10n("snacks.errors.add_unauthorized"));
 
         if (string.IsNullOrWhiteSpace(snack.Name))
-            throw new ArgumentException("Name is required.");
+            throw new ArgumentException(l10n("snacks.errors.name_required"));
 
         if (snack.Price < 0)
-            throw new ArgumentException("Price cannot be negative.");
+            throw new ArgumentException(l10n("snacks.errors.price_non_negative"));
 
         if (snack.Quantity < 0)
-            throw new ArgumentException("Quantity cannot be negative.");
+            throw new ArgumentException(l10n("snacks.errors.quantity_non_negative"));
 
         _snackAccess.Add(snack);
     }
@@ -42,16 +42,16 @@ public class SnackLogic
     public void Update(Snack snack, User currentUser)
     {
         if (currentUser.Role != "Admin" && currentUser.Role != "SuperAdmin")
-            throw new UnauthorizedAccessException("Only admins can update snacks.");
+            throw new UnauthorizedAccessException(l10n("snacks.errors.update_unauthorized"));
 
         if (string.IsNullOrWhiteSpace(snack.Name))
-            throw new ArgumentException("Name is required.");
+            throw new ArgumentException(l10n("snacks.errors.name_required"));
 
         if (snack.Price < 0)
-            throw new ArgumentException("Price cannot be negative.");
+            throw new ArgumentException(l10n("snacks.errors.price_non_negative"));
 
         if (snack.Quantity < 0)
-            throw new ArgumentException("Quantity cannot be negative.");
+            throw new ArgumentException(l10n("snacks.errors.quantity_non_negative"));
 
         _snackAccess.Update(snack);
     }
@@ -59,11 +59,11 @@ public class SnackLogic
     public void Delete(int id, User currentUser)
     {
         if (currentUser.Role != "Admin" && currentUser.Role != "SuperAdmin")
-            throw new UnauthorizedAccessException("Only admins can delete snacks.");
+            throw new UnauthorizedAccessException(l10n("snacks.errors.delete_unauthorized"));
 
         var snack = _snackAccess.GetById(id);
         if (snack == null)
-            throw new Exception("Snack not found.");
+            throw new Exception(l10n("snacks.errors.not_found"));
 
         _snackAccess.Delete(id);
     }

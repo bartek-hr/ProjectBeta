@@ -6,28 +6,29 @@ public sealed class UserRegistration : Form
     {
         string? statusMessage = null;
 
-        Heading("Register");
-        Label("Demo registration form. Tab moves focus, Enter activates the button, Escape exits.");
+        Heading(l10n("demo.user_registration.heading"));
+        Label(l10n("demo.user_registration.instructions"));
         Divider();
-        TextInput("Username").Placeholder("jane_doe").Required().Min(3);
-        TextInput("Fullname").Placeholder("Jane Doe").Required();
-        TextInput("Email").Placeholder("jane@example.com").Required()
-            .Pattern(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", "Email is not valid");
-        var password = TextInput("Password").Placeholder("Choose a password").Required().Masked();
-        TextInput("Confirm Password").Placeholder("Repeat the password").Required().Masked()
-            .Validator(val => val != password.Value ? "Passwords do not match" : null);
-        TextInput("Age").Placeholder("18").Required()
-            .Validator(val => !int.TryParse(val, out var n) || n <= 0 ? "Age must be a positive number" : null);
+        TextInput(l10n("demo.user_registration.fields.username.label")).Key("username").Placeholder(l10n("demo.user_registration.fields.username.placeholder")).Required().Min(3);
+        TextInput(l10n("demo.user_registration.fields.fullname.label")).Key("fullname").Placeholder(l10n("demo.user_registration.fields.fullname.placeholder")).Required();
+        TextInput(l10n("demo.user_registration.fields.email.label")).Key("email").Placeholder(l10n("demo.user_registration.fields.email.placeholder")).Required()
+            .Pattern(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", l10n("demo.user_registration.validation.email_invalid"));
+        var password = TextInput(l10n("demo.user_registration.fields.password.label")).Key("password").Placeholder(l10n("demo.user_registration.fields.password.placeholder")).Required().Masked();
+        TextInput(l10n("demo.user_registration.fields.confirm_password.label")).Key("confirm_password").Placeholder(l10n("demo.user_registration.fields.confirm_password.placeholder")).Required().Masked()
+            .Validator(val => val != password.Value ? l10n("demo.user_registration.validation.password_mismatch") : null);
+        TextInput(l10n("demo.user_registration.fields.age.label")).Key("age").Placeholder(l10n("demo.user_registration.fields.age.placeholder")).Required()
+            .Validator(val => !int.TryParse(val, out var n) || n <= 0 ? l10n("demo.user_registration.validation.age_positive") : null);
         Divider();
         Message(() => statusMessage);
-        Button("Register").OnClick(form =>
+        Button(l10n("demo.user_registration.actions.register")).OnClick(form =>
         {
-            var user = form.Get<string>("Username");
-            var name = form.Get<string>("Fullname");
-            var email = form.Get<string>("Email");
-            var ageVal = form.Get<string>("Age");
-
-            statusMessage = $"Demo only: registered {name} ({user}) with email {email}, age {ageVal}.";
+            statusMessage = l10n("demo.user_registration.status.registered", new Dictionary<string, string>
+            {
+                ["name"] = form.Get<string>("fullname") ?? string.Empty,
+                ["username"] = form.Get<string>("username") ?? string.Empty,
+                ["email"] = form.Get<string>("email") ?? string.Empty,
+                ["age"] = form.Get<string>("age") ?? string.Empty
+            });
         });
     }
 }

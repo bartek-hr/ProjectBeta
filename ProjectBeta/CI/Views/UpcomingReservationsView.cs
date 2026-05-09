@@ -37,12 +37,17 @@ public sealed class UpcomingReservationsView : Form
     private void InitializeForm()
     {
         List<Booking> reservations = _bookingLogic.GetBookingsByUserId(_user.Id);
-        Heading("Reservation Details");
-        Label("Tab to navigate, Shift+Tab to go back.");
+        Heading(l10n("reservations.upcoming.heading"));
+        Label(l10n("reservations.upcoming.instructions"));
         var table = new Table<Booking>(
-            "Movie", "Auditorium", "Seats", "Date", "Paid", "Total Price"
+            l10n("reservations.upcoming.table.movie"),
+            l10n("reservations.upcoming.table.auditorium"),
+            l10n("reservations.upcoming.table.seats"),
+            l10n("reservations.upcoming.table.date"),
+            l10n("reservations.upcoming.table.paid"),
+            l10n("reservations.upcoming.table.total_price")
         )
-        .EmptyMessage("No movies scheduled.")
+        .EmptyMessage(l10n("reservations.upcoming.empty"))
         .OnSelect(OnBookingSelected);
 
         foreach (var reservation in reservations)
@@ -65,7 +70,7 @@ public sealed class UpcomingReservationsView : Form
         Divider();
         Message(() => _statusMessage);
 
-        Button("Back").OnClick(NavigateToMain).Hidden(() => _confirmingDelete);
+        Button(l10n("reservations.upcoming.actions.back")).OnClick(NavigateToMain).Hidden(() => _confirmingDelete);
     }
 
 

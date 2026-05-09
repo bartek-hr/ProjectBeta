@@ -23,6 +23,21 @@ Fallback order:
 2. `en-GB`
 3. original key
 
+The primary locale tree is organized by product flow and shared subsystem:
+
+- `auth.login`, `auth.register`
+- `main.dashboard`
+- `movies.list`, `movies.seat_booking`
+- `reservations.create`, `reservations.history`, `reservations.upcoming`, `reservations.edit`
+- `account.profile`
+- `admin.users`, `admin.cinemas.*`, `admin.auditoriums.*`
+- `components.*`
+- `validation.*`
+- `demo.user_registration`
+- `legacy.*`
+
+`en-GB.lang` is the complete source locale. Other locales may stay partial and rely on fallback.
+
 ## Placeholders
 
 Syntax: `:name`
@@ -42,6 +57,32 @@ Example call:
 ```csharp
 l10n("messages.welcome", new Dictionary<string, string> { ["name"] = "Ruben" })
 ```
+
+## Stable Field Keys
+
+Form inputs may now define a stable field identifier with `.Key("field_name")`. Use this whenever the visible label is localized or may change.
+
+Example:
+
+```csharp
+TextInput(l10n("auth.register.fields.username.label"))
+    .Key("username")
+    .Placeholder(l10n("auth.register.fields.username.placeholder"));
+
+var username = form.Get<string>("username");
+```
+
+Field error dictionaries should use lowercase snake_case keys such as:
+
+- `general`
+- `identity`
+- `username`
+- `email`
+- `password`
+- `new_password`
+- `first_name`
+- `last_name`
+- `date_of_birth`
 
 ## Pluralization
 
@@ -76,4 +117,5 @@ l10n("app.title")
 l10n("app.title", "nl-NL")
 l10n("messages.welcome", new Dictionary<string, string> { ["name"] = "Ruben" })
 l10n("inventory.car_detailed", new Dictionary<string, string> { ["count"] = "3" })
+l10n("main.dashboard.heading", new Dictionary<string, string> { ["name"] = user.Username })
 ```

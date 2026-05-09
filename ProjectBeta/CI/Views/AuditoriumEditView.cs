@@ -33,24 +33,24 @@ public sealed class AuditoriumEditView : Form
 
     private void InitializeForm()
     {
-        Message(() => $"Edit Auditorium: {_auditorium.Name}");
-        Label($"Cinema: {_cinema.Name}");
+        Message(() => l10n("admin.auditoriums.edit.heading", new Dictionary<string, string> { ["name"] = _auditorium.Name }));
+        Label(l10n("admin.auditoriums.edit.cinema", new Dictionary<string, string> { ["cinema"] = _cinema.Name }));
         Divider();
 
         Message(() => _statusMessage);
-        TextInput("Name").Required().Max(100).Default(_auditorium.Name);
+        TextInput(l10n("admin.auditoriums.edit.fields.name.label")).Key("name").Required().Max(100).Default(_auditorium.Name);
 
         Divider();
 
-        Button("Save").OnClick(form =>
+        Button(l10n("admin.auditoriums.edit.actions.save")).OnClick(form =>
         {
-            var name = form.Get<string>("Name") ?? string.Empty;
+            var name = form.Get<string>("name") ?? string.Empty;
 
             try
             {
                 _auditoriumLogic.UpdateName(_auditorium.Id, name, _user);
                 _auditorium.Name = name;
-                _statusMessage = "Auditorium updated successfully.";
+                _statusMessage = l10n("admin.auditoriums.edit.status.updated");
             }
             catch (UnauthorizedAccessException ex)
             {
@@ -58,7 +58,7 @@ public sealed class AuditoriumEditView : Form
             }
         });
 
-        Button("Back").OnClick(() =>
+        Button(l10n("admin.auditoriums.edit.actions.back")).OnClick(() =>
         {
             Console.Clear();
             var listView = _serviceProvider.GetRequiredService<AuditoriumListView>();

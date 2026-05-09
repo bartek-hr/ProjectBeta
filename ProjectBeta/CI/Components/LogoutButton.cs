@@ -20,7 +20,7 @@ public sealed class LogoutButton : Component
     {
         var buf = context.Buffer;
         buf.Write(IsFocused ? "> " : "  ", IsFocused ? Style.Primary : Style.Muted);
-        buf.Write("[ Log Out ]", IsFocused ? Style.Highlight : Style.Default);
+        buf.Write($"[ {l10n("components.logout.button")} ]", IsFocused ? Style.Highlight : Style.Default);
         buf.WriteLine();
         return 1;
     }

@@ -37,12 +37,17 @@ public sealed class ReservationHistoryView : Form
     private void InitializeForm()
     {
         List<Booking> reservations = _bookingLogic.GetBookingsByUserId(_user.Id);
-        Heading("Reservation Details");
-        Label("Tab to navigate, Shift+Tab to go back.");
+        Heading(l10n("reservations.history.heading"));
+        Label(l10n("reservations.history.instructions"));
         var table = new Table<Booking>(
-            "Movie", "Auditorium", "Seats", "Date", "Paid", "Total Price"
+            l10n("reservations.history.table.movie"),
+            l10n("reservations.history.table.auditorium"),
+            l10n("reservations.history.table.seats"),
+            l10n("reservations.history.table.date"),
+            l10n("reservations.history.table.paid"),
+            l10n("reservations.history.table.total_price")
         )
-        .EmptyMessage("No movies scheduled.")
+        .EmptyMessage(l10n("reservations.history.empty"))
         .OnSelect(OnBookingSelected);
 
         foreach (var reservation in reservations)
@@ -65,7 +70,7 @@ public sealed class ReservationHistoryView : Form
         Divider();
         Message(() => _statusMessage);
 
-        Button("Back").OnClick(NavigateToMain).Hidden(() => _confirmingDelete);
+        Button(l10n("reservations.history.actions.back")).OnClick(NavigateToMain).Hidden(() => _confirmingDelete);
     }
 
 

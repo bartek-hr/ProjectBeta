@@ -27,14 +27,14 @@ public class BookingSnackLogic
     public void Add(BookingSnack bookingSnack, User currentUser)
     {
         if (currentUser.Role != "Admin" && currentUser.Role != "SuperAdmin")
-            throw new UnauthorizedAccessException("Only admins can add booking snacks.");
+            throw new UnauthorizedAccessException(l10n("booking_snacks.errors.add_unauthorized"));
 
         if (bookingSnack.BookedQuantity <= 0)
-            throw new ArgumentException("Booked quantity must be greater than zero.");
+            throw new ArgumentException(l10n("booking_snacks.errors.quantity_positive"));
 
         var snack = _snackAccess.GetById(bookingSnack.SnackId);
         if (snack == null)
-            throw new Exception("Snack not found.");
+            throw new Exception(l10n("booking_snacks.errors.snack_not_found"));
 
         _bookingSnackAccess.Add(bookingSnack);
     }
@@ -42,10 +42,10 @@ public class BookingSnackLogic
     public void Update(BookingSnack bookingSnack, User currentUser)
     {
         if (currentUser.Role != "Admin" && currentUser.Role != "SuperAdmin")
-            throw new UnauthorizedAccessException("Only admins can update booking snacks.");
+            throw new UnauthorizedAccessException(l10n("booking_snacks.errors.update_unauthorized"));
 
         if (bookingSnack.BookedQuantity <= 0)
-            throw new ArgumentException("Booked quantity must be greater than zero.");
+            throw new ArgumentException(l10n("booking_snacks.errors.quantity_positive"));
 
         _bookingSnackAccess.Update(bookingSnack);
     }
@@ -53,11 +53,11 @@ public class BookingSnackLogic
     public void Delete(int id, User currentUser)
     {
         if (currentUser.Role != "Admin" && currentUser.Role != "SuperAdmin")
-            throw new UnauthorizedAccessException("Only admins can delete booking snacks.");
+            throw new UnauthorizedAccessException(l10n("booking_snacks.errors.delete_unauthorized"));
 
         var bookingSnack = _bookingSnackAccess.GetById(id);
         if (bookingSnack == null)
-            throw new Exception("BookingSnack not found.");
+            throw new Exception(l10n("booking_snacks.errors.not_found"));
 
         _bookingSnackAccess.Delete(id);
     }

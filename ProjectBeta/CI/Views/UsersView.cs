@@ -34,19 +34,23 @@ public sealed class UsersView : Form
         var result = _userLogic.GetAllUsers();
         _users = result.Users ?? [];
         _statusMessage = result.FieldErrors != null &&
-                         result.FieldErrors.TryGetValue("General", out var errors)
+                         result.FieldErrors.TryGetValue("general", out var errors)
             ? string.Join(Environment.NewLine, errors)
             : null;
     }
 
     private void InitializeForm()
     {
-        Heading("Users");
+        Heading(l10n("admin.users.heading"));
         Divider();
         Message(() => _statusMessage);
 
-        var table = Table<User>("Username", "Name", "Email", "Role")
-            .EmptyMessage(_statusMessage ?? "No users found.")
+        var table = Table<User>(
+                l10n("admin.users.table.username"),
+                l10n("admin.users.table.name"),
+                l10n("admin.users.table.email"),
+                l10n("admin.users.table.role"))
+            .EmptyMessage(_statusMessage ?? l10n("admin.users.empty"))
             .OnSelect(OpenAccount);
 
         foreach (var userAccount in _users)
@@ -61,7 +65,7 @@ public sealed class UsersView : Form
         }
 
         Divider();
-        Button("Back").OnClick(NavigateToMain);
+        Button(l10n("admin.users.actions.back")).OnClick(NavigateToMain);
     }
 
     private void OpenAccount(User userAccount)

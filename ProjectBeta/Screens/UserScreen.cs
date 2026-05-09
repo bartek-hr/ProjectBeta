@@ -18,11 +18,11 @@ public class UserScreen
         while (running)
         {
             Console.Clear();
-            Console.WriteLine("=== User Menu ===");
-            Console.WriteLine("1. Add user");
-            Console.WriteLine("2. List users");
-            Console.WriteLine("0. Back");
-            Console.Write("Choice: ");
+            Console.WriteLine(l10n("legacy.user_screen.heading"));
+            Console.WriteLine(l10n("legacy.user_screen.options.add_user"));
+            Console.WriteLine(l10n("legacy.user_screen.options.list_users"));
+            Console.WriteLine(l10n("legacy.user_screen.options.back"));
+            Console.Write(l10n("legacy.user_screen.prompt"));
 
             switch (Console.ReadLine())
             {
@@ -30,7 +30,7 @@ public class UserScreen
                 case "2": ListUsers(); break;
                 case "0": running = false; break;
                 default:
-                    Console.WriteLine("Invalid choice. Press any key...");
+                    Console.WriteLine(l10n("legacy.common.invalid_choice"));
                     Console.ReadKey();
                     break;
             }
@@ -41,38 +41,45 @@ public class UserScreen
     {
         string? statusMessage = null;
 
-        var usernameInput = new InputText("Username").Placeholder("Enter username").Required();
-        var passwordInput = new InputText("Password").Placeholder("Enter password").Required().Masked();
+        var usernameInput = new InputText(l10n("legacy.user_screen.fields.username.label"))
+            .Key("username")
+            .Placeholder(l10n("legacy.user_screen.fields.username.placeholder"))
+            .Required();
+        var passwordInput = new InputText(l10n("legacy.user_screen.fields.password.label"))
+            .Key("password")
+            .Placeholder(l10n("legacy.user_screen.fields.password.placeholder"))
+            .Required()
+            .Masked();
 
         var addUserForm = new Form()
-            .Add(new Label("=== Add User ==="))
-            .Add(new Label("Tab moves focus. Enter submits. Escape returns to the menu."))
+            .Add(new Label(l10n("legacy.user_screen.add_user.heading")))
+            .Add(new Label(l10n("legacy.user_screen.add_user.instructions")))
             .Add(usernameInput)
             .Add(passwordInput)
             .Add(new Message(() => statusMessage))
-            .Add(new Button("Create User").OnClick(() =>
+            .Add(new Button(l10n("legacy.user_screen.add_user.actions.create")).OnClick(() =>
             {
                 if (string.IsNullOrWhiteSpace(usernameInput.Value))
                 {
-                    statusMessage = "Username is required.";
+                    statusMessage = l10n("validation.common.required", new Dictionary<string, string> { ["field"] = usernameInput.Label });
                     return;
                 }
 
                 if (string.IsNullOrWhiteSpace(passwordInput.Value))
                 {
-                    statusMessage = "Password is required.";
+                    statusMessage = l10n("validation.common.required", new Dictionary<string, string> { ["field"] = passwordInput.Label });
                     return;
                 }
 
                 if (_userService.Register(usernameInput.Value, passwordInput.Value))
                 {
-                    statusMessage = "User added! Press Escape to return or keep editing to add another user.";
+                    statusMessage = l10n("legacy.user_screen.add_user.status.created");
                     usernameInput.Value = string.Empty;
                     passwordInput.Value = string.Empty;
                     return;
                 }
 
-                statusMessage = "Username already exists.";
+                statusMessage = l10n("legacy.user_screen.add_user.status.username_exists");
             }));
 
         addUserForm.Display();
@@ -84,15 +91,19 @@ public class UserScreen
 
         if (users.Count == 0)
         {
-            Console.WriteLine("No users found.");
+            Console.WriteLine(l10n("legacy.user_screen.list.empty"));
         }
         else
         {
             foreach (var u in users)
-                Console.WriteLine($"- {u.Username} ({u.Role})");
+                Console.WriteLine(l10n("legacy.user_screen.list.item", new Dictionary<string, string>
+                {
+                    ["username"] = u.Username,
+                    ["role"] = u.Role
+                }));
         }
 
-        Console.WriteLine("Press any key...");
+        Console.WriteLine(l10n("legacy.common.press_any_key"));
         Console.ReadKey();
     }
 }

@@ -122,18 +122,18 @@ public sealed class SeatMap : Component
         var titleStyle = IsFocused ? Style.Highlight : Style.Primary;
 
         buf.WriteLine("╔══════════════════════════════════════════════════════════════════════╗", Style.Muted);
-        buf.WriteLine("║                         CINEMA SEAT SELECTOR                        ║", titleStyle);
+        buf.WriteLine($"║ {l10n("components.seat_map.title")} ║", titleStyle);
         buf.WriteLine("╚══════════════════════════════════════════════════════════════════════╝", Style.Muted);
         buf.WriteLine();
 
-        buf.Write(" Movie: ", Style.Primary);
+        buf.Write($" {l10n("components.seat_map.labels.movie")} ", Style.Primary);
         buf.WriteLine(MovieTitle, Style.Default.WithBold());
-        buf.Write(" Hall:  ", Style.Primary);
+        buf.Write($" {l10n("components.seat_map.labels.hall")}  ", Style.Primary);
         buf.WriteLine(AuditoriumName, Style.Default);
-        buf.Write(" Time:  ", Style.Primary);
+        buf.Write($" {l10n("components.seat_map.labels.time")}  ", Style.Primary);
         buf.WriteLine(Showtime, Style.Default);
-        buf.Write(" Pick:  ", Style.Primary);
-        buf.WriteLine(SelectedSeatCode ?? "None", Style.Success.WithBold());
+        buf.Write($" {l10n("components.seat_map.labels.pick")}  ", Style.Primary);
+        buf.WriteLine(SelectedSeatCode ?? l10n("components.seat_map.none"), Style.Success.WithBold());
         buf.WriteLine();
 
         buf.WriteLine("                     ╭────────────────────────────╮", Style.Warning);
@@ -148,21 +148,21 @@ public sealed class SeatMap : Component
 
         buf.WriteLine();
 
-        buf.Write(" Legend: ", Style.Primary);
+        buf.Write($"{l10n("components.seat_map.labels.legend")} ", Style.Primary);
         WriteSeatChip(buf, "  ", SeatState.Available, false, false, false);
-        buf.Write(" Available   ", Style.Muted);
+        buf.Write($" {l10n("components.seat_map.legend.available")}   ", Style.Muted);
 
         WriteSeatChip(buf, "XX", SeatState.Reserved, false, false, false);
-        buf.Write(" Reserved   ", Style.Muted);
+        buf.Write($" {l10n("components.seat_map.legend.reserved")}   ", Style.Muted);
        
         WriteSeatChip(buf, "👑", SeatState.Available, false, false, true);
-        buf.Write(" King   ", Style.Muted);
+        buf.Write($" {l10n("components.seat_map.legend.king")}   ", Style.Muted);
 
         WriteSeatChip(buf, "🔥", SeatState.Available, false, true, false);
-        buf.Write(" VIP   ", Style.Muted);
+        buf.Write($" {l10n("components.seat_map.legend.vip")}   ", Style.Muted);
 
         WriteSeatChip(buf, "<>", SeatState.Selected, true, false, false);
-        buf.Write(" Selected", Style.Muted);
+        buf.Write($" {l10n("components.seat_map.legend.selected")}", Style.Muted);
 
         buf.WriteLine();
 
@@ -214,7 +214,10 @@ public sealed class SeatMap : Component
         {
             _selectedRow = row;
             _selectedSeat = seat;
-            _statusMessage = $"Hovering {SelectedSeatCode}";
+            _statusMessage = l10n("components.seat_map.status.hovering", new Dictionary<string, string>
+            {
+                ["seat"] = SelectedSeatCode ?? l10n("components.seat_map.none")
+            });
             return true;
         }
 
@@ -230,12 +233,18 @@ public sealed class SeatMap : Component
 
         if (seat.State == SeatState.Reserved)
         {
-            _statusMessage = $"{seat.Row}{seat.Number} is already taken.";
+            _statusMessage = l10n("components.seat_map.status.already_taken", new Dictionary<string, string>
+            {
+                ["seat"] = $"{seat.Row}{seat.Number}"
+            });
             return true;
         }
 
         seat.State = SeatState.Reserved;
-        _statusMessage = $"Seat {seat.Row}{seat.Number} reserved.";
+        _statusMessage = l10n("components.seat_map.status.reserved", new Dictionary<string, string>
+        {
+            ["seat"] = $"{seat.Row}{seat.Number}"
+        });
         _selectedSeats.Add($"{seat.Row}{seat.Number}");
         if (KingSeats.Contains($"{seat.Row}{seat.Number}")){
             _selectedTypes.Add(3);

@@ -34,20 +34,22 @@ public sealed class MainView : Form
 
     private void InitializeForm()
     {
-        // Display user details
-        Heading("Welcome " + _user.Username);
-        Label("Email: " + _user.Email);
-        Label("Full Name: " + _user.FirstName + " " + _user.LastName);
+        Heading(l10n("main.dashboard.heading", new Dictionary<string, string> { ["name"] = _user.Username }));
+        Label(l10n("main.dashboard.email", new Dictionary<string, string> { ["email"] = _user.Email }));
+        Label(l10n("main.dashboard.full_name", new Dictionary<string, string>
+        {
+            ["name"] = $"{_user.FirstName} {_user.LastName}"
+        }));
 
 
-        Button("Movies").OnClick(() => 
+        Button(l10n("main.dashboard.actions.movies")).OnClick(() => 
         {    Console.Clear();
             var moviesVies = _serviceProvider.GetRequiredService<MoviesView>();
             moviesVies.SetUser(_user);
             _appLoop.Display(moviesVies);
         });
 
-        Button("Reservation History").OnClick(() =>
+        Button(l10n("main.dashboard.actions.reservation_history")).OnClick(() =>
         {
             Console.Clear();
             var reservationHistoryView = _serviceProvider.GetRequiredService<ReservationHistoryView>();
@@ -55,14 +57,14 @@ public sealed class MainView : Form
             _appLoop.Display(reservationHistoryView);
         });
 
-        Button("Upcoming Reservations").OnClick(() =>
+        Button(l10n("main.dashboard.actions.upcoming_reservations")).OnClick(() =>
         {
             Console.Clear();
             var upcomingReservationsView = _serviceProvider.GetRequiredService<UpcomingReservationsView>();
             upcomingReservationsView.SetView(_user);
             _appLoop.Display(upcomingReservationsView);
         });
-        Button("Account Details").OnClick(() =>
+        Button(l10n("main.dashboard.actions.account_details")).OnClick(() =>
         {
             Console.Clear();
             var accountView = _serviceProvider.GetRequiredService<AccountView>();
@@ -71,15 +73,15 @@ public sealed class MainView : Form
         });
         if (_user.Role == "Admin")
         {
-            Button("Rapports(TBD)").OnClick(form => { _statusMessage = "TBD"; });
-            Button("Users").OnClick(() =>
+            Button(l10n("main.dashboard.actions.reports")).OnClick(form => { _statusMessage = l10n("main.dashboard.status.reports_tbd"); });
+            Button(l10n("main.dashboard.actions.users")).OnClick(() =>
             {
                 Console.Clear();
                 var usersView = _serviceProvider.GetRequiredService<UsersView>();
                 usersView.SetUser(_user);
                 _appLoop.Display(usersView);
             });
-            Button("Cinemas").OnClick(() =>
+            Button(l10n("main.dashboard.actions.cinemas")).OnClick(() =>
             {
                 Console.Clear();
                 var cinemaView = _serviceProvider.GetRequiredService<CinemaView>();

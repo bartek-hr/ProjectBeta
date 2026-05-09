@@ -39,11 +39,17 @@ public sealed class ReservationView : Form
 
     private void InitializeForm()
     {
-        Heading("Reservation Details");
-        Label("Tab to navigate, Shift+Tab to go back.");
+        Heading(l10n("reservations.create.heading"));
+        Label(l10n("reservations.create.instructions"));
         Divider();
               var table = new Table(
-            "Movie", "Seat", "Date", "Start", "End", "Auditorium", "Snacks"
+            l10n("reservations.create.table.movie"),
+            l10n("reservations.create.table.seat"),
+            l10n("reservations.create.table.date"),
+            l10n("reservations.create.table.start"),
+            l10n("reservations.create.table.end"),
+            l10n("reservations.create.table.auditorium"),
+            l10n("reservations.create.table.snacks")
         );
 
         foreach (var reservedSeat in _reservedSeats)
@@ -54,18 +60,21 @@ public sealed class ReservationView : Form
                 _movie.ScheduleDate.ToString("yyyy-MM-dd"),
                 _movie.StartTime.ToString("HH:mm"),
                 _movie.EndTime.ToString("HH:mm"),
-                "1",
-                " "
+                l10n("reservations.create.values.default_auditorium"),
+                l10n("reservations.create.values.no_snacks")
             );
         }
 
         Add(table);
         Divider();
-        Label($"Total Price: {_bookingLogic.DetermineTotalPrice(_seatTypes)}");
+        Label(l10n("reservations.create.total_price", new Dictionary<string, string>
+        {
+            ["amount"] = _bookingLogic.DetermineTotalPrice(_seatTypes).ToString()
+        }));
         Message(() => _statusMessage);
-        Button("Save").OnClick(OnSave);
+        Button(l10n("reservations.create.actions.save")).OnClick(OnSave);
 
-        Button("Back").OnClick(NavigateToMain).Hidden(() => _confirmingDelete);
+        Button(l10n("reservations.create.actions.back")).OnClick(NavigateToMain).Hidden(() => _confirmingDelete);
     }
 
     private void OnSave(Form form)

@@ -16,99 +16,105 @@ public sealed class UserView : Form
         _userLogic = userLogic;
         _appLoop = appLoop;
         _serviceProvider = serviceProvider;
-        _statusMessage = null;
-        _fieldErrors = null;
         InitializeForm();
     }
 
     private void InitializeForm()
     {
-        Heading("User Information");
-        Label("Please enter user details. Tab to navigate, Shift+Tab to go back, Escape to exit.");
+        Heading(l10n("auth.register.heading"));
+        Label(l10n("auth.register.instructions"));
         Divider();
 
-        // General error at the top
-        Message(() => _fieldErrors != null && _fieldErrors.ContainsKey("General") ? string.Join("\n", _fieldErrors["General"]) : null);
+        Message(() => GetError("general"));
 
-        Label("Account Info");
-        TextInput("Username").Placeholder("jane_doe").Required().Min(3).Max(20);
-        // Username     
-        Message(() => _fieldErrors != null && _fieldErrors.ContainsKey("Username") ? string.Join("\n", _fieldErrors["Username"]) : null);
+        Label(l10n("auth.register.sections.account"));
+        TextInput(l10n("auth.register.fields.username.label"))
+            .Key("username")
+            .Placeholder(l10n("auth.register.fields.username.placeholder"))
+            .Required()
+            .Min(3)
+            .Max(20);
+        Message(() => GetError("username"));
 
-        TextInput("Email").Placeholder("jane@example.com").Required()
-            .Pattern(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", "Must be a valid email address");
-        // Email error
-        Message(() => _fieldErrors != null && _fieldErrors.ContainsKey("Email") ? string.Join("\n", _fieldErrors["Email"]) : null);
+        TextInput(l10n("auth.register.fields.email.label"))
+            .Key("email")
+            .Placeholder(l10n("auth.register.fields.email.placeholder"))
+            .Required()
+            .Pattern(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", l10n("validation.user.email.invalid"));
+        Message(() => GetError("email"));
 
-        TextInput("Password").Placeholder("Choose a password").Required().Masked();
-        // Password error
-        Message(() => _fieldErrors != null && _fieldErrors.ContainsKey("Password") ? string.Join("\n", _fieldErrors["Password"]) : null);
+        TextInput(l10n("auth.register.fields.password.label"))
+            .Key("password")
+            .Placeholder(l10n("auth.register.fields.password.placeholder"))
+            .Required()
+            .Masked();
+        Message(() => GetError("password"));
 
-        TextInput("First Name").Placeholder("Jane").Required();
-        Message(() => _fieldErrors != null && _fieldErrors.ContainsKey("First Name") ? string.Join("\n", _fieldErrors["First Name"]) : null);
+        TextInput(l10n("auth.register.fields.first_name.label"))
+            .Key("first_name")
+            .Placeholder(l10n("auth.register.fields.first_name.placeholder"))
+            .Required();
+        Message(() => GetError("first_name"));
 
-        TextInput("Last Name").Placeholder("Doe").Required();
-        Message(() => _fieldErrors != null && _fieldErrors.ContainsKey("Last Name") ? string.Join("\n", _fieldErrors["Last Name"]) : null);
+        TextInput(l10n("auth.register.fields.last_name.label"))
+            .Key("last_name")
+            .Placeholder(l10n("auth.register.fields.last_name.placeholder"))
+            .Required();
+        Message(() => GetError("last_name"));
 
-        DateInput("Date of Birth").Required().Min(new DateOnly(1900, 1, 1)).Max(DateOnly.FromDateTime(DateTime.Today));
-        Message(() =>
-        {
-            return _fieldErrors != null && _fieldErrors.ContainsKey("Date of Birth")
-                ? string.Join("\n", _fieldErrors["Date of Birth"])
-                : null;
-        });
+        DateInput(l10n("auth.register.fields.date_of_birth.label"))
+            .Key("date_of_birth")
+            .Required()
+            .Min(new DateOnly(1900, 1, 1))
+            .Max(DateOnly.FromDateTime(DateTime.Today));
+        Message(() => GetError("date_of_birth"));
 
         Divider();
 
         Message(() => _statusMessage);
-        Button("Submit").OnClick(OnSubmit);
-        Button("Reset").OnClick(OnReset);
-        Button("Cancel").OnClick(() =>
+        Button(l10n("auth.register.actions.submit")).OnClick(OnSubmit);
+        Button(l10n("auth.register.actions.reset")).OnClick(OnReset);
+        Button(l10n("auth.register.actions.cancel")).OnClick(() =>
         {
             Console.Clear();
             _appLoop.Display(_serviceProvider.GetRequiredService<LoginView>());
         });
     }
 
+    private string? GetError(string key)
+    {
+        return _fieldErrors != null && _fieldErrors.ContainsKey(key)
+            ? string.Join("\n", _fieldErrors[key])
+            : null;
+    }
+
     private void OnSubmit(Form form)
     {
-        // Clear previous errors
         _fieldErrors = null;
         _statusMessage = null;
 
-        // Get form values
-        var username = form.Get<string>("Username");
-        var email = form.Get<string>("Email");
-        var password = form.Get<string>("Password");
-        var firstName = form.Get<string>("First Name");
-        var lastName = form.Get<string>("Last Name");
-        var dateOfBirth = form.Get<DateOnly?>("Date of Birth");
-
-        // Use injected UserService
         var result = _userLogic.Register(
-            username!,
-            email!,
-            password!,
-            firstName!,
-            lastName!,
-            dateOfBirth
+            form.Get<string>("username")!,
+            form.Get<string>("email")!,
+            form.Get<string>("password")!,
+            form.Get<string>("first_name")!,
+            form.Get<string>("last_name")!,
+            form.Get<DateOnly?>("date_of_birth")
         );
 
         if (!result.Success)
         {
             _fieldErrors = result.FieldErrors;
-            _statusMessage = null;
+            return;
         }
-        else
-        {
-            _statusMessage = "User registered successfully. Redirecting to Login screen.";
-            _fieldErrors = null;
-            Invalidate();
-            Render();
-            Thread.Sleep(1500);
-            Console.Clear();
-            _appLoop.Display(_serviceProvider.GetRequiredService<LoginView>());
-        }
+
+        _statusMessage = l10n("auth.register.status.success");
+        _fieldErrors = null;
+        Invalidate();
+        Render();
+        Thread.Sleep(1500);
+        Console.Clear();
+        _appLoop.Display(_serviceProvider.GetRequiredService<LoginView>());
     }
 
     private void OnReset()

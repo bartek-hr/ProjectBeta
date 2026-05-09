@@ -1,4 +1,3 @@
-using System.Reflection.Metadata;
 using Microsoft.Extensions.DependencyInjection;
 using ProjectBeta.CI;
 using ProjectBeta.CI.Components;
@@ -13,7 +12,7 @@ public sealed class AccountView : Form
     private readonly AppLoop _appLoop;
     private readonly IServiceProvider _serviceProvider;
     private User _user = null!;
-    private User? _admin_user;
+    private User? _adminUser;
     private string? _statusMessage;
     private bool _confirmingDelete;
     private Button? _noCancelButton;
@@ -26,60 +25,88 @@ public sealed class AccountView : Form
         _serviceProvider = serviceProvider;
     }
 
-    public void SetUser(User user, User? admin_user = null)
+    public void SetUser(User user, User? adminUser = null)
     {
         _user = user;
-        _admin_user = admin_user; 
+        _adminUser = adminUser;
+        ClearChildren();
         InitializeForm();
     }
 
     private void InitializeForm()
     {
-        Heading("Account Details");
-        Label("Update your account info. Tab to navigate, Shift+Tab to go back.");
+        Heading(l10n("account.profile.heading"));
+        Label(l10n("account.profile.instructions"));
         Divider();
 
-        Message(() => _fieldErrors != null && _fieldErrors.ContainsKey("General") ? string.Join("\n", _fieldErrors["General"]) : null);
+        Message(() => GetError("general"));
 
-        Label("Account Info");
-        TextInput("Username").Placeholder("jane_doe").Required().Min(3).Max(20).Default(_user.Username);
-        Message(() => _fieldErrors != null && _fieldErrors.ContainsKey("Username") ? string.Join("\n", _fieldErrors["Username"]) : null);
+        Label(l10n("account.profile.sections.account"));
+        TextInput(l10n("account.profile.fields.username.label"))
+            .Key("username")
+            .Placeholder(l10n("account.profile.fields.username.placeholder"))
+            .Required()
+            .Min(3)
+            .Max(20)
+            .Default(_user.Username);
+        Message(() => GetError("username"));
 
-        TextInput("Email").Placeholder("jane@example.com").Required()
-            .Pattern(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", "Must be a valid email address").Default(_user.Email);
-        Message(() => _fieldErrors != null && _fieldErrors.ContainsKey("Email") ? string.Join("\n", _fieldErrors["Email"]) : null);
+        TextInput(l10n("account.profile.fields.email.label"))
+            .Key("email")
+            .Placeholder(l10n("account.profile.fields.email.placeholder"))
+            .Required()
+            .Pattern(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", l10n("validation.user.email.invalid"))
+            .Default(_user.Email);
+        Message(() => GetError("email"));
 
-        TextInput("New Password").Placeholder("Leave blank to keep current").Masked();
-        Message(() => _fieldErrors != null && _fieldErrors.ContainsKey("New Password") ? string.Join("\n", _fieldErrors["New Password"]) : null);
+        TextInput(l10n("account.profile.fields.new_password.label"))
+            .Key("new_password")
+            .Placeholder(l10n("account.profile.fields.new_password.placeholder"))
+            .Masked();
+        Message(() => GetError("new_password"));
 
-        TextInput("First Name").Placeholder("Jane").Required().Default(_user.FirstName);
-        Message(() => _fieldErrors != null && _fieldErrors.ContainsKey("First Name") ? string.Join("\n", _fieldErrors["First Name"]) : null);
+        TextInput(l10n("account.profile.fields.first_name.label"))
+            .Key("first_name")
+            .Placeholder(l10n("account.profile.fields.first_name.placeholder"))
+            .Required()
+            .Default(_user.FirstName);
+        Message(() => GetError("first_name"));
 
-        TextInput("Last Name").Placeholder("Doe").Required().Default(_user.LastName);
-        Message(() => _fieldErrors != null && _fieldErrors.ContainsKey("Last Name") ? string.Join("\n", _fieldErrors["Last Name"]) : null);
+        TextInput(l10n("account.profile.fields.last_name.label"))
+            .Key("last_name")
+            .Placeholder(l10n("account.profile.fields.last_name.placeholder"))
+            .Required()
+            .Default(_user.LastName);
+        Message(() => GetError("last_name"));
 
-        DateInput("Date of Birth").Required()
+        DateInput(l10n("account.profile.fields.date_of_birth.label"))
+            .Key("date_of_birth")
+            .Required()
             .Min(new DateOnly(1900, 1, 1))
             .Max(DateOnly.FromDateTime(DateTime.Today))
             .Default(_user.DateOfBirth);
-        Message(() => _fieldErrors != null && _fieldErrors.ContainsKey("Date of Birth") ? string.Join("\n", _fieldErrors["Date of Birth"]) : null);
+        Message(() => GetError("date_of_birth"));
 
         Divider();
 
         Message(() => _statusMessage);
-        Button("Save").OnClick(OnSave);
-        Button("Delete Account").OnClick(() =>
+        Button(l10n("account.profile.actions.save")).OnClick(OnSave);
+        Button(l10n("account.profile.actions.delete_account")).OnClick(() =>
         {
             _confirmingDelete = true;
             Invalidate();
             Render();
-            if (_noCancelButton != null) FocusChild(_noCancelButton);
+            if (_noCancelButton != null)
+            {
+                FocusChild(_noCancelButton);
+            }
+
             Render();
         }).Hidden(() => _confirmingDelete);
 
-        Message(() => _confirmingDelete ? "Are you sure you want to delete your account? This cannot be undone." : null);
-        Button("Yes, Delete").OnClick(OnDelete).Hidden(() => !_confirmingDelete);
-        _noCancelButton = Button("No, Cancel").OnClick(() =>
+        Message(() => _confirmingDelete ? l10n("account.profile.confirm_delete.message") : null);
+        Button(l10n("account.profile.confirm_delete.confirm")).OnClick(OnDelete).Hidden(() => !_confirmingDelete);
+        _noCancelButton = Button(l10n("account.profile.confirm_delete.cancel")).OnClick(() =>
         {
             _confirmingDelete = false;
             Invalidate();
@@ -87,7 +114,14 @@ public sealed class AccountView : Form
         });
         _noCancelButton.Hidden(() => !_confirmingDelete);
 
-        Button("Back").OnClick(NavigateToMain).Hidden(() => _confirmingDelete);
+        Button(l10n("account.profile.actions.back")).OnClick(NavigateToMain).Hidden(() => _confirmingDelete);
+    }
+
+    private string? GetError(string key)
+    {
+        return _fieldErrors != null && _fieldErrors.ContainsKey(key)
+            ? string.Join("\n", _fieldErrors[key])
+            : null;
     }
 
     private void OnSave(Form form)
@@ -95,12 +129,12 @@ public sealed class AccountView : Form
         _fieldErrors = null;
         _statusMessage = null;
 
-        var username = form.Get<string>("Username");
-        var email = form.Get<string>("Email");
-        var newPassword = form.Get<string>("New Password");
-        var firstName = form.Get<string>("First Name");
-        var lastName = form.Get<string>("Last Name");
-        var dateOfBirth = form.Get<DateOnly?>("Date of Birth");
+        var username = form.Get<string>("username");
+        var email = form.Get<string>("email");
+        var newPassword = form.Get<string>("new_password");
+        var firstName = form.Get<string>("first_name");
+        var lastName = form.Get<string>("last_name");
+        var dateOfBirth = form.Get<DateOnly?>("date_of_birth");
 
         var result = _userLogic.UpdateUser(
             _user.Id,
@@ -115,27 +149,27 @@ public sealed class AccountView : Form
         if (!result.Success)
         {
             _fieldErrors = result.FieldErrors;
+            return;
+        }
+
+        if (_adminUser is null)
+        {
+            _user.Username = username!;
+            _user.Email = email!;
+            _user.FirstName = firstName!;
+            _user.LastName = lastName!;
+            _user.DateOfBirth = dateOfBirth!.Value;
         }
         else
         {
-            if (_admin_user is null){
-            // Refresh local user reference
-                _user.Username = username!;
-                _user.Email = email!;
-                _user.FirstName = firstName!;
-                _user.LastName = lastName!;
-                _user.DateOfBirth = dateOfBirth!.Value;
-            }
-            else
-            {
-                _user = _admin_user;
-            }
-            _statusMessage = "Account updated successfully.";
-            _fieldErrors = null;
-            Invalidate();
-            Render();
-            Thread.Sleep(1200);
+            _user = _adminUser;
         }
+
+        _statusMessage = l10n("account.profile.status.updated");
+        _fieldErrors = null;
+        Invalidate();
+        Render();
+        Thread.Sleep(1200);
     }
 
     private void OnDelete(Form form)
@@ -146,17 +180,16 @@ public sealed class AccountView : Form
         {
             _confirmingDelete = false;
             _fieldErrors = result.FieldErrors;
+            return;
         }
-        else
-        {
-            _statusMessage = "Account deleted. Redirecting to Login.";
-            _fieldErrors = null;
-            Invalidate();
-            Render();
-            Thread.Sleep(1500);
-            Console.Clear();
-            _appLoop.Display(_serviceProvider.GetRequiredService<LoginView>());
-        }
+
+        _statusMessage = l10n("account.profile.status.deleted");
+        _fieldErrors = null;
+        Invalidate();
+        Render();
+        Thread.Sleep(1500);
+        Console.Clear();
+        _appLoop.Display(_serviceProvider.GetRequiredService<LoginView>());
     }
 
     private void NavigateToMain()

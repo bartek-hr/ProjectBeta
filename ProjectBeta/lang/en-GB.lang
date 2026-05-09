@@ -1,5 +1,6 @@
 app:
   title: Project Beta
+  exited: Exited application
 home:
   welcome: Welcome
 inventory:
@@ -12,3 +13,424 @@ messages:
   loud_welcome: Welcome, :NAME!
   title_welcome: Welcome, :Name!
   welcome: Welcome, :name!
+auth:
+  login:
+    heading: Login
+    instructions:
+      default: Please enter credentials. Tab to navigate, Shift+Tab to go back, Escape to exit.
+      invalid: One of the credentials is wrong. Please try again. Tab to navigate, Shift+Tab to go back, Escape to exit.
+    fields:
+      identity:
+        label: Username or Email
+        placeholder: jane_doe or jane@example.com
+      password:
+        label: Password
+        placeholder: Choose a password
+    actions:
+      submit: Login
+      register: Register
+    status:
+      failed: Login failed. Please try again.
+      success: Hi :name.
+    errors:
+      required_fields: Please fill in all required fields.
+      invalid_credentials: Invalid credentials.
+  register:
+    heading: User Information
+    instructions: Please enter user details. Tab to navigate, Shift+Tab to go back, Escape to exit.
+    sections:
+      account: Account Info
+    fields:
+      username:
+        label: Username
+        placeholder: jane_doe
+      email:
+        label: Email
+        placeholder: jane@example.com
+      password:
+        label: Password
+        placeholder: Choose a password
+      first_name:
+        label: First Name
+        placeholder: Jane
+      last_name:
+        label: Last Name
+        placeholder: Doe
+      date_of_birth:
+        label: Date of Birth
+    actions:
+      submit: Submit
+      reset: Reset
+      cancel: Cancel
+    status:
+      success: User registered successfully. Redirecting to Login screen.
+    errors:
+      required_fields: Please fill in all required fields.
+      username_taken: Username is already taken. Please choose another.
+      email_registered: Email is already registered. Please use a different email.
+      save_failed: An error occurred while saving the user. Please try again.
+main:
+  dashboard:
+    heading: Welcome :name
+    email: Email: :email
+    full_name: Full Name: :name
+    actions:
+      movies: Movies
+      reservation_history: Reservation History
+      upcoming_reservations: Upcoming Reservations
+      account_details: Account Details
+      reports: Reports (TBD)
+      users: Users
+      cinemas: Cinemas
+    status:
+      reports_tbd: TBD
+movies:
+  list:
+    heading: Movies for date: :date
+    empty: No movies scheduled.
+    status:
+      no_schedule_for_date: No schedule for this date.
+    table:
+      movie: Movie
+      rating: Rating
+      start: Start
+      end: End
+      auditorium: Auditorium
+      space_left: Space Left
+    values:
+      default_auditorium: 1
+      unknown_space_left: ?
+  seat_booking:
+    heading: The Grand Cinema
+    tagline: A premium seat picker for the movie reservation flow.
+    instructions: Tab to focus the buttons. Escape exits the app.
+    auditorium: Hall 1 · Dolby Atmos
+    actions:
+      snacks: Snacks (TBD)
+      confirm: Confirm selected seat
+      back: Back
+reservations:
+  create:
+    heading: Reservation Details
+    instructions: Tab to navigate, Shift+Tab to go back.
+    table:
+      movie: Movie
+      seat: Seat
+      date: Date
+      start: Start
+      end: End
+      auditorium: Auditorium
+      snacks: Snacks
+    total_price: Total Price: :amount
+    values:
+      default_auditorium: 1
+      no_snacks: None
+    actions:
+      save: Save
+      back: Back
+  edit:
+    heading: Reservation Details
+    instructions: Tab to navigate, Shift+Tab to go back.
+    empty: No movies scheduled.
+    table:
+      movie: Movie
+      auditorium: Auditorium
+      seats: Seats
+      date: Date
+      paid: Paid
+      total_price: Total Price
+    actions:
+      delete: Delete
+      pay: Pay
+      back: Back
+  history:
+    heading: Reservation Details
+    instructions: Tab to navigate, Shift+Tab to go back.
+    empty: No movies scheduled.
+    table:
+      movie: Movie
+      auditorium: Auditorium
+      seats: Seats
+      date: Date
+      paid: Paid
+      total_price: Total Price
+    actions:
+      back: Back
+  upcoming:
+    heading: Reservation Details
+    instructions: Tab to navigate, Shift+Tab to go back.
+    empty: No movies scheduled.
+    table:
+      movie: Movie
+      auditorium: Auditorium
+      seats: Seats
+      date: Date
+      paid: Paid
+      total_price: Total Price
+    actions:
+      back: Back
+  errors:
+    booking_not_found: Booking not found.
+    total_price_positive: Total price must be greater than 0.
+    invalid_user: Invalid user.
+    invalid_screening: Invalid screening.
+account:
+  profile:
+    heading: Account Details
+    instructions: Update your account info. Tab to navigate, Shift+Tab to go back.
+    sections:
+      account: Account Info
+    fields:
+      username:
+        label: Username
+        placeholder: jane_doe
+      email:
+        label: Email
+        placeholder: jane@example.com
+      new_password:
+        label: New Password
+        placeholder: Leave blank to keep current
+      first_name:
+        label: First Name
+        placeholder: Jane
+      last_name:
+        label: Last Name
+        placeholder: Doe
+      date_of_birth:
+        label: Date of Birth
+    actions:
+      save: Save
+      delete_account: Delete Account
+      back: Back
+    confirm_delete:
+      message: Are you sure you want to delete your account? This cannot be undone.
+      confirm: Yes, Delete
+      cancel: No, Cancel
+    status:
+      updated: Account updated successfully.
+      deleted: Account deleted. Redirecting to Login.
+    errors:
+      required_fields: Please fill in all required fields.
+      username_taken: Username is already taken.
+      email_registered: Email is already registered.
+      user_not_found: User not found.
+      update_failed: An error occurred while updating. Please try again.
+      delete_failed: An error occurred while deleting. Please try again.
+admin:
+  users:
+    heading: Users
+    empty: No users found.
+    actions:
+      back: Back
+    table:
+      username: Username
+      name: Name
+      email: Email
+      role: Role
+    errors:
+      none_found: No users found.
+      load_failed: An error occurred while retrieving users. Please try again.
+  cinemas:
+    list:
+      heading: Cinema Management
+      instructions: Select a cinema to manage.
+      cinema_button: :name — :city
+      actions:
+        back: Back
+    detail:
+      city: City: :city
+      actions:
+        update: Update Cinema
+        view_auditoriums: View Auditoriums
+        back: Back
+    edit:
+      heading: Edit Cinema: :name
+      status:
+        updated: Cinema updated successfully.
+      fields:
+        name:
+          label: Name
+        city:
+          label: City
+      actions:
+        save: Save
+        back: Back
+      errors:
+        update_name_unauthorized: Only admins can update cinema names.
+        update_city_unauthorized: Only admins can update cinema city.
+  auditoriums:
+    list:
+      heading: :cinema — Auditoriums
+      instructions: Select an auditorium to edit.
+      auditorium_button: :name (Capacity: :capacity)
+      actions:
+        back: Back
+    edit:
+      heading: Edit Auditorium: :name
+      cinema: Cinema: :cinema
+      status:
+        updated: Auditorium updated successfully.
+      fields:
+        name:
+          label: Name
+      actions:
+        save: Save
+        back: Back
+      errors:
+        update_name_unauthorized: Only admins can update auditorium names.
+        update_capacity_unauthorized: Only admins can update auditorium capacity.
+        reassign_unauthorized: Only admins can reassign auditoriums.
+components:
+  form:
+    date_placeholder: YYYY-MM-DD
+    none: (none)
+  table:
+    no_rows: No rows
+  select:
+    no_options: (no options)
+  multiselect:
+    no_options: (no options)
+  radiogroup:
+    no_options: (no options)
+  toggle:
+    on: ON
+    off: OFF
+  logout:
+    button: Log Out
+  seat_map:
+    title: CINEMA SEAT SELECTOR
+    none: None
+    labels:
+      movie: Movie:
+      hall: Hall:
+      time: Time:
+      pick: Pick:
+      legend: Legend:
+    legend:
+      available: Available
+      reserved: Reserved
+      king: King
+      vip: VIP
+      selected: Selected
+    status:
+      hovering: Hovering :seat
+      already_taken: :seat is already taken.
+      reserved: Seat :seat reserved.
+demo:
+  user_registration:
+    heading: Register
+    instructions: Demo registration form. Tab moves focus, Enter activates the button, Escape exits.
+    fields:
+      username:
+        label: Username
+        placeholder: jane_doe
+      fullname:
+        label: Full Name
+        placeholder: Jane Doe
+      email:
+        label: Email
+        placeholder: jane@example.com
+      password:
+        label: Password
+        placeholder: Choose a password
+      confirm_password:
+        label: Confirm Password
+        placeholder: Repeat the password
+      age:
+        label: Age
+        placeholder: 18
+    actions:
+      register: Register
+    validation:
+      email_invalid: Email is not valid.
+      password_mismatch: Passwords do not match.
+      age_positive: Age must be a positive number.
+    status:
+      registered: Demo only: registered :name (:username) with email :email, age :age.
+legacy:
+  common:
+    invalid_choice: Invalid choice. Press any key...
+    press_any_key: Press any key...
+  main_screen:
+    heading: === Main Menu ===
+    prompt: Choice:
+    options:
+      users: 1. Users
+      exit: 0. Exit
+  user_screen:
+    heading: === User Menu ===
+    prompt: Choice:
+    options:
+      add_user: 1. Add user
+      list_users: 2. List users
+      back: 0. Back
+    fields:
+      username:
+        label: Username
+        placeholder: Enter username
+      password:
+        label: Password
+        placeholder: Enter password
+    add_user:
+      heading: === Add User ===
+      instructions: Tab moves focus. Enter submits. Escape returns to the menu.
+      actions:
+        create: Create User
+      status:
+        created: User added! Press Escape to return or keep editing to add another user.
+        username_exists: Username already exists.
+    list:
+      empty: No users found.
+      item: - :username (:role)
+snacks:
+  errors:
+    add_unauthorized: Only admins can add snacks.
+    update_unauthorized: Only admins can update snacks.
+    delete_unauthorized: Only admins can delete snacks.
+    name_required: Name is required.
+    price_non_negative: Price cannot be negative.
+    quantity_non_negative: Quantity cannot be negative.
+    not_found: Snack not found.
+booking_snacks:
+  errors:
+    add_unauthorized: Only admins can add booking snacks.
+    update_unauthorized: Only admins can update booking snacks.
+    delete_unauthorized: Only admins can delete booking snacks.
+    quantity_positive: Booked quantity must be greater than zero.
+    snack_not_found: Snack not found.
+    not_found: Booking snack not found.
+receipts:
+  errors:
+    not_found: Receipt not found.
+    total_positive: Total price must be greater than 0.
+    invalid_booking: Invalid booking.
+validation:
+  common:
+    invalid: The value is invalid.
+    required: :field is required
+    min_length: :field must be at least :min characters
+    min_value: :field must be at least :min
+    max_value: :field must be at most :max
+    invalid_number: :field is not a valid number
+    invalid_date: :field is not a valid date
+    date_on_or_after: :field must be on or after :date
+    date_on_or_before: :field must be on or before :date
+    selection_required: :field requires at least one selection
+  user:
+    username:
+      required: Username is required.
+      length: Username must be between 3 and 20 characters.
+      pattern: Username can only contain letters, numbers, and underscores.
+    password:
+      required: Password is required.
+    role:
+      required: Role is required.
+    email:
+      required: Email is required.
+      invalid: Must be a valid email address
+    first_name:
+      required: First Name is required.
+    last_name:
+      required: Last Name is required.
+    date_of_birth:
+      required: Date of Birth is required.

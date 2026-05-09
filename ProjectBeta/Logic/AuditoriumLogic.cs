@@ -30,7 +30,7 @@ public class AuditoriumLogic
     public void UpdateName(int auditoriumId, string newName, User currentUser)
     {
         if (currentUser.Role != "Admin")
-            throw new UnauthorizedAccessException("Only admins can update auditorium names.");
+            throw new UnauthorizedAccessException(l10n("admin.auditoriums.edit.errors.update_name_unauthorized"));
 
         _auditoriumAccess.UpdateName(auditoriumId, newName);
     }
@@ -38,7 +38,7 @@ public class AuditoriumLogic
     public void UpdateCapacity(int auditoriumId, int newCapacity, User currentUser)
     {
         if (currentUser.Role != "Admin")
-            throw new UnauthorizedAccessException("Only admins can update auditorium capacity.");
+            throw new UnauthorizedAccessException(l10n("admin.auditoriums.edit.errors.update_capacity_unauthorized"));
 
         _auditoriumAccess.UpdateCapacity(auditoriumId, newCapacity);
     }
@@ -46,7 +46,7 @@ public class AuditoriumLogic
     public void UpdateCinema(int auditoriumId, int newCinemaId, User currentUser)
     {
         if (currentUser.Role != "Admin")
-            throw new UnauthorizedAccessException("Only admins can reassign auditoriums.");
+            throw new UnauthorizedAccessException(l10n("admin.auditoriums.edit.errors.reassign_unauthorized"));
 
         _auditoriumAccess.UpdateCinema(auditoriumId, newCinemaId);
     }

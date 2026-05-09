@@ -30,15 +30,19 @@ public sealed class AuditoriumListView : Form
 
     private void InitializeForm()
     {
-        Heading($"{_cinema.Name} — Auditoriums");
-        Label("Select an auditorium to edit.");
+        Heading(l10n("admin.auditoriums.list.heading", new Dictionary<string, string> { ["cinema"] = _cinema.Name }));
+        Label(l10n("admin.auditoriums.list.instructions"));
         Divider();
 
         var auditoriums = _auditoriumLogic.GetByCinemaId(_cinema.Id);
         foreach (var auditorium in auditoriums)
         {
             var a = auditorium;
-            Button($"{a.Name} (Capacity: {a.Capacity})").OnClick(() =>
+            Button(l10n("admin.auditoriums.list.auditorium_button", new Dictionary<string, string>
+            {
+                ["name"] = a.Name,
+                ["capacity"] = a.Capacity.ToString()
+            })).OnClick(() =>
             {
                 Console.Clear();
                 var editView = _serviceProvider.GetRequiredService<AuditoriumEditView>();
@@ -48,7 +52,7 @@ public sealed class AuditoriumListView : Form
         }
 
         Divider();
-        Button("Back").OnClick(() =>
+        Button(l10n("admin.auditoriums.list.actions.back")).OnClick(() =>
         {
             Console.Clear();
             var detailView = _serviceProvider.GetRequiredService<CinemaDetailView>();

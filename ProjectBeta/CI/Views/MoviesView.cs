@@ -67,18 +67,26 @@ public sealed class MoviesView : Form
         _schedule = _movieLogic.GetOrGenerateSchedule(_selectedDate);
         var today = DateOnly.FromDateTime(DateTime.Today);
         _statusMessage = _schedule.Count == 0 && _selectedDate < today
-            ? "No schedule for this date."
+            ? l10n("movies.list.status.no_schedule_for_date")
             : null;
     }
     private void InitializeForm()
     {
-        Label($"Movies for date: {_selectedDate:yyyy-MM-dd}");
+        Label(l10n("movies.list.heading", new Dictionary<string, string>
+        {
+            ["date"] = _selectedDate.ToString("yyyy-MM-dd")
+        }));
         Message(() => _statusMessage);
 
         var table = new Table<MovieSchedule>(
-            "Movie", "Rating", "Start", "End", "Auditorium", "Space Left"
+            l10n("movies.list.table.movie"),
+            l10n("movies.list.table.rating"),
+            l10n("movies.list.table.start"),
+            l10n("movies.list.table.end"),
+            l10n("movies.list.table.auditorium"),
+            l10n("movies.list.table.space_left")
         )
-        .EmptyMessage("No movies scheduled.")
+        .EmptyMessage(l10n("movies.list.empty"))
         .OnSelect(OnMovieSelected);
 
         foreach (var schedule in _schedule)
@@ -89,8 +97,8 @@ public sealed class MoviesView : Form
                 schedule.Movie.Rating?.ToString("0.0") ?? "-",
                 schedule.StartTime.ToString("HH:mm"),
                 schedule.EndTime.ToString("HH:mm"),
-                "1",
-                "?"
+                l10n("movies.list.values.default_auditorium"),
+                l10n("movies.list.values.unknown_space_left")
             );
         }
         Add(table);

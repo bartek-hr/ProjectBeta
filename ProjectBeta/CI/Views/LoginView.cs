@@ -1,17 +1,16 @@
+using Microsoft.Extensions.DependencyInjection;
 using ProjectBeta.CI;
 using ProjectBeta.CI.Components;
 using ProjectBeta.CI.Views;
-using ProjectBeta.Data;
-using ProjectBeta.Model;
-using Microsoft.Extensions.DependencyInjection;
 using ProjectBeta.Logic;
+using ProjectBeta.Model;
 
 public sealed class LoginView : Form
 {
     private readonly UserLogic _userLogic;
     private readonly IServiceProvider _serviceProvider;
-    private string? _statusMessage;
     private readonly AppLoop _appLoop;
+    private string? _statusMessage;
     private Dictionary<string, string[]>? _fieldErrors;
 
     public LoginView(UserLogic userLogic, IServiceProvider serviceProvider, AppLoop appLoop)
@@ -19,127 +18,85 @@ public sealed class LoginView : Form
         _userLogic = userLogic;
         _serviceProvider = serviceProvider;
         _appLoop = appLoop;
-        _statusMessage = null;
-        _fieldErrors = null;
         InitializeForm();
     }
-    private void InitializeForm()
+
+    private void InitializeForm(bool invalidCredentials = false)
     {
-        Heading("Login");
-        Label("Please enter credentials. Tab to navigate, Shift+Tab to go back, Escape to exit.");
+        ClearChildren();
+
+        Heading(l10n("auth.login.heading"));
+        Label(invalidCredentials
+            ? l10n("auth.login.instructions.invalid")
+            : l10n("auth.login.instructions.default"));
         Divider();
 
-        Message(() => _fieldErrors != null && _fieldErrors.ContainsKey("General") ? string.Join("\n", _fieldErrors["General"]) : null);
+        Message(() => GetError("general"));
 
-        TextInput("Username or Email").Placeholder("jane_doe or jane@example.com").Required();
-        Message(() => _fieldErrors != null && _fieldErrors.ContainsKey("Username or Email") ? string.Join("\n", _fieldErrors["Username or Email"]) : null);
+        TextInput(l10n("auth.login.fields.identity.label"))
+            .Key("identity")
+            .Placeholder(l10n("auth.login.fields.identity.placeholder"))
+            .Required();
+        Message(() => GetError("identity"));
 
-        TextInput("Password").Placeholder("Choose a password").Required().Masked();
-        Message(() => _fieldErrors != null && _fieldErrors.ContainsKey("Password") ? string.Join("\n", _fieldErrors["Password"]) : null);
+        TextInput(l10n("auth.login.fields.password.label"))
+            .Key("password")
+            .Placeholder(l10n("auth.login.fields.password.placeholder"))
+            .Required()
+            .Masked();
+        Message(() => GetError("password"));
 
         Divider();
 
         Message(() => _statusMessage);
-        Button("Login").OnClick(OnSubmit);
-        Button("Register").OnClick(NavigateToUserView);
+        Button(l10n("auth.login.actions.submit")).OnClick(OnSubmit);
+        Button(l10n("auth.login.actions.register")).OnClick(NavigateToUserView);
     }
-    private void InitializeLogin(bool loggingAgain = false)
+
+    private string? GetError(string key)
     {
-        Heading("Login");
-        if (loggingAgain)
-        {
-            Label("One of credentials is wrong please try again. Tab to navigate, Shift+Tab to go back, Escape to exit.");
-        }
-        else
-        {
-            Label("Please enter credentials. Tab to navigate, Shift+Tab to go back, Escape to exit.");
-        }
-        Divider();
-
-        // General error at the top
-        Message(() => _fieldErrors != null && _fieldErrors.ContainsKey("General") ? string.Join("\n", _fieldErrors["General"]) : null);
-
-        Label("Log In");
-        TextInput("Username").Placeholder("jane_doe").Required().Min(3).Max(20);
-        // Username error
-        Message(() => _fieldErrors != null && _fieldErrors.ContainsKey("Username") ? string.Join("\n", _fieldErrors["Username"]) : null);
-
-        TextInput("Email").Placeholder("jane@example.com").Required()
-            .Pattern(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", "Must be a valid email address");
-        // Email error
-        Message(() => _fieldErrors != null && _fieldErrors.ContainsKey("Email") ? string.Join("\n", _fieldErrors["Email"]) : null);
-
-        TextInput("Password").Placeholder("Choose a password").Required().Masked();
-        // Password error
-        Message(() => _fieldErrors != null && _fieldErrors.ContainsKey("Password") ? string.Join("\n", _fieldErrors["Password"]) : null);
-
-        Divider();
-
-        Message(() => _statusMessage);
-        Button("Submit").OnClick(OnSubmit);
-        Button("Register").OnClick(NavigateToUserView);
-        Button("Reset").OnClick(OnReset);
+        return _fieldErrors != null && _fieldErrors.ContainsKey(key)
+            ? string.Join("\n", _fieldErrors[key])
+            : null;
     }
+
     private void OnSubmit(Form form)
     {
-        // Clear previous errors
         _fieldErrors = null;
         _statusMessage = null;
 
-        // Get form values
-        var usernameOrEmail = form.Get<string>("Username or Email");
-        var password = form.Get<string>("Password");
+        var identity = form.Get<string>("identity");
+        var password = form.Get<string>("password");
 
-        // Use injected UserService
-        var result = _userLogic.SearchUser(usernameOrEmail, usernameOrEmail, password);
+        var result = _userLogic.SearchUser(identity, identity, password);
 
         if (!result.Success)
         {
-            Console.Clear();
-
             _fieldErrors = result.FieldErrors;
-            _statusMessage = "Login failed. Please try again.";
-            System.Threading.Thread.Sleep(2000);
-            InitializeLogin(true);
+            _statusMessage = l10n("auth.login.status.failed");
+            InitializeForm(result.FieldErrors?.ContainsKey("identity") == true);
+            return;
         }
-        else
-        {
-            _statusMessage = $"Hi {result.User!.Username}.";
-            _fieldErrors = null;
 
-            // After successful login, go to MainView or another screen
-            NavigateToMainView(result.User);
-        }
+        _statusMessage = l10n("auth.login.status.success", new Dictionary<string, string>
+        {
+            ["name"] = result.User!.Username
+        });
+        _fieldErrors = null;
+        NavigateToMainView(result.User);
     }
 
     private void NavigateToMainView(User user)
     {
-        // Clear the console before displaying the next screen
         Console.Clear();
-
-        // Get the MainView from the DI container
-        var mainView = _serviceProvider.GetRequiredService<MainView>(); // This line should work now
-
-        // Pass the User to MainView if needed
+        var mainView = _serviceProvider.GetRequiredService<MainView>();
         mainView.SetUser(user);
-
-        // Change the current view to MainView
         _appLoop.Display(mainView);
     }
 
     private void NavigateToUserView()
     {
-        // Clear the console before displaying the next screen
         Console.Clear();
-
-        // Change the current view to UserView
         _appLoop.Display(_serviceProvider.GetRequiredService<UserView>());
-    }
-
-    private void OnReset()
-    {
-        _statusMessage = "Form reset.";
-        _fieldErrors = null;
-        //TODO: Clear Form, by setting fields empty
     }
 }

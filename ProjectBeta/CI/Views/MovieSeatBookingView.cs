@@ -53,16 +53,16 @@ public sealed class MovieSeatBookingView : Form
     }
     private void InitializeForm()
     {
-        Heading("The Grand Cinema");
-        Label("A premium seat picker for the movie reservation flow.");
-        Label("Tab to focus the buttons. Escape exits the app.");
+        Heading(l10n("movies.seat_booking.heading"));
+        Label(l10n("movies.seat_booking.tagline"));
+        Label(l10n("movies.seat_booking.instructions"));
         Divider();
         DateTime startDateTime = _movie.ScheduleDate.ToDateTime(_movie.StartTime);
         List<Booking> reservations = _bookingLogic.GetBookingsByCreatedAt(startDateTime);
         var reservedSeats = GetReservedSeats(reservations);
 
         var seatMap = new SeatMap(
-            auditoriumName: "Hall 1 · Dolby Atmos",
+            auditoriumName: l10n("movies.seat_booking.auditorium"),
             movieTitle: _movie.Movie.Title,
             showtime: $"{_movie.ScheduleDate:yyyy-MM-dd} {_movie.StartTime:HH:mm}"
         );
@@ -111,14 +111,14 @@ public sealed class MovieSeatBookingView : Form
         Add(seatMap);
         Spacer();
         Message(() => seatMap.StatusMessage);
-        Button("Snacks(TBD)").OnClick(() => Close());
-        Button("Confirm selected seat").OnClick(() =>         
+        Button(l10n("movies.seat_booking.actions.snacks")).OnClick(() => Close());
+        Button(l10n("movies.seat_booking.actions.confirm")).OnClick(() =>         
         {
             Console.Clear();
             var reservationView = _serviceProvider.GetRequiredService<ReservationView>();
             reservationView.SetView(_user, _movie, seatMap._selectedSeats, seatMap._selectedTypes);
             _appLoop.Display(reservationView);
         });
-        Button("Back").OnClick(() => Close());
+        Button(l10n("movies.seat_booking.actions.back")).OnClick(() => Close());
     }
 }

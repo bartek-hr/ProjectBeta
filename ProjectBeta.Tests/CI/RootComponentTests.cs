@@ -234,6 +234,28 @@ public class RootComponentTests
     }
 
     [TestMethod]
+    public void FormGet_UsesStableFieldKeyWhenProvided()
+    {
+        var form = new Form(new FakeConsoleDriver());
+        var input = new InputText("Localized Username").Key("username");
+        input.Value = "alice";
+        form.Add(input);
+
+        Assert.AreEqual("alice", form.Get<string>("username"));
+    }
+
+    [TestMethod]
+    public void FormGet_FallsBackToLabelForLegacyCallSites()
+    {
+        var form = new Form(new FakeConsoleDriver());
+        var input = new InputText("Username");
+        input.Value = "alice";
+        form.Add(input);
+
+        Assert.AreEqual("alice", form.Get<string>("Username"));
+    }
+
+    [TestMethod]
     public void Close_RestoresPreviouslyDisplayedView()
     {
         var app = new AppLoop();

@@ -24,7 +24,7 @@ public class BookingLogic
         var booking = _bookingAccess.GetById(id);
 
         if (booking == null)
-            throw new Exception("Booking not found");
+            throw new Exception(l10n("reservations.errors.booking_not_found"));
 
         return booking;
     }
@@ -49,13 +49,13 @@ public class BookingLogic
     public void CreateBooking(Booking booking)
     {
         if (booking.TotalPrice <= 0)
-            throw new Exception("Total price must be greater than 0");
+            throw new Exception(l10n("reservations.errors.total_price_positive"));
 
         if (booking.UserId <= 0)
-            throw new Exception("Invalid user");
+            throw new Exception(l10n("reservations.errors.invalid_user"));
 
         if (booking.AuditoriumId <= 0)
-            throw new Exception("Invalid screening");
+            throw new Exception(l10n("reservations.errors.invalid_screening"));
     
         booking.CreatedAt = DateTime.Now;
 
@@ -86,7 +86,7 @@ public class BookingLogic
         var booking = _bookingAccess.GetById(bookingId);
 
         if (booking == null)
-            throw new Exception("Booking not found");
+            throw new Exception(l10n("reservations.errors.booking_not_found"));
 
         booking.Paid = true;
 

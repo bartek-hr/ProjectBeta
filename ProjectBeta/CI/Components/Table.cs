@@ -6,7 +6,7 @@ public class Table : Component
 {
     protected readonly List<ColumnDefinition> _columns = [];
     protected readonly List<string[]> _rows = [];
-    protected string _emptyMessage = "No rows";
+    protected string _emptyMessage = l10n("components.table.no_rows");
 
     public Table(params string[] headers)
     {

@@ -41,7 +41,10 @@ public class Form : RootComponent
     {
         var component = Children
             .OfType<IValueComponent>()
-            .FirstOrDefault(c => c.Label == label);
+            .FirstOrDefault(c => c.FieldKey == label)
+            ?? Children
+                .OfType<IValueComponent>()
+                .FirstOrDefault(c => c.Label == label);
 
         return component?.Value is T val ? val : default;
     }

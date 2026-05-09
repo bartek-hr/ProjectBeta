@@ -17,13 +17,21 @@ public sealed class NumberInput : Component, IValidatable, IValueComponent
     public NumberInput(string label)
     {
         Label = label;
+        FieldKey = label;
     }
 
     public override bool IsFocusable => true;
 
     public string Label { get; }
+    public string FieldKey { get; private set; }
     public double? Value => _value;
     object? IValueComponent.Value => _value;
+
+    public NumberInput Key(string fieldKey)
+    {
+        FieldKey = string.IsNullOrWhiteSpace(fieldKey) ? Label : fieldKey;
+        return this;
+    }
 
     public NumberInput Min(double min)
     {
@@ -60,18 +68,26 @@ public sealed class NumberInput : Component, IValidatable, IValueComponent
         var errors = new List<string>();
 
         if (_isRequired && _value == null && string.IsNullOrEmpty(_textBuffer))
-            errors.Add($"{Label} is required");
+            errors.Add(l10n("validation.common.required", new Dictionary<string, string> { ["field"] = Label }));
 
         if (_value != null)
         {
             if (_value < _min)
-                errors.Add($"{Label} must be at least {_min}");
+                errors.Add(l10n("validation.common.min_value", new Dictionary<string, string>
+                {
+                    ["field"] = Label,
+                    ["min"] = _min.ToString()
+                }));
             if (_value > _max)
-                errors.Add($"{Label} must be at most {_max}");
+                errors.Add(l10n("validation.common.max_value", new Dictionary<string, string>
+                {
+                    ["field"] = Label,
+                    ["max"] = _max.ToString()
+                }));
         }
         else if (!string.IsNullOrEmpty(_textBuffer))
         {
-            errors.Add($"{Label} is not a valid number");
+            errors.Add(l10n("validation.common.invalid_number", new Dictionary<string, string> { ["field"] = Label }));
         }
 
         return errors;

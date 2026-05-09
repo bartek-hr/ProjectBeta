@@ -35,12 +35,17 @@ public sealed class ReservationEditView : Form
 
     private void InitializeForm()
     {
-        Heading("Reservation Details");
-        Label("Tab to navigate, Shift+Tab to go back.");
+        Heading(l10n("reservations.edit.heading"));
+        Label(l10n("reservations.edit.instructions"));
         var table = new Table(
-            "Movie", "Auditorium", "Seats", "Date", "Paid", "Total Price"
+            l10n("reservations.edit.table.movie"),
+            l10n("reservations.edit.table.auditorium"),
+            l10n("reservations.edit.table.seats"),
+            l10n("reservations.edit.table.date"),
+            l10n("reservations.edit.table.paid"),
+            l10n("reservations.edit.table.total_price")
         )
-        .EmptyMessage("No movies scheduled.");
+        .EmptyMessage(l10n("reservations.edit.empty"));
 
         table.AddRow(
             _booking.Movie,
@@ -55,10 +60,10 @@ public sealed class ReservationEditView : Form
         Add(table);
         Divider();
         Message(() => _statusMessage);
-        Button("Delete").OnClick(OnDelete);
-        Button("Pay").OnClick(OnPay);
+        Button(l10n("reservations.edit.actions.delete")).OnClick(OnDelete);
+        Button(l10n("reservations.edit.actions.pay")).OnClick(OnPay);
 
-        Button("Back").OnClick(NavigateToMain).Hidden(() => _confirmingDelete);
+        Button(l10n("reservations.edit.actions.back")).OnClick(NavigateToMain).Hidden(() => _confirmingDelete);
     }
 
     private void OnDelete(Form form)
