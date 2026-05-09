@@ -88,7 +88,7 @@ public class AppDbContext : DbContext
                 Id = 1,
                 Username = "admin",
                 PasswordHash = "password",
-                Role = "Admin",
+                Role = "SuperAdmin",
                 Email = "admin@example.com",
                 FirstName = "Admin",
                 LastName = "User",

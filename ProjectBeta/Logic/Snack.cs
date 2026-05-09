@@ -24,7 +24,7 @@ public class SnackLogic
 
     public void Add(Snack snack, User currentUser)
     {
-        if (currentUser.Role != "Admin" && currentUser.Role != "SuperAdmin")
+        if (!currentUser.IsAdmin())
             throw new UnauthorizedAccessException(l10n("snacks.errors.add_unauthorized"));
 
         if (string.IsNullOrWhiteSpace(snack.Name))
@@ -41,7 +41,7 @@ public class SnackLogic
 
     public void Update(Snack snack, User currentUser)
     {
-        if (currentUser.Role != "Admin" && currentUser.Role != "SuperAdmin")
+        if (!currentUser.IsAdmin())
             throw new UnauthorizedAccessException(l10n("snacks.errors.update_unauthorized"));
 
         if (string.IsNullOrWhiteSpace(snack.Name))
@@ -58,7 +58,7 @@ public class SnackLogic
 
     public void Delete(int id, User currentUser)
     {
-        if (currentUser.Role != "Admin" && currentUser.Role != "SuperAdmin")
+        if (!currentUser.IsAdmin())
             throw new UnauthorizedAccessException(l10n("snacks.errors.delete_unauthorized"));
 
         var snack = _snackAccess.GetById(id);

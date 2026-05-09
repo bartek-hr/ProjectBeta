@@ -45,6 +45,8 @@ public sealed class AccountView : Form
         Message(() => GetError("general"));
 
         Label(l10n("account.profile.sections.account"));
+        var canEditRole = _adminUser?.IsSuperAdmin() == true && !_user.IsSuperAdmin();
+
         TextInput(l10n("account.profile.fields.username.label"))
             .Key("username")
             .Placeholder(l10n("account.profile.fields.username.placeholder"))
@@ -90,6 +92,17 @@ public sealed class AccountView : Form
             .Max(DateOnly.FromDateTime(DateTime.Today))
             .Default(state?.DateOfBirth ?? _user.DateOfBirth);
         Message(() => GetError("date_of_birth"));
+
+        if (canEditRole)
+        {
+            RadioGroup(l10n("account.profile.fields.role.label"))
+                .Key("role")
+                .AddOption(l10n("roles.user"))
+                .AddOption(l10n("roles.admin"))
+                .Default(GetRoleOptionLabel(state?.Role ?? _user.Role))
+                .Required();
+            Message(() => GetError("role"));
+        }
 
         Divider();
 
@@ -139,6 +152,8 @@ public sealed class AccountView : Form
         var firstName = form.Get<string>("first_name");
         var lastName = form.Get<string>("last_name");
         var dateOfBirth = form.Get<DateOnly?>("date_of_birth");
+        var requestedRole = ResolveSelectedRole(form.Get<string>("role"));
+        var actingUser = _adminUser ?? _user;
 
         var result = _userLogic.UpdateUser(
             _user.Id,
@@ -147,7 +162,9 @@ public sealed class AccountView : Form
             newPassword,
             firstName!,
             lastName!,
-            dateOfBirth
+            dateOfBirth,
+            actingUser,
+            requestedRole
         );
 
         if (!result.Success)
@@ -156,18 +173,13 @@ public sealed class AccountView : Form
             return;
         }
 
-        if (_adminUser is null)
-        {
-            _user.Username = username!;
-            _user.Email = email!;
-            _user.FirstName = firstName!;
-            _user.LastName = lastName!;
-            _user.DateOfBirth = dateOfBirth!.Value;
-        }
-        else
-        {
-            _user = _adminUser;
-        }
+        _user.Username = username!;
+        _user.Email = email!;
+        _user.FirstName = firstName!;
+        _user.LastName = lastName!;
+        _user.DateOfBirth = dateOfBirth!.Value;
+        if (!string.IsNullOrWhiteSpace(requestedRole) && !_user.IsSuperAdmin())
+            _user.Role = requestedRole;
 
         _statusMessage = l10n("account.profile.status.updated");
         _fieldErrors = null;
@@ -193,6 +205,15 @@ public sealed class AccountView : Form
         Render();
         Thread.Sleep(1500);
         Console.Clear();
+
+        if (_adminUser != null)
+        {
+            var usersView = _serviceProvider.GetRequiredService<UsersView>();
+            usersView.SetUser(_adminUser);
+            _appLoop.Display(usersView);
+            return;
+        }
+
         _appLoop.Display(_serviceProvider.GetRequiredService<LoginView>());
     }
 
@@ -200,7 +221,7 @@ public sealed class AccountView : Form
     {
         Console.Clear();
         var mainView = _serviceProvider.GetRequiredService<MainView>();
-        mainView.SetUser(_user);
+        mainView.SetUser(_adminUser ?? _user);
         _appLoop.Display(mainView);
     }
 
@@ -225,7 +246,26 @@ public sealed class AccountView : Form
             form.Get<string>("new_password"),
             form.Get<string>("first_name"),
             form.Get<string>("last_name"),
-            form.Get<DateOnly?>("date_of_birth"));
+            form.Get<DateOnly?>("date_of_birth"),
+            ResolveSelectedRole(form.Get<string>("role")));
+    }
+
+    private static string GetRoleOptionLabel(string role)
+    {
+        return string.Equals(role, "Admin", StringComparison.OrdinalIgnoreCase)
+            ? l10n("roles.admin")
+            : l10n("roles.user");
+    }
+
+    private static string? ResolveSelectedRole(string? selectedRole)
+    {
+        if (string.Equals(selectedRole, l10n("roles.admin"), StringComparison.Ordinal))
+            return "Admin";
+
+        if (string.Equals(selectedRole, l10n("roles.user"), StringComparison.Ordinal))
+            return "User";
+
+        return null;
     }
 
     private sealed record AccountFormState(
@@ -234,5 +274,6 @@ public sealed class AccountView : Form
         string? NewPassword,
         string? FirstName,
         string? LastName,
-        DateOnly? DateOfBirth);
+        DateOnly? DateOfBirth,
+        string? Role);
 }

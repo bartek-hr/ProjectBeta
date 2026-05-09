@@ -91,6 +91,7 @@ public class UserLogicTests
     {
         var logic = _logic!;
         var context = _context!;
+        var actingUser = context.Users.Find(1)!;
 
         // Use seeded user with Id=1
         var result = logic.UpdateUser(
@@ -100,7 +101,8 @@ public class UserLogicTests
             null,
             "Admin",
             "Updated",
-            new DateOnly(1990, 1, 1)
+            new DateOnly(1990, 1, 1),
+            actingUser
         );
 
         Assert.IsTrue(result.Success);
@@ -116,6 +118,8 @@ public class UserLogicTests
     public void UpdateUser_DuplicateUsername_ReturnsFalse()
     {
         var logic = _logic!;
+        var context = _context!;
+        var actingUser = context.Users.Find(2)!;
 
         // user with ID 2 tries to take admin's username
         var result = logic.UpdateUser(
@@ -125,7 +129,8 @@ public class UserLogicTests
             null,
             "User",
             "One",
-            new DateOnly(1995, 5, 15)
+            new DateOnly(1995, 5, 15),
+            actingUser
         );
 
         Assert.IsFalse(result.Success);
@@ -138,6 +143,7 @@ public class UserLogicTests
     {
         var logic = _logic!;
         var context = _context!;
+        var actingUser = context.Users.Find(1)!;
 
         var result = logic.UpdateUser(
             1,
@@ -146,7 +152,8 @@ public class UserLogicTests
             "newpassword",
             "Admin",
             "User",
-            new DateOnly(1990, 1, 1)
+            new DateOnly(1990, 1, 1),
+            actingUser
         );
 
         Assert.IsTrue(result.Success);
@@ -159,6 +166,7 @@ public class UserLogicTests
     {
         var logic = _logic!;
         var context = _context!;
+        var actingUser = context.Users.Find(1)!;
 
         var originalHash = context.Users.Find(1)!.PasswordHash;
 
@@ -169,7 +177,8 @@ public class UserLogicTests
             "",
             "Admin",
             "User",
-            new DateOnly(1990, 1, 1)
+            new DateOnly(1990, 1, 1),
+            actingUser
         );
 
         Assert.IsTrue(result.Success);

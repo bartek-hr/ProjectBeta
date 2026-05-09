@@ -198,6 +198,8 @@ account:
         placeholder: Doe
       date_of_birth:
         label: Date of Birth
+      role:
+        label: Role
     actions:
       save: Save
       delete_account: Delete Account
@@ -214,8 +216,14 @@ account:
       username_taken: Username is already taken.
       email_registered: Email is already registered.
       user_not_found: User not found.
+      role_invalid: Role must be User or Admin.
+      role_update_unauthorized: You are not allowed to change this user's role.
       update_failed: An error occurred while updating. Please try again.
       delete_failed: An error occurred while deleting. Please try again.
+roles:
+  user: User
+  admin: Admin
+  superadmin: SuperAdmin
 admin:
   users:
     heading: Users

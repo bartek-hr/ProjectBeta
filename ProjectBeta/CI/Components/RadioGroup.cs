@@ -43,6 +43,18 @@ public sealed class RadioGroup : Component, IValidatable, IValueComponent
         return this;
     }
 
+    public RadioGroup Default(string option)
+    {
+        var index = Array.FindIndex(_options, current => string.Equals(current, option, StringComparison.Ordinal));
+        if (index >= 0)
+        {
+            _selectedIndex = index;
+            _highlightedIndex = index;
+        }
+
+        return this;
+    }
+
     public List<string> Validate()
     {
         var errors = new List<string>();

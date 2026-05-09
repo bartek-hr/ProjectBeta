@@ -99,7 +99,11 @@ public class UserScreen
                 Console.WriteLine(l10n("legacy.user_screen.list.item", new Dictionary<string, string>
                 {
                     ["username"] = u.Username,
-                    ["role"] = u.Role
+                    ["role"] = u.IsSuperAdmin()
+                        ? l10n("roles.superadmin")
+                        : u.IsAdmin()
+                            ? l10n("roles.admin")
+                            : l10n("roles.user")
                 }));
         }
 

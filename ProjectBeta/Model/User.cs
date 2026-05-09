@@ -4,6 +4,11 @@ using System.ComponentModel.DataAnnotations;
 
 public class User
 {
+    private const string AdminRole = "Admin";
+    private const string UserRole = "User";
+    private const string SuperAdminRole = "SuperAdmin";
+    private const string SuperAdminUsername = "admin";
+
     public int Id { get; set; }
 
     [Required(ErrorMessage = "validation.user.username.required")]
@@ -32,4 +37,15 @@ public class User
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public bool IsActive { get; set; } = true;
+
+    public bool IsSuperAdmin()
+    {
+        return string.Equals(Role, SuperAdminRole, StringComparison.OrdinalIgnoreCase) ||
+               string.Equals(Username, SuperAdminUsername, StringComparison.OrdinalIgnoreCase);
+    }
+
+    public bool IsAdmin()
+    {
+        return IsSuperAdmin() || string.Equals(Role, AdminRole, StringComparison.OrdinalIgnoreCase);
+    }
 }

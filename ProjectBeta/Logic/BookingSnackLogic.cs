@@ -26,7 +26,7 @@ public class BookingSnackLogic
 
     public void Add(BookingSnack bookingSnack, User currentUser)
     {
-        if (currentUser.Role != "Admin" && currentUser.Role != "SuperAdmin")
+        if (!currentUser.IsAdmin())
             throw new UnauthorizedAccessException(l10n("booking_snacks.errors.add_unauthorized"));
 
         if (bookingSnack.BookedQuantity <= 0)
@@ -41,7 +41,7 @@ public class BookingSnackLogic
 
     public void Update(BookingSnack bookingSnack, User currentUser)
     {
-        if (currentUser.Role != "Admin" && currentUser.Role != "SuperAdmin")
+        if (!currentUser.IsAdmin())
             throw new UnauthorizedAccessException(l10n("booking_snacks.errors.update_unauthorized"));
 
         if (bookingSnack.BookedQuantity <= 0)
@@ -52,7 +52,7 @@ public class BookingSnackLogic
 
     public void Delete(int id, User currentUser)
     {
-        if (currentUser.Role != "Admin" && currentUser.Role != "SuperAdmin")
+        if (!currentUser.IsAdmin())
             throw new UnauthorizedAccessException(l10n("booking_snacks.errors.delete_unauthorized"));
 
         var bookingSnack = _bookingSnackAccess.GetById(id);

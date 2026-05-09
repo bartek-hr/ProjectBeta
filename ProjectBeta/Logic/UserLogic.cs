@@ -13,6 +13,7 @@ public class UserLogic
     private const string IdentityKey = "identity";
     private const string UsernameKey = "username";
     private const string EmailKey = "email";
+    private const string RoleKey = "role";
 
     public UserLogic(UserAccess userAccess)
     {
@@ -126,7 +127,9 @@ public class UserLogic
         string? newPassword,
         string firstName,
         string lastName,
-        DateOnly? dateOfBirth
+        DateOnly? dateOfBirth,
+        User actingUser,
+        string? role = null
     )
     {
         var user = _userAccess.GetUserById(id);
@@ -150,6 +153,9 @@ public class UserLogic
 
         if (!string.IsNullOrWhiteSpace(newPassword))
             user.PasswordHash = newPassword;
+
+        if (!TryApplyRoleChange(user, actingUser, role, out var roleError))
+            return (false, CreateErrors(RoleKey, roleError!));
 
         // Model annotation validation
         var validationResults = new List<System.ComponentModel.DataAnnotations.ValidationResult>();
@@ -259,5 +265,56 @@ public class UserLogic
         }
 
         return builder.ToString();
+    }
+
+    private static bool TryApplyRoleChange(User targetUser, User actingUser, string? requestedRole, out string? error)
+    {
+        error = null;
+
+        if (string.IsNullOrWhiteSpace(requestedRole))
+            return true;
+
+        var normalizedRole = NormalizeRole(requestedRole);
+        if (normalizedRole is null)
+        {
+            error = l10n("account.profile.errors.role_invalid");
+            return false;
+        }
+
+        if (targetUser.IsSuperAdmin())
+        {
+            if (!string.Equals(targetUser.Role, normalizedRole, StringComparison.OrdinalIgnoreCase))
+            {
+                error = l10n("account.profile.errors.role_update_unauthorized");
+                return false;
+            }
+
+            return true;
+        }
+
+        if (!actingUser.IsSuperAdmin())
+        {
+            if (!string.Equals(targetUser.Role, normalizedRole, StringComparison.OrdinalIgnoreCase))
+            {
+                error = l10n("account.profile.errors.role_update_unauthorized");
+                return false;
+            }
+
+            return true;
+        }
+
+        targetUser.Role = normalizedRole;
+        return true;
+    }
+
+    private static string? NormalizeRole(string role)
+    {
+        if (string.Equals(role, "Admin", StringComparison.OrdinalIgnoreCase))
+            return "Admin";
+
+        if (string.Equals(role, "User", StringComparison.OrdinalIgnoreCase))
+            return "User";
+
+        return null;
     }
 }

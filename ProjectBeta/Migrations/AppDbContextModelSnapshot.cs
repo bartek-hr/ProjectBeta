@@ -260,7 +260,7 @@ namespace ProjectBeta.Migrations
                             IsActive = true,
                             LastName = "User",
                             PasswordHash = "password",
-                            Role = "Admin",
+                            Role = "SuperAdmin",
                             Username = "admin"
                         },
                         new

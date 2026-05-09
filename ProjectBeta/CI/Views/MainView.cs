@@ -71,7 +71,7 @@ public sealed class MainView : Form
             accountView.SetUser(_user);
             _appLoop.Display(accountView);
         });
-        if (_user.Role == "Admin")
+        if (_user.IsAdmin())
         {
             Button(l10n("main.dashboard.actions.reports")).OnClick(form => { _statusMessage = l10n("main.dashboard.status.reports_tbd"); });
             Button(l10n("main.dashboard.actions.users")).OnClick(() =>

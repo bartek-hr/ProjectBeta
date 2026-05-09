@@ -60,7 +60,7 @@ public sealed class UsersView : Form
                 userAccount.Username,
                 $"{userAccount.FirstName} {userAccount.LastName}",
                 userAccount.Email,
-                userAccount.Role
+                GetRoleLabel(userAccount)
             );
         }
 
@@ -82,5 +82,15 @@ public sealed class UsersView : Form
         var mainView = _serviceProvider.GetRequiredService<MainView>();
         mainView.SetUser(_user);
         _appLoop.Display(mainView);
+    }
+
+    private static string GetRoleLabel(User user)
+    {
+        if (user.IsSuperAdmin())
+            return l10n("roles.superadmin");
+
+        return user.IsAdmin()
+            ? l10n("roles.admin")
+            : l10n("roles.user");
     }
 }

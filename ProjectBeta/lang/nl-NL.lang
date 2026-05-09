@@ -198,6 +198,8 @@ account:
         placeholder: Doe
       date_of_birth:
         label: Geboortedatum
+      role:
+        label: Rol
     actions:
       save: Opslaan
       delete_account: Account verwijderen
@@ -214,8 +216,14 @@ account:
       username_taken: Gebruikersnaam is al in gebruik.
       email_registered: E-mailadres is al geregistreerd.
       user_not_found: Gebruiker niet gevonden.
+      role_invalid: Rol moet User of Admin zijn.
+      role_update_unauthorized: Je mag de rol van deze gebruiker niet wijzigen.
       update_failed: Er is een fout opgetreden bij het bijwerken. Probeer het opnieuw.
       delete_failed: Er is een fout opgetreden bij het verwijderen. Probeer het opnieuw.
+roles:
+  user: User
+  admin: Admin
+  superadmin: SuperAdmin
 admin:
   users:
     heading: Gebruikers

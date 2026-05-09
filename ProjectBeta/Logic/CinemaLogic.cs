@@ -24,7 +24,7 @@ public class CinemaLogic
 
     public void UpdateName(int cinemaId, string newName, User currentUser)
     {
-        if (currentUser.Role != "Admin")
+        if (!currentUser.IsAdmin())
             throw new UnauthorizedAccessException(l10n("admin.cinemas.edit.errors.update_name_unauthorized"));
 
         _cinemaAccess.UpdateName(cinemaId, newName);
@@ -32,7 +32,7 @@ public class CinemaLogic
 
     public void UpdateCity(int cinemaId, string newCity, User currentUser)
     {
-        if (currentUser.Role != "Admin")
+        if (!currentUser.IsAdmin())
             throw new UnauthorizedAccessException(l10n("admin.cinemas.edit.errors.update_city_unauthorized"));
 
         _cinemaAccess.UpdateCity(cinemaId, newCity);
