@@ -193,4 +193,26 @@ public class Form : RootComponent
         Add(c);
         return c;
     }
+
+    protected Button LanguageToggle(Action onSwitch, Func<bool>? hidden = null)
+    {
+        var label = new Label("Language / Taal");
+        if (hidden != null)
+            label.Hidden(hidden);
+        Add(label);
+
+        var currentLocale = GetLocale();
+        var targetLocale = SupportedLocales.Keys.FirstOrDefault(locale =>
+            !string.Equals(locale, currentLocale, StringComparison.OrdinalIgnoreCase))
+            ?? currentLocale;
+        var buttonLabel = SupportedLocales.TryGetValue(targetLocale, out var displayName)
+            ? displayName
+            : targetLocale;
+
+        var button = new Button(buttonLabel).OnClick(onSwitch);
+        if (hidden != null)
+            button.Hidden(hidden);
+        Add(button);
+        return button;
+    }
 }

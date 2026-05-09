@@ -21,11 +21,12 @@ public sealed class LoginView : Form
         InitializeForm();
     }
 
-    private void InitializeForm(bool invalidCredentials = false)
+    private void InitializeForm(bool invalidCredentials = false, LoginFormState? state = null)
     {
         ClearChildren();
 
         Heading(l10n("auth.login.heading"));
+        LanguageToggle(SwitchLanguage);
         Label(invalidCredentials
             ? l10n("auth.login.instructions.invalid")
             : l10n("auth.login.instructions.default"));
@@ -33,17 +34,21 @@ public sealed class LoginView : Form
 
         Message(() => GetError("general"));
 
-        TextInput(l10n("auth.login.fields.identity.label"))
+        var identityInput = TextInput(l10n("auth.login.fields.identity.label"))
             .Key("identity")
             .Placeholder(l10n("auth.login.fields.identity.placeholder"))
             .Required();
+        if (!string.IsNullOrEmpty(state?.Identity))
+            identityInput.Default(state.Identity);
         Message(() => GetError("identity"));
 
-        TextInput(l10n("auth.login.fields.password.label"))
+        var passwordInput = TextInput(l10n("auth.login.fields.password.label"))
             .Key("password")
             .Placeholder(l10n("auth.login.fields.password.placeholder"))
             .Required()
             .Masked();
+        if (!string.IsNullOrEmpty(state?.Password))
+            passwordInput.Default(state.Password);
         Message(() => GetError("password"));
 
         Divider();
@@ -74,7 +79,7 @@ public sealed class LoginView : Form
         {
             _fieldErrors = result.FieldErrors;
             _statusMessage = l10n("auth.login.status.failed");
-            InitializeForm(result.FieldErrors?.ContainsKey("identity") == true);
+            InitializeForm(result.FieldErrors?.ContainsKey("identity") == true, CaptureState(form));
             return;
         }
 
@@ -99,4 +104,25 @@ public sealed class LoginView : Form
         Console.Clear();
         _appLoop.Display(_serviceProvider.GetRequiredService<UserView>());
     }
+
+    private void SwitchLanguage()
+    {
+        var targetLocale = GetLocale().Equals("en-GB", StringComparison.OrdinalIgnoreCase) ? "nl-NL" : "en-GB";
+        var state = CaptureState(this);
+        _statusMessage = null;
+        _fieldErrors = null;
+        SetLocale(targetLocale);
+        InitializeForm(state: state);
+        Invalidate();
+        Render();
+    }
+
+    private static LoginFormState CaptureState(Form form)
+    {
+        return new LoginFormState(
+            form.Get<string>("identity") ?? string.Empty,
+            form.Get<string>("password") ?? string.Empty);
+    }
+
+    private sealed record LoginFormState(string Identity, string Password);
 }

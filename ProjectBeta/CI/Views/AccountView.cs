@@ -33,9 +33,12 @@ public sealed class AccountView : Form
         InitializeForm();
     }
 
-    private void InitializeForm()
+    private void InitializeForm(AccountFormState? state = null)
     {
+        ClearChildren();
+
         Heading(l10n("account.profile.heading"));
+        LanguageToggle(SwitchLanguage, () => _confirmingDelete);
         Label(l10n("account.profile.instructions"));
         Divider();
 
@@ -48,7 +51,7 @@ public sealed class AccountView : Form
             .Required()
             .Min(3)
             .Max(20)
-            .Default(_user.Username);
+            .Default(state?.Username ?? _user.Username);
         Message(() => GetError("username"));
 
         TextInput(l10n("account.profile.fields.email.label"))
@@ -56,27 +59,28 @@ public sealed class AccountView : Form
             .Placeholder(l10n("account.profile.fields.email.placeholder"))
             .Required()
             .Pattern(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", l10n("validation.user.email.invalid"))
-            .Default(_user.Email);
+            .Default(state?.Email ?? _user.Email);
         Message(() => GetError("email"));
 
         TextInput(l10n("account.profile.fields.new_password.label"))
             .Key("new_password")
             .Placeholder(l10n("account.profile.fields.new_password.placeholder"))
-            .Masked();
+            .Masked()
+            .Default(state?.NewPassword ?? string.Empty);
         Message(() => GetError("new_password"));
 
         TextInput(l10n("account.profile.fields.first_name.label"))
             .Key("first_name")
             .Placeholder(l10n("account.profile.fields.first_name.placeholder"))
             .Required()
-            .Default(_user.FirstName);
+            .Default(state?.FirstName ?? _user.FirstName);
         Message(() => GetError("first_name"));
 
         TextInput(l10n("account.profile.fields.last_name.label"))
             .Key("last_name")
             .Placeholder(l10n("account.profile.fields.last_name.placeholder"))
             .Required()
-            .Default(_user.LastName);
+            .Default(state?.LastName ?? _user.LastName);
         Message(() => GetError("last_name"));
 
         DateInput(l10n("account.profile.fields.date_of_birth.label"))
@@ -84,7 +88,7 @@ public sealed class AccountView : Form
             .Required()
             .Min(new DateOnly(1900, 1, 1))
             .Max(DateOnly.FromDateTime(DateTime.Today))
-            .Default(_user.DateOfBirth);
+            .Default(state?.DateOfBirth ?? _user.DateOfBirth);
         Message(() => GetError("date_of_birth"));
 
         Divider();
@@ -199,4 +203,36 @@ public sealed class AccountView : Form
         mainView.SetUser(_user);
         _appLoop.Display(mainView);
     }
+
+    private void SwitchLanguage()
+    {
+        var targetLocale = GetLocale().Equals("en-GB", StringComparison.OrdinalIgnoreCase) ? "nl-NL" : "en-GB";
+        var state = CaptureState(this);
+        _statusMessage = null;
+        _fieldErrors = null;
+        _confirmingDelete = false;
+        SetLocale(targetLocale);
+        InitializeForm(state);
+        Invalidate();
+        Render();
+    }
+
+    private static AccountFormState CaptureState(Form form)
+    {
+        return new AccountFormState(
+            form.Get<string>("username"),
+            form.Get<string>("email"),
+            form.Get<string>("new_password"),
+            form.Get<string>("first_name"),
+            form.Get<string>("last_name"),
+            form.Get<DateOnly?>("date_of_birth"));
+    }
+
+    private sealed record AccountFormState(
+        string? Username,
+        string? Email,
+        string? NewPassword,
+        string? FirstName,
+        string? LastName,
+        DateOnly? DateOfBirth);
 }

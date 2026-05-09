@@ -12,6 +12,7 @@ messages:
 - `l10n(string key, string? locale = null)`
 - `l10n(string key, IReadOnlyDictionary<string, string> replacements)`
 - `l10n(string key, IReadOnlyDictionary<string, string> replacements, string? locale)`
+- `GetLocale(): string`
 
 ## Locale Files
 
@@ -37,6 +38,11 @@ The primary locale tree is organized by product flow and shared subsystem:
 - `legacy.*`
 
 `en-GB.lang` is the complete source locale. Other locales may stay partial and rely on fallback.
+
+Supported session locales:
+
+- `en-GB` => `English`
+- `nl-NL` => `Nederlands`
 
 ## Placeholders
 

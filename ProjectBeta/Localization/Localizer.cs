@@ -9,8 +9,15 @@ public static class Localizer
     private static readonly object SyncRoot = new();
     private static readonly Dictionary<string, IReadOnlyDictionary<string, string>> LocaleCache = new(StringComparer.OrdinalIgnoreCase);
     private static readonly IReadOnlyDictionary<string, string> EmptyDictionary = new Dictionary<string, string>(StringComparer.Ordinal);
+    private static readonly IReadOnlyDictionary<string, string> SupportedLocaleNames = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+    {
+        ["en-GB"] = "English",
+        ["nl-NL"] = "Nederlands"
+    };
     private static readonly Regex PlaceholderPattern = new(@":(?<name>\w+)\b", RegexOptions.Compiled);
     private static string _currentLocale = DefaultLocale;
+
+    public static IReadOnlyDictionary<string, string> SupportedLocales => SupportedLocaleNames;
 
     public static string l10n(string key, string? locale = null)
     {
@@ -33,6 +40,11 @@ public static class Localizer
         {
             _currentLocale = NormalizeStoredLocale(locale);
         }
+    }
+
+    public static string GetLocale()
+    {
+        return GetCurrentLocale();
     }
 
     private static string Translate(string key, IReadOnlyDictionary<string, string>? replacements, string? locale)

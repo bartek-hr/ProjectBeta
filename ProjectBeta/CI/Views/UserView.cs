@@ -19,54 +19,69 @@ public sealed class UserView : Form
         InitializeForm();
     }
 
-    private void InitializeForm()
+    private void InitializeForm(UserFormState? state = null)
     {
+        ClearChildren();
+
         Heading(l10n("auth.register.heading"));
+        LanguageToggle(SwitchLanguage);
         Label(l10n("auth.register.instructions"));
         Divider();
 
         Message(() => GetError("general"));
 
         Label(l10n("auth.register.sections.account"));
-        TextInput(l10n("auth.register.fields.username.label"))
+        var usernameInput = TextInput(l10n("auth.register.fields.username.label"))
             .Key("username")
             .Placeholder(l10n("auth.register.fields.username.placeholder"))
             .Required()
             .Min(3)
             .Max(20);
+        if (!string.IsNullOrEmpty(state?.Username))
+            usernameInput.Default(state.Username);
         Message(() => GetError("username"));
 
-        TextInput(l10n("auth.register.fields.email.label"))
+        var emailInput = TextInput(l10n("auth.register.fields.email.label"))
             .Key("email")
             .Placeholder(l10n("auth.register.fields.email.placeholder"))
             .Required()
             .Pattern(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", l10n("validation.user.email.invalid"));
+        if (!string.IsNullOrEmpty(state?.Email))
+            emailInput.Default(state.Email);
         Message(() => GetError("email"));
 
-        TextInput(l10n("auth.register.fields.password.label"))
+        var passwordInput = TextInput(l10n("auth.register.fields.password.label"))
             .Key("password")
             .Placeholder(l10n("auth.register.fields.password.placeholder"))
             .Required()
             .Masked();
+        if (!string.IsNullOrEmpty(state?.Password))
+            passwordInput.Default(state.Password);
         Message(() => GetError("password"));
 
-        TextInput(l10n("auth.register.fields.first_name.label"))
+        var firstNameInput = TextInput(l10n("auth.register.fields.first_name.label"))
             .Key("first_name")
             .Placeholder(l10n("auth.register.fields.first_name.placeholder"))
             .Required();
+        if (!string.IsNullOrEmpty(state?.FirstName))
+            firstNameInput.Default(state.FirstName);
         Message(() => GetError("first_name"));
 
-        TextInput(l10n("auth.register.fields.last_name.label"))
+        var lastNameInput = TextInput(l10n("auth.register.fields.last_name.label"))
             .Key("last_name")
             .Placeholder(l10n("auth.register.fields.last_name.placeholder"))
             .Required();
+        if (!string.IsNullOrEmpty(state?.LastName))
+            lastNameInput.Default(state.LastName);
         Message(() => GetError("last_name"));
 
-        DateInput(l10n("auth.register.fields.date_of_birth.label"))
+        var dateOfBirthInput = DateInput(l10n("auth.register.fields.date_of_birth.label"))
             .Key("date_of_birth")
             .Required()
             .Min(new DateOnly(1900, 1, 1))
             .Max(DateOnly.FromDateTime(DateTime.Today));
+        if (state?.DateOfBirth is DateOnly dateOfBirth)
+            dateOfBirthInput.Default(dateOfBirth);
         Message(() => GetError("date_of_birth"));
 
         Divider();
@@ -122,4 +137,35 @@ public sealed class UserView : Form
         Console.Clear();
         _appLoop.Display(_serviceProvider.GetRequiredService<UserView>());
     }
+
+    private void SwitchLanguage()
+    {
+        var targetLocale = GetLocale().Equals("en-GB", StringComparison.OrdinalIgnoreCase) ? "nl-NL" : "en-GB";
+        var state = CaptureState(this);
+        _statusMessage = null;
+        _fieldErrors = null;
+        SetLocale(targetLocale);
+        InitializeForm(state);
+        Invalidate();
+        Render();
+    }
+
+    private static UserFormState CaptureState(Form form)
+    {
+        return new UserFormState(
+            form.Get<string>("username"),
+            form.Get<string>("email"),
+            form.Get<string>("password"),
+            form.Get<string>("first_name"),
+            form.Get<string>("last_name"),
+            form.Get<DateOnly?>("date_of_birth"));
+    }
+
+    private sealed record UserFormState(
+        string? Username,
+        string? Email,
+        string? Password,
+        string? FirstName,
+        string? LastName,
+        DateOnly? DateOfBirth);
 }
