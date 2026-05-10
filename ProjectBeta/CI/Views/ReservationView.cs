@@ -17,6 +17,7 @@ public sealed class ReservationView : Form
     private List<string> _reservedSeats;
     private string? _statusMessage;
     private List<int> _seatTypes;
+    private int _auditoriumId;
     private bool _confirmingDelete;
     private Button? _noCancelButton;
     private Dictionary<string, string[]>? _fieldErrors;
@@ -28,12 +29,13 @@ public sealed class ReservationView : Form
         _serviceProvider = serviceProvider;
     }
 
-    public void SetView(User user, MovieSchedule movie, List<string> reservedSeats, List<int> seatTypes)
+    public void SetView(User user, MovieSchedule movie, List<string> reservedSeats, List<int> seatTypes, int auditoriumId)
     {
         _user = user;
         _movie = movie;
         _reservedSeats = reservedSeats;
         _seatTypes = seatTypes;
+        _auditoriumId = auditoriumId;
         InitializeForm();
     }
 
@@ -54,7 +56,7 @@ public sealed class ReservationView : Form
                 _movie.ScheduleDate.ToString("yyyy-MM-dd"),
                 _movie.StartTime.ToString("HH:mm"),
                 _movie.EndTime.ToString("HH:mm"),
-                "1",
+                $"{_auditoriumId}",
                 " "
             );
         }
@@ -79,7 +81,7 @@ public sealed class ReservationView : Form
         _bookingLogic.CreateBooking(
             _user.Id,
             _bookingLogic.DetermineTotalPrice(_seatTypes),
-            1,
+            _auditoriumId,
             reservedseats,
             1,
             $"{_movie.Movie.Title}",

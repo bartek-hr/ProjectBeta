@@ -93,10 +93,10 @@ public class BookingLogic
         _bookingAccess.Update(booking);
     }
 
-    public List<Booking> GetBookingsByCreatedAt(DateTime createdAt)
+    public List<Booking> GetBookingsByCreatedAtAndAuditoriumID(DateTime createdAt, int auditoriumId)
     {
         return _bookingAccess.GetAll()
-            .Where(b => b.CreatedAt == createdAt)
+            .Where(b => b.AuditoriumId == auditoriumId && b.CreatedAt == createdAt)
             .ToList();
     }
 
