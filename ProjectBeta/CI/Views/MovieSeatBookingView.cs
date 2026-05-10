@@ -11,43 +11,44 @@ namespace ProjectBeta.CI.Views;
 public sealed class MovieSeatBookingView : Form
 {
     private readonly IServiceProvider _serviceProvider;
+    private readonly AuditoriumLogic _auditoriumLogic;
     private readonly AppLoop _appLoop;
     private User _user;
     private MovieSchedule _movie;
     private readonly BookingLogic _bookingLogic;
+    private Auditorium _auditorium;
+    private HashSet<string>? _reservedSeats;
 
-    public MovieSeatBookingView(BookingLogic bookingLogic, IServiceProvider serviceProvider, AppLoop appLoop)
+    public MovieSeatBookingView(BookingLogic bookingLogic, AuditoriumLogic auditoriumLogic, IServiceProvider serviceProvider, AppLoop appLoop)
     {
         _user = new User();
         _appLoop = appLoop;
+        _auditoriumLogic = auditoriumLogic;
         _serviceProvider = serviceProvider;
         _bookingLogic = bookingLogic;
-
-    }
-    
-    public bool isNotReserved(List<Booking> Reservations, string SeatRow)
-    {
-        return false;
     }
 
-    private HashSet<string> GetReservedSeats(List<Booking> bookings)
+    private HashSet<string>? GetReservedSeats()
     {
-        return bookings
+        List<Booking> reservations = _bookingLogic.GetBookingsByCreatedAtAndAuditoriumID(_movie.ScheduleDate.ToDateTime(_movie.StartTime), _auditorium.Id);
+        return reservations
             .Where(b => !string.IsNullOrWhiteSpace(b.Seats))
             .SelectMany(b => b.Seats.Split(',', StringSplitOptions.RemoveEmptyEntries))
             .Select(s => s.Trim())
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
     }
-    private SeatState GetSeatState(string seat, HashSet<string> reservedSeats)
+    private SeatState GetSeatState(string seat)
     {
-        return reservedSeats.Contains(seat)
+        return _reservedSeats.Contains(seat)
             ? SeatState.Reserved
             : SeatState.Available;
     }
-    public void SetView(User user, MovieSchedule movie)
+    public void SetView(User user, MovieSchedule movie, int auditoriumId)
     {
         _user = user;
         _movie = movie;
+        _auditorium = _auditoriumLogic.GetById(auditoriumId);
+        _reservedSeats = GetReservedSeats();
         ClearChildren();
         InitializeForm();
     }
@@ -57,68 +58,105 @@ public sealed class MovieSeatBookingView : Form
         Label(l10n("movies.seat_booking.tagline"));
         Label(l10n("movies.seat_booking.instructions"));
         Divider();
-        DateTime startDateTime = _movie.ScheduleDate.ToDateTime(_movie.StartTime);
-        List<Booking> reservations = _bookingLogic.GetBookingsByCreatedAt(startDateTime);
-        var reservedSeats = GetReservedSeats(reservations);
-
         var seatMap = new SeatMap(
             auditoriumName: l10n("movies.seat_booking.auditorium"),
             movieTitle: _movie.Movie.Title,
-            showtime: $"{_movie.ScheduleDate:yyyy-MM-dd} {_movie.StartTime:HH:mm}"
+            showtime: $"{_movie.ScheduleDate:yyyy-MM-dd} {_movie.StartTime:HH:mm}",
+            capacity: $"{_auditorium.Capacity}"
         );
-
-        char startRow = 'A';
-        char endRow = 'N';
-
-        for (char row = startRow; row <= endRow; row++)
+        if (_auditorium.Capacity == 150){
+            BuildAuditorium(seatMap, 'N');
+        }
+        if (_auditorium.Capacity == 300){
+            BuildAuditorium(seatMap, 'S');
+        }
+        if (_auditorium.Capacity == 500){
+            BuildAuditorium(seatMap, 'T');
+        }        
+        Button("Snacks(TBD)").OnClick(() => Close());
+        Button("Confirm selected seat").OnClick(() =>         
         {
-            int startSeat;
-            int endSeat;
-
-            if (row == 'A' || row == 'N')
-            {
-                startSeat = 3;
-                endSeat = 10;
-            }
-            else if (row == 'B' || row == 'C' || row == 'L' || row == 'M')
-            {
-                startSeat = 2;
-                endSeat = 11;
-            }
-            else
-            {
-                startSeat = 1;
-                endSeat = 12;
-            }
-
-            var seats = new List<SeatState>();
-
-            for (int i = startSeat; i <= endSeat; i++)
-            {
-                string seatLabel = $"{row}{i}";
-                if (reservations == null || reservations.Count == 0)
-                {
-                    seats.Add(SeatState.Available);
-                }
-                else
-                {
-                    seats.Add(GetSeatState(seatLabel, reservedSeats));
-                }
-            }
-
-            seatMap.AddRow(row, seats.ToArray());
+            Console.Clear();
+            var reservationView = _serviceProvider.GetRequiredService<ReservationView>();
+            reservationView.SetView(_user, _movie, seatMap._selectedSeats, seatMap._selectedTypes, _auditorium.Id);
+            _appLoop.Display(reservationView);
+        });
+        Button(l10n("movies.seat_booking.actions.back")).OnClick(() => Close());
+    }
+    
+    public void BuildAuditorium(SeatMap seatMap, char EndRow)
+    {
+        char startRow = 'A';
+        char endRow = EndRow;
+        for (char row = startRow; row <= endRow; row++)
+        {  
+            seatMap = BuildSeats(row, seatMap);  
         }
         Add(seatMap);
         Spacer();
         Message(() => seatMap.StatusMessage);
-        Button(l10n("movies.seat_booking.actions.snacks")).OnClick(() => Close());
-        Button(l10n("movies.seat_booking.actions.confirm")).OnClick(() =>         
+    }
+
+
+    public SeatMap BuildSeats(char row, SeatMap seatMap)
+    {
+        (int StartSeat, int EndSeat) StartEndSeats = DetermineStartEndSeatsForAuditorium(row);
+        var seats = new List<SeatState>();
+        for (int i = StartEndSeats.StartSeat; i <= StartEndSeats.EndSeat; i++)
         {
-            Console.Clear();
-            var reservationView = _serviceProvider.GetRequiredService<ReservationView>();
-            reservationView.SetView(_user, _movie, seatMap._selectedSeats, seatMap._selectedTypes);
-            _appLoop.Display(reservationView);
-        });
-        Button(l10n("movies.seat_booking.actions.back")).OnClick(() => Close());
+            string seatLabel = $"{row}{i}";
+            if (_reservedSeats == null || _reservedSeats.Count == 0)
+            {
+                seats.Add(SeatState.Available);
+            }
+            else
+            {
+                seats.Add(GetSeatState(seatLabel));
+            }
+        }
+        seatMap.AddRow(row, seats.ToArray());
+        return seatMap;
+    }
+    public (int StartSeat, int EndSeat) DetermineStartEndSeatsForAuditorium(char row)
+    {
+        if (_auditorium.Capacity == 500) {
+            return DetermineStartEndSeatsForBigAuditorium(row);
+        }else if(_auditorium.Capacity == 300) {
+            return DetermineStartEndSeatsForMediumAuditorium(row);
+        }
+        return DetermineStartEndSeatsForSmallAuditorium(row);
+    }
+    public (int StartSeat, int EndSeat) DetermineStartEndSeatsForSmallAuditorium(char row)
+    {
+        return row switch
+        {
+            'A' or 'N' => (3, 10),
+            'B' or 'C' or 'L' or 'M' => (2, 11),
+            _ => (1, 12)
+        };
+    }
+    public (int StartSeat, int EndSeat) DetermineStartEndSeatsForMediumAuditorium(char row)
+    {
+        return row switch
+        {
+            'A' or 'B' or 'C'or 'D' or 'E' or 'F' or 'L' or 'M' or 'N'  => (2, 17),
+            'O' or 'P' or 'Q' => (3, 16),
+            'R' or 'S' => (4, 15),
+            _ => (1, 18)
+        };
+    }
+    public (int StartSeat, int EndSeat) DetermineStartEndSeatsForBigAuditorium(char row)
+    {
+        return row switch
+        {
+            'A'  => (5, 26),
+            'R' => (6, 25),
+            'S' => (8, 23),
+            'T' => (9, 22),
+            'B' or 'C' or 'D' or 'E' or 'P' or 'Q' => (4, 27),
+            'F' or 'N' or 'O' => (3, 28),
+            'G' or 'M' or 'O' => (2, 29),
+            _ => (1, 30)
+        };
     }
 }
