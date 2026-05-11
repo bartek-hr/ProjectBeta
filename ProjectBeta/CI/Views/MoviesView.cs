@@ -12,7 +12,6 @@ namespace ProjectBeta.CI.Views;
 public sealed class MoviesView : Form
 {
     private readonly MovieLogic _movieLogic;
-    private readonly AuditoriumLogic _auditoriumLogic;
     private readonly BookingLogic _bookingLogic;
     private DateOnly _selectedDate;
     private IReadOnlyList<MovieSchedule> _schedule = [];
@@ -20,12 +19,10 @@ public sealed class MoviesView : Form
     private User _user = null!;
     private readonly IServiceProvider _serviceProvider;
     private readonly AppLoop _appLoop;
-    private int _auditoriumId;
 
-    public MoviesView(MovieLogic movieLogic, AuditoriumLogic auditoriumLogic, BookingLogic bookingLogic, IServiceProvider serviceProvider, AppLoop appLoop)
+    public MoviesView(MovieLogic movieLogic, BookingLogic bookingLogic, IServiceProvider serviceProvider, AppLoop appLoop)
     {
         _movieLogic = movieLogic;
-        _auditoriumLogic = auditoriumLogic;
         _bookingLogic = bookingLogic;
         _selectedDate = DateOnly.FromDateTime(DateTime.Today);
         _serviceProvider = serviceProvider;
@@ -93,7 +90,6 @@ public sealed class MoviesView : Form
         )
         .EmptyMessage(l10n("movies.list.empty"))
         .OnSelect(OnMovieSelected);
-        _auditoriumId = 3;
         foreach (var schedule in _schedule)
         {
             table.AddRow(
@@ -102,23 +98,20 @@ public sealed class MoviesView : Form
                 schedule.Movie.Rating?.ToString("0.0") ?? "-",
                 schedule.StartTime.ToString("HH:mm"),
                 schedule.EndTime.ToString("HH:mm"),
-                $"{_auditoriumId}",
-                $"{determineSpaceLeft(_auditoriumId, schedule)}"
+                schedule.Auditorium.Name,
+                $"{DetermineSpaceLeft(schedule)}"
             );
         }
         Add(table);
 
     }
-    private int determineSpaceLeft(int auditoriumId, MovieSchedule schedule)
+    private int DetermineSpaceLeft(MovieSchedule schedule)
     {
-        Auditorium _auditorium = _auditoriumLogic.GetById(auditoriumId);
-        var _reservedSeats = GetReservedSeats(schedule, _auditorium.Id);
-        return _auditorium.Capacity - _reservedSeats.Count;
-        
-
+        var reservedSeats = GetReservedSeats(schedule, schedule.Auditorium.Id);
+        return schedule.Auditorium.Capacity - reservedSeats.Count;
     }
 
-    private HashSet<string>? GetReservedSeats(MovieSchedule schedule, int auditoriumId)
+    private HashSet<string> GetReservedSeats(MovieSchedule schedule, int auditoriumId)
     {
         List<Booking> reservations = _bookingLogic.GetBookingsByCreatedAtAndAuditoriumID(schedule.ScheduleDate.ToDateTime(schedule.StartTime), auditoriumId);
         return reservations
@@ -132,7 +125,7 @@ public sealed class MoviesView : Form
     {
             Console.Clear();
             var accountView = _serviceProvider.GetRequiredService<MovieSeatBookingView>();
-            accountView.SetView(_user, schedule, _auditoriumId);
+            accountView.SetView(_user, schedule, schedule.Auditorium);
             _appLoop.Display(accountView);
     }
     

@@ -74,11 +74,16 @@ public class AppDbContext : DbContext
             entity.Property(schedule => schedule.ScheduleDate).IsRequired();
             entity.Property(schedule => schedule.StartTime).IsRequired();
             entity.Property(schedule => schedule.EndTime).IsRequired();
+            entity.Property(schedule => schedule.AuditoriumId).IsRequired();
             entity.HasIndex(schedule => schedule.ScheduleDate);
-            entity.HasIndex(schedule => new { schedule.ScheduleDate, schedule.StartTime }).IsUnique();
+            entity.HasIndex(schedule => new { schedule.ScheduleDate, schedule.AuditoriumId, schedule.StartTime }).IsUnique();
             entity.HasOne(schedule => schedule.Movie)
                 .WithMany()
                 .HasForeignKey(schedule => schedule.MovieId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(schedule => schedule.Auditorium)
+                .WithMany()
+                .HasForeignKey(schedule => schedule.AuditoriumId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
 

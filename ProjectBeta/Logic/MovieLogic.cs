@@ -14,11 +14,13 @@ public class MovieLogic
 
     private readonly MovieAccess _movieAccess;
     private readonly MovieScheduleAccess _movieScheduleAccess;
+    private readonly AuditoriumLogic _auditoriumLogic;
 
-    public MovieLogic(MovieAccess movieAccess, MovieScheduleAccess movieScheduleAccess)
+    public MovieLogic(MovieAccess movieAccess, MovieScheduleAccess movieScheduleAccess, AuditoriumLogic auditoriumLogic)
     {
         _movieAccess = movieAccess;
         _movieScheduleAccess = movieScheduleAccess;
+        _auditoriumLogic = auditoriumLogic;
     }
 
     public IReadOnlyList<MovieSchedule> GetScheduleForDate(DateOnly date)
@@ -62,46 +64,57 @@ public class MovieLogic
             throw new InvalidOperationException("No trending movies are available with a valid runtime.");
         }
 
+        var auditoriums = _auditoriumLogic.GetAll();
+        if (auditoriums.Count == 0)
+        {
+            return [];
+        }
+
         Shuffle(validMovies);
 
         var schedules = new List<MovieSchedule>();
-        var usedMovieIds = new HashSet<string>(StringComparer.Ordinal);
-        var currentStart = OpeningTimeValue;
-
-        while (true)
+        foreach (var auditorium in auditoriums)
         {
-            var unusedCandidates = validMovies
-                .Where(movie => !usedMovieIds.Contains(movie.Id) && FitsInRemainingWindow(movie, currentStart))
-                .ToList();
+            var usedMovieIds = new HashSet<string>(StringComparer.Ordinal);
+            var currentStart = OpeningTimeValue;
 
-            var selectedMovie = PickRandom(unusedCandidates);
-
-            if (selectedMovie == null)
+            while (true)
             {
-                var repeatedCandidates = validMovies
-                    .Where(movie => usedMovieIds.Contains(movie.Id) && FitsInRemainingWindow(movie, currentStart))
+                var unusedCandidates = validMovies
+                    .Where(movie => !usedMovieIds.Contains(movie.Id) && FitsInRemainingWindow(movie, currentStart))
                     .ToList();
 
-                selectedMovie = PickRandom(repeatedCandidates);
+                var selectedMovie = PickRandom(unusedCandidates);
+
+                if (selectedMovie == null)
+                {
+                    var repeatedCandidates = validMovies
+                        .Where(movie => usedMovieIds.Contains(movie.Id) && FitsInRemainingWindow(movie, currentStart))
+                        .ToList();
+
+                    selectedMovie = PickRandom(repeatedCandidates);
+                }
+
+                if (selectedMovie == null)
+                {
+                    break;
+                }
+
+                var endTime = currentStart.Add(TimeSpan.FromSeconds(selectedMovie.RuntimeSeconds!.Value));
+                schedules.Add(new MovieSchedule
+                {
+                    ScheduleDate = date,
+                    AuditoriumId = auditorium.Id,
+                    Auditorium = auditorium,
+                    MovieId = selectedMovie.Id,
+                    StartTime = currentStart,
+                    EndTime = endTime,
+                    Movie = selectedMovie
+                });
+
+                usedMovieIds.Add(selectedMovie.Id);
+                currentStart = endTime.AddMinutes(MinimumBreakMinutes);
             }
-
-            if (selectedMovie == null)
-            {
-                break;
-            }
-
-            var endTime = currentStart.Add(TimeSpan.FromSeconds(selectedMovie.RuntimeSeconds!.Value));
-            schedules.Add(new MovieSchedule
-            {
-                ScheduleDate = date,
-                MovieId = selectedMovie.Id,
-                StartTime = currentStart,
-                EndTime = endTime,
-                Movie = selectedMovie
-            });
-
-            usedMovieIds.Add(selectedMovie.Id);
-            currentStart = endTime.AddMinutes(MinimumBreakMinutes);
         }
 
         if (schedules.Count == 0)

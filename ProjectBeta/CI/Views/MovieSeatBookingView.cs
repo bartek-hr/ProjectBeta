@@ -11,7 +11,6 @@ namespace ProjectBeta.CI.Views;
 public sealed class MovieSeatBookingView : Form
 {
     private readonly IServiceProvider _serviceProvider;
-    private readonly AuditoriumLogic _auditoriumLogic;
     private readonly AppLoop _appLoop;
     private User _user;
     private MovieSchedule _movie;
@@ -19,11 +18,10 @@ public sealed class MovieSeatBookingView : Form
     private Auditorium _auditorium;
     private HashSet<string>? _reservedSeats;
 
-    public MovieSeatBookingView(BookingLogic bookingLogic, AuditoriumLogic auditoriumLogic, IServiceProvider serviceProvider, AppLoop appLoop)
+    public MovieSeatBookingView(BookingLogic bookingLogic, IServiceProvider serviceProvider, AppLoop appLoop)
     {
         _user = new User();
         _appLoop = appLoop;
-        _auditoriumLogic = auditoriumLogic;
         _serviceProvider = serviceProvider;
         _bookingLogic = bookingLogic;
     }
@@ -43,11 +41,11 @@ public sealed class MovieSeatBookingView : Form
             ? SeatState.Reserved
             : SeatState.Available;
     }
-    public void SetView(User user, MovieSchedule movie, int auditoriumId)
+    public void SetView(User user, MovieSchedule movie, Auditorium auditorium)
     {
         _user = user;
         _movie = movie;
-        _auditorium = _auditoriumLogic.GetById(auditoriumId);
+        _auditorium = auditorium;
         _reservedSeats = GetReservedSeats();
         ClearChildren();
         InitializeForm();
@@ -59,7 +57,7 @@ public sealed class MovieSeatBookingView : Form
         Label(l10n("movies.seat_booking.instructions"));
         Divider();
         var seatMap = new SeatMap(
-            auditoriumName: l10n("movies.seat_booking.auditorium"),
+            auditoriumName: _auditorium.Name,
             movieTitle: _movie.Movie.Title,
             showtime: $"{_movie.ScheduleDate:yyyy-MM-dd} {_movie.StartTime:HH:mm}",
             capacity: $"{_auditorium.Capacity}"

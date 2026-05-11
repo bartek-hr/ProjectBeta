@@ -6,6 +6,8 @@ public class MovieSchedule
     public DateOnly ScheduleDate { get; set; }
     public TimeOnly StartTime { get; set; }
     public TimeOnly EndTime { get; set; }
+    public int AuditoriumId { get; set; }
+    public Auditorium Auditorium { get; set; } = null!;
     public string MovieId { get; set; } = string.Empty;
     public Movie Movie { get; set; } = null!;
 }
