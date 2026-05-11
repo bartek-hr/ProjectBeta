@@ -155,7 +155,7 @@ public sealed class MovieSeatBookingView : Form
             'T' => (9, 22),
             'B' or 'C' or 'D' or 'E' or 'P' or 'Q' => (4, 27),
             'F' or 'N' or 'O' => (3, 28),
-            'G' or 'M' or 'O' => (2, 29),
+            'G' or 'M' => (2, 29),
             _ => (1, 30)
         };
     }
