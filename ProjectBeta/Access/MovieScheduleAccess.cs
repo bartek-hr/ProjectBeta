@@ -17,8 +17,10 @@ public class MovieScheduleAccess
     {
         return _context.MovieSchedules
             .Include(schedule => schedule.Movie)
+            .Include(schedule => schedule.Auditorium)
             .Where(schedule => schedule.ScheduleDate == date)
-            .OrderBy(schedule => schedule.StartTime)
+            .OrderBy(schedule => schedule.AuditoriumId)
+            .ThenBy(schedule => schedule.StartTime)
             .ToList();
     }
 
@@ -28,6 +30,7 @@ public class MovieScheduleAccess
             .Select(schedule => new MovieSchedule
             {
                 ScheduleDate = schedule.ScheduleDate,
+                AuditoriumId = schedule.AuditoriumId,
                 MovieId = schedule.MovieId,
                 StartTime = schedule.StartTime,
                 EndTime = schedule.EndTime
