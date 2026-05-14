@@ -82,6 +82,8 @@ main:
       reports: Rapporten (NOG TE DOEN)
       users: Gebruikers
       cinemas: Bioscopen
+      seat_prices: Stoelprijzen
+      discounts: Kortingen
     status:
       reports_tbd: NOG TE DOEN
 movies:
@@ -121,6 +123,10 @@ reservations:
       end: Einde
       auditorium: Zaal
       snacks: Snacks
+    age_prompt: "Optioneel: vul hieronder de leeftijd per persoon in voor leeftijdskorting"
+    age_label: "Leeftijd voor stoel :seat (optioneel)"
+    user_seat_label: "Welke stoel is van jou? (optioneel, voor abonnement)"
+    user_seat_none: Geen
     total_price: Totale prijs: :amount
     values:
       default_auditorium: 1
@@ -288,6 +294,56 @@ admin:
         update_name_unauthorized: Alleen beheerders mogen zaelnamen aanpassen.
         update_capacity_unauthorized: Alleen beheerders mogen zaalcapaciteit aanpassen.
         reassign_unauthorized: Alleen beheerders mogen zalen opnieuw toewijzen.
+  seat_prices:
+    heading: Stoelprijzen
+    instructions: Pas de basisprijs per stoeltype aan. Wijzigingen gelden alleen voor toekomstige boekingen.
+    price_label: ":name (huidig: €:price)"
+    actions:
+      save: :name prijs opslaan
+      back: Terug
+    status:
+      saved: ":name prijs bijgewerkt naar €:price."
+      invalid_price: Voer een geldige prijs in (0 of hoger).
+  discounts:
+    heading: Kortingen
+    instructions: Bekijk en beheer kortingsregels.
+    active_badge: ACTIEF
+    inactive_badge: INACTIEF
+    fields:
+      percentage:
+        label: "Percentage (%)"
+      effective_from:
+        label: Geldig vanaf (JJJJ-MM-DD)
+      effective_until:
+        label: "Geldig tot (JJJJ-MM-DD, leeg = geen einddatum)"
+      is_active:
+        label: Actief
+      name:
+        label: Naam
+      min_age:
+        label: Minimumleeftijd (leeg = geen)
+      max_age:
+        label: Maximumleeftijd (leeg = geen)
+      min_group_size:
+        label: Minimale groepsgrootte (leeg = geen)
+      required_day_of_week:
+        label: Dag van de week
+    actions:
+      edit: :name bewerken
+      save: :name opslaan
+      delete: :name verwijderen
+      back: Terug
+      create: Korting aanmaken
+    create:
+      heading: Nieuwe korting aanmaken
+    status:
+      saved: ":name bijgewerkt."
+      deleted: ":name verwijderd."
+      created: ":name aangemaakt."
+      invalid_percentage: Percentage moet tussen 0 en 100 liggen.
+      invalid_age_range: Minimumleeftijd moet kleiner zijn dan of gelijk aan de maximumleeftijd.
+      invalid_date: Ongeldig datumformaat. Gebruik JJJJ-MM-DD.
+      name_required: Naam is verplicht.
 components:
   form:
     date_placeholder: JJJJ-MM-DD

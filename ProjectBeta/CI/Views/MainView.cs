@@ -88,6 +88,20 @@ public sealed class MainView : Form
                 cinemaView.SetUser(_user);
                 _appLoop.Display(cinemaView);
             });
+            Button(l10n("main.dashboard.actions.seat_prices")).OnClick(() =>
+            {
+                Console.Clear();
+                var seatPriceView = _serviceProvider.GetRequiredService<SeatPriceView>();
+                seatPriceView.SetUser(_user);
+                _appLoop.Display(seatPriceView);
+            });
+            Button(l10n("main.dashboard.actions.discounts")).OnClick(() =>
+            {
+                Console.Clear();
+                var discountView = _serviceProvider.GetRequiredService<DiscountView>();
+                discountView.SetUser(_user);
+                _appLoop.Display(discountView);
+            });
         }
         Divider();
         Message(() => _statusMessage);
