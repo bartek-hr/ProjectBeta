@@ -1,0 +1,213 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using System.Text.Json;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using ProjectBeta.Model;
+
+namespace ProjectBeta.Data;
+
+public class AppDbContext : DbContext
+{
+    // Add Models below
+    public DbSet<User> Users { get; set; }
+    public DbSet<Booking> Bookings { get; set; }
+    public DbSet<Receipt> Receipts { get; set; }
+    public DbSet<Cinema> Cinemas { get; set; }
+    public DbSet<Auditorium> Auditoriums { get; set; }
+    public DbSet<Movie> Movies { get; set; }
+    public DbSet<MovieSchedule> MovieSchedules { get; set; }
+    public DbSet<Snack> Snacks { get; set; }
+    public DbSet<BookingSnack> BookingSnacks { get; set; }
+    public DbSet<SubscriptionPlan> SubscriptionPlans { get; set; }
+    public DbSet<Subscription> Subscriptions { get; set; }
+    public DbSet<SubscriptionPurchase> SubscriptionPurchases { get; set; }
+
+    public AppDbContext()
+    {
+    }
+
+    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+    {
+    }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder options)
+    {
+        if (!options.IsConfigured)
+        {
+            var config = new ConfigurationBuilder()
+                .SetBasePath(AppContext.BaseDirectory)
+                .AddJsonFile("appsettings.json", optional: false)
+                .Build();
+
+            options.UseSqlite(config.GetConnectionString("DefaultConnection"));
+            options.UseSqlite(SqliteConnectionStringResolver.GetResolvedConnectionString());
+        }
+    }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+
+        var genresConverter = new ValueConverter<List<string>, string>(
+            genres => JsonSerializer.Serialize(genres, (JsonSerializerOptions?)null),
+            genresJson => JsonSerializer.Deserialize<List<string>>(genresJson, (JsonSerializerOptions?)null) ?? new List<string>());
+
+        var genresComparer = new ValueComparer<List<string>>(
+            (left, right) => (left == null && right == null) || (left != null && right != null && left.SequenceEqual(right)),
+            genres => genres.Aggregate(0, (hash, genre) => HashCode.Combine(hash, genre.GetHashCode())),
+            genres => genres.ToList());
+
+        modelBuilder.Entity<Movie>(entity =>
+        {
+            entity.HasKey(movie => movie.Id);
+            entity.Property(movie => movie.Id).IsRequired();
+            entity.Property(movie => movie.Title).IsRequired();
+            entity.Property(movie => movie.Description).IsRequired();
+            entity.Property(movie => movie.Genres)
+                .HasConversion(genresConverter)
+                .Metadata.SetValueComparer(genresComparer);
+        });
+
+        modelBuilder.Entity<MovieSchedule>(entity =>
+        {
+            entity.HasKey(schedule => schedule.Id);
+            entity.Property(schedule => schedule.MovieId).IsRequired();
+            entity.Property(schedule => schedule.ScheduleDate).IsRequired();
+            entity.Property(schedule => schedule.StartTime).IsRequired();
+            entity.Property(schedule => schedule.EndTime).IsRequired();
+            entity.Property(schedule => schedule.AuditoriumId).IsRequired();
+            entity.HasIndex(schedule => schedule.ScheduleDate);
+            entity.HasIndex(schedule => new { schedule.ScheduleDate, schedule.AuditoriumId, schedule.StartTime }).IsUnique();
+            entity.HasOne(schedule => schedule.Movie)
+                .WithMany()
+                .HasForeignKey(schedule => schedule.MovieId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(schedule => schedule.Auditorium)
+                .WithMany()
+                .HasForeignKey(schedule => schedule.AuditoriumId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<User>().HasData(
+            new User
+            {
+                Id = 1,
+                Username = "admin",
+                PasswordHash = "password",
+                Role = "SuperAdmin",
+                Email = "admin@example.com",
+                FirstName = "Admin",
+                LastName = "User",
+                DateOfBirth = new DateOnly(1990, 1, 1),
+                CreatedAt = DateTime.UtcNow,
+                IsActive = true
+            },
+            new User
+            {
+                Id = 2,
+                Username = "user1",
+                PasswordHash = "password",
+                Role = "User",
+                Email = "user1@example.com",
+                FirstName = "User",
+                LastName = "One",
+                DateOfBirth = new DateOnly(1995, 5, 15),
+                CreatedAt = DateTime.UtcNow,
+                IsActive = true
+            }
+        );
+
+        modelBuilder.Entity<Auditorium>()
+            .HasOne(a => a.Cinema)
+            .WithMany(c => c.Auditoriums)
+            .HasForeignKey(a => a.CinemaId);
+
+        modelBuilder.Entity<Cinema>().HasData(
+            new Cinema { Id = 1, Name = "Darcy", City = "Rotterdam" }
+        );
+
+        modelBuilder.Entity<Auditorium>().HasData(
+            new Auditorium { Id = 1, Name = "Auditorium 1", CinemaId = 1, Capacity = 150 },
+            new Auditorium { Id = 2, Name = "Auditorium 2", CinemaId = 1, Capacity = 300 },
+            new Auditorium { Id = 3, Name = "Auditorium 3", CinemaId = 1, Capacity = 500 }
+        );
+
+        modelBuilder.Entity<SubscriptionPlan>(entity =>
+        {
+            entity.HasKey(plan => plan.Id);
+            entity.Property(plan => plan.Name).IsRequired().HasMaxLength(50);
+            entity.Property(plan => plan.Description).IsRequired().HasMaxLength(250);
+            entity.Property(plan => plan.MonthlyPrice).HasColumnType("decimal(18,2)");
+
+            entity.HasData(
+                new SubscriptionPlan
+                {
+                    Id = 1,
+                    Name = "Standard Subscription",
+                    Description = "Monthly cinema subscription with free Monday cinema and possible discounts.",
+                    MonthlyPrice = 20.00m,
+                    IncludesFreeMondayCinema = true,
+                    IncludesDiscounts = true,
+                    IsActive = true,
+                    CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+                }
+            );
+        });
+
+        modelBuilder.Entity<Subscription>(entity =>
+        {
+            entity.HasKey(subscription => subscription.Id);
+            entity.Property(subscription => subscription.MonthlyPrice).HasColumnType("decimal(18,2)");
+            entity.Property(subscription => subscription.DiscountPercentage).HasColumnType("decimal(5,2)");
+            entity.Property(subscription => subscription.FinalMonthlyPrice).HasColumnType("decimal(18,2)");
+
+            entity.HasOne(subscription => subscription.SubscriptionPlan)
+                .WithMany(plan => plan.Subscriptions)
+                .HasForeignKey(subscription => subscription.SubscriptionPlanId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(subscription => subscription.PrimaryUser)
+                .WithMany()
+                .HasForeignKey(subscription => subscription.PrimaryUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(subscription => subscription.SharedWithUser)
+                .WithMany()
+                .HasForeignKey(subscription => subscription.SharedWithUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<SubscriptionPurchase>(entity =>
+        {
+            entity.HasKey(purchase => purchase.Id);
+            entity.Property(purchase => purchase.Amount).HasColumnType("decimal(18,2)");
+            entity.Property(purchase => purchase.DiscountPercentage).HasColumnType("decimal(5,2)");
+            entity.Property(purchase => purchase.PaymentStatus).IsRequired().HasMaxLength(25);
+
+            entity.HasOne(purchase => purchase.Subscription)
+                .WithMany(subscription => subscription.Purchases)
+                .HasForeignKey(purchase => purchase.SubscriptionId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(purchase => purchase.User)
+                .WithMany()
+                .HasForeignKey(purchase => purchase.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<BookingSnack>(entity =>
+        {
+            entity.HasOne(bs => bs.Snack)
+                .WithMany()
+                .HasForeignKey(bs => bs.SnackId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(bs => bs.Booking)
+                .WithMany()
+                .HasForeignKey(bs => bs.BookingId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+    }
+}
