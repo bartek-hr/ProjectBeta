@@ -1,10 +1,6 @@
-using ProjectBeta.CI;
 using ProjectBeta.CI.Components;
-using ProjectBeta.CI.Views;
-using ProjectBeta.Data;
 using ProjectBeta.Model;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using ProjectBeta.Logic;
 namespace ProjectBeta.CI.Views;
 
@@ -42,9 +38,9 @@ public sealed class MainView : Form
             ["name"] = $"{_user.FirstName} {_user.LastName}"
         }));
 
-
-        Button(l10n("main.dashboard.actions.movies")).OnClick(() => 
-        {    Console.Clear();
+        Button(l10n("main.dashboard.actions.movies")).OnClick(() =>
+        {
+            Console.Clear();
             var moviesVies = _serviceProvider.GetRequiredService<MoviesView>();
             moviesVies.SetUser(_user, _cinemaId);
             _appLoop.Display(moviesVies);
@@ -65,6 +61,7 @@ public sealed class MainView : Form
             upcomingReservationsView.SetView(_user);
             _appLoop.Display(upcomingReservationsView);
         });
+
         Button(l10n("main.dashboard.actions.account_details")).OnClick(() =>
         {
             Console.Clear();
@@ -75,6 +72,7 @@ public sealed class MainView : Form
         if (_user.IsAdmin())
         {
             Button(l10n("main.dashboard.actions.reports")).OnClick(form => { _statusMessage = l10n("main.dashboard.status.reports_tbd"); });
+
             Button(l10n("main.dashboard.actions.users")).OnClick(() =>
             {
                 Console.Clear();
@@ -82,6 +80,7 @@ public sealed class MainView : Form
                 usersView.SetUser(_user);
                 _appLoop.Display(usersView);
             });
+
             Button(l10n("main.dashboard.actions.cinemas")).OnClick(() =>
             {
                 Console.Clear();
@@ -89,13 +88,31 @@ public sealed class MainView : Form
                 cinemaView.SetUser(_user);
                 _appLoop.Display(cinemaView);
             });
+
+            Button(l10n("main.dashboard.actions.seat_prices")).OnClick(() =>
+            {
+                Console.Clear();
+                var seatPriceView = _serviceProvider.GetRequiredService<SeatPriceView>();
+                seatPriceView.SetUser(_user);
+                _appLoop.Display(seatPriceView);
+            });
+
+            Button(l10n("main.dashboard.actions.discounts")).OnClick(() =>
+            {
+                Console.Clear();
+                var discountView = _serviceProvider.GetRequiredService<DiscountView>();
+                discountView.SetUser(_user);
+                _appLoop.Display(discountView);
+            });
+
             Button("Locations").OnClick(() =>
             {
                 Console.Clear();
                 var locationView = _serviceProvider.GetRequiredService<LocationView>();
                 locationView.SetUser(_user);
                 _appLoop.Display(locationView);
-             });
+            });
+
             Button(l10n("Snacks Manager")).OnClick(() =>
             {
                 Console.Clear();
@@ -104,6 +121,7 @@ public sealed class MainView : Form
                 _appLoop.Display(snacksView);
             });
         }
+
         Divider();
         Message(() => _statusMessage);
         LogoutButton(_appLoop, _serviceProvider);

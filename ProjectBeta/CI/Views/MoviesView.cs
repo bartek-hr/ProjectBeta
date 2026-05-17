@@ -123,7 +123,8 @@ public sealed class MoviesView : Form
             );
         }
         Add(table);
-
+        Divider();
+        Button(l10n("movies.list.actions.back")).OnClick(NavigateToMain);
     }
     private int DetermineSpaceLeft(MovieSchedule schedule)
     {
@@ -143,10 +144,18 @@ public sealed class MoviesView : Form
 
     private void OnMovieSelected(MovieSchedule schedule)
     {
-            Console.Clear();
-            var accountView = _serviceProvider.GetRequiredService<MovieSeatBookingView>();
-            accountView.SetView(_user, schedule, schedule.Auditorium, _cinemaId);
-            _appLoop.Display(accountView);
+        Console.Clear();
+        var accountView = _serviceProvider.GetRequiredService<MovieSeatBookingView>();
+        accountView.SetView(_user, schedule, schedule.Auditorium, _cinemaId);
+        _appLoop.Display(accountView);
     }
-    
+
+    private void NavigateToMain()
+    {
+        Console.Clear();
+        var mainView = _serviceProvider.GetRequiredService<MainView>();
+        mainView.SetUser(_user);
+        _appLoop.Display(mainView);
+    }
+
 }

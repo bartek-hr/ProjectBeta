@@ -37,6 +37,8 @@ public class User
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public bool IsActive { get; set; } = true;
+    public bool HasSubscription { get; set; } = false;
+    public int? SubscriptionSeatType { get; set; }
 
     public bool IsSuperAdmin()
     {

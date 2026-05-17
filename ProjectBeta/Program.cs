@@ -38,7 +38,10 @@ namespace ProjectBeta
             services.AddScoped<SnackLogic>();
             services.AddScoped<BookingSnackAccess>();
             services.AddScoped<BookingSnackLogic>();
+            services.AddScoped<DiscountAccess>();
+            services.AddScoped<SeatPriceAccess>();
             services.AddScoped<BookingLogic>();
+            services.AddScoped<PricingLogic>();
             services.AddScoped<LocationAccess>();
             services.AddScoped<LocationLogic>();
             services.AddTransient<UserView>();
@@ -61,15 +64,19 @@ namespace ProjectBeta
             services.AddTransient<AuditoriumListView>();
             services.AddTransient<AuditoriumEditView>();
             services.AddTransient<MoviesView>();
+            services.AddTransient<SeatPriceView>();
+            services.AddTransient<DiscountView>();
             services.AddTransient<LocationView>();
             services.AddScoped<MainView>();
             var provider = services.BuildServiceProvider();
 
             // Initialize DB
             using var context = provider.GetRequiredService<AppDbContext>();
-            context.Database.Migrate();
 
-            var loginView = provider.GetRequiredService<LoginView>(); // DI will inject AppLoop here
+            context.Database.Migrate();
+            context.Seed();
+
+            var loginView = provider.GetRequiredService<LoginView>();
             // Display the LoginView as entry view
             Display(loginView);
             App.Run();
