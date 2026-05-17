@@ -19,6 +19,7 @@ public class AppDbContext : DbContext
     public DbSet<MovieSchedule> MovieSchedules { get; set; }
     public DbSet<Snack> Snacks { get; set; }
     public DbSet<BookingSnack> BookingSnacks { get; set; }
+    public DbSet<Location> Locations { get; set; }
 
     public AppDbContext()
     {
@@ -120,6 +121,12 @@ public class AppDbContext : DbContext
             .HasOne(a => a.Cinema)
             .WithMany(c => c.Auditoriums)
             .HasForeignKey(a => a.CinemaId);
+
+        modelBuilder.Entity<Auditorium>()
+            .HasOne(a => a.Location)
+            .WithMany(l => l.Auditoriums)
+            .HasForeignKey(a => a.LocationId)
+            .OnDelete(DeleteBehavior.SetNull);
 
         modelBuilder.Entity<Cinema>().HasData(
             new Cinema { Id = 1, Name = "Darcy", City = "Rotterdam" }
