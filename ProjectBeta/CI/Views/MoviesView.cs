@@ -17,6 +17,7 @@ public sealed class MoviesView : Form
     private DateOnly _selectedDate;
     private IReadOnlyList<MovieSchedule> _schedule = [];
     private string? _statusMessage;
+    private string _searchQuery = string.Empty;
     private User _user = null!;
     private readonly IServiceProvider _serviceProvider;
     private readonly AppLoop _appLoop;
@@ -61,9 +62,10 @@ public sealed class MoviesView : Form
     public void SetUser(User user, int cinemaId)
     {
         _user = user;
+        _searchQuery = string.Empty;
         _cinemaId = cinemaId;
         ClearChildren();
-        LoadSchedule();  
+        LoadSchedule();
         InitializeForm();
     }
     private void LoadSchedule()
@@ -82,6 +84,22 @@ public sealed class MoviesView : Form
         }));
         Message(() => _statusMessage);
 
+        var searchInput = TextInput("Search by title");
+        Button("Search").OnClick(() =>
+        {
+            _searchQuery = searchInput.Value ?? string.Empty;
+            RefreshView();
+        });
+        Button("Clear").OnClick(() =>
+        {
+            _searchQuery = string.Empty;
+            RefreshView();
+        });
+
+        Divider();
+
+        var filteredSchedule = _movieLogic.SearchSchedule(_schedule, _searchQuery);
+
         var table = new Table<MovieSchedule>(
             l10n("movies.list.table.movie"),
             l10n("movies.list.table.rating"),
@@ -92,7 +110,7 @@ public sealed class MoviesView : Form
         )
         .EmptyMessage(l10n("movies.list.empty"))
         .OnSelect(OnMovieSelected);
-        foreach (var schedule in _schedule)
+        foreach (var schedule in filteredSchedule)
         {
             table.AddRow(
                 schedule,

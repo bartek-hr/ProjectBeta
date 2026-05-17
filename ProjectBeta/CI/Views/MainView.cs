@@ -89,6 +89,13 @@ public sealed class MainView : Form
                 cinemaView.SetUser(_user);
                 _appLoop.Display(cinemaView);
             });
+            Button("Locations").OnClick(() =>
+            {
+                Console.Clear();
+                var locationView = _serviceProvider.GetRequiredService<LocationView>();
+                locationView.SetUser(_user);
+                _appLoop.Display(locationView);
+             });
             Button(l10n("Snacks Manager")).OnClick(() =>
             {
                 Console.Clear();
