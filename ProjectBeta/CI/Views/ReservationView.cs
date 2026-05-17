@@ -18,6 +18,7 @@ public sealed class ReservationView : Form
     private string? _statusMessage;
     private List<int> _seatTypes;
     private int _auditoriumId;
+    private int _cinemaId;
     private bool _confirmingDelete;
     private Button? _noCancelButton;
     private Dictionary<string, string[]>? _fieldErrors;
@@ -29,10 +30,11 @@ public sealed class ReservationView : Form
         _serviceProvider = serviceProvider;
     }
 
-    public void SetView(User user, MovieSchedule movie, List<string> reservedSeats, List<int> seatTypes, int auditoriumId)
+    public void SetView(User user, MovieSchedule movie, List<string> reservedSeats, List<int> seatTypes, int auditoriumId, int cinemaId)
     {
         _user = user;
         _movie = movie;
+        _cinemaId = cinemaId;
         _reservedSeats = reservedSeats;
         _seatTypes = seatTypes;
         _auditoriumId = auditoriumId;
@@ -75,7 +77,7 @@ public sealed class ReservationView : Form
         }));
         Message(() => _statusMessage);
         Button(l10n("reservations.create.actions.save")).OnClick(OnSave);
-
+        Button("Snacks").OnClick(OnSnacks);
         Button(l10n("reservations.create.actions.back")).OnClick(NavigateToMain).Hidden(() => _confirmingDelete);
     }
 
@@ -98,8 +100,33 @@ public sealed class ReservationView : Form
         );
         NavigateToMain();
     }
+    private void OnSnacks(Form form)
+    {
+        _fieldErrors = null;
+        _statusMessage = null;
 
-  
+        string reservedseats = string.Join(",", _reservedSeats);
+        DateTime startDateTime = _movie.ScheduleDate.ToDateTime(_movie.StartTime);
+
+        Booking createdBooking = _bookingLogic.CreateBookingWithReturn(
+            _user.Id,
+            _bookingLogic.DetermineTotalPrice(_seatTypes),
+            _auditoriumId,
+            reservedseats,
+            1,
+            $"{_movie.Movie.Title}",
+            startDateTime
+        );
+        NavigateToBookingSnacksView(createdBooking);
+    }
+    private void NavigateToBookingSnacksView(Booking createdBooking)
+    {
+        Console.Clear();
+        var mainView = _serviceProvider.GetRequiredService<BookingSnacksView>();
+        mainView.SetView(_user, createdBooking, _cinemaId);
+        _appLoop.Display(mainView);
+    }
+
 
     private void NavigateToMain()
     {

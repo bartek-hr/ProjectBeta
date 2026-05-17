@@ -13,6 +13,7 @@ public sealed class MainView : Form
     private User _user;
     private readonly UserLogic _userLogic;
     private readonly IServiceProvider _serviceProvider;
+    private int _cinemaId = 1;
     private string? _statusMessage;
     private readonly AppLoop _appLoop;
     private Dictionary<string, string[]>? _fieldErrors;
@@ -45,7 +46,7 @@ public sealed class MainView : Form
         Button(l10n("main.dashboard.actions.movies")).OnClick(() => 
         {    Console.Clear();
             var moviesVies = _serviceProvider.GetRequiredService<MoviesView>();
-            moviesVies.SetUser(_user);
+            moviesVies.SetUser(_user, _cinemaId);
             _appLoop.Display(moviesVies);
         });
 
@@ -87,6 +88,13 @@ public sealed class MainView : Form
                 var cinemaView = _serviceProvider.GetRequiredService<CinemaView>();
                 cinemaView.SetUser(_user);
                 _appLoop.Display(cinemaView);
+            });
+            Button(l10n("Snacks Manager")).OnClick(() =>
+            {
+                Console.Clear();
+                var snacksView = _serviceProvider.GetRequiredService<SnacksView>();
+                snacksView.SetView(_user, _cinemaId);
+                _appLoop.Display(snacksView);
             });
         }
         Divider();

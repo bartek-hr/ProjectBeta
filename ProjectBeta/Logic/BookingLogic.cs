@@ -64,6 +64,24 @@ public class BookingLogic
 
         _bookingAccess.Add(booking);
     }
+
+    public Booking CreateBookingWithReturn(int userId, decimal totalPrice, int auditoriumId, string seats, int discountID, string movie, DateTime createdAt )
+    {
+        var booking = new Booking
+        {
+            UserId = userId,
+            Seats = seats,
+            DiscountId = discountID,
+            AuditoriumId = auditoriumId,
+            TotalPrice = totalPrice,
+            CreatedAt = createdAt,
+            ScreeningId = 1,
+            Movie = movie,
+            Paid = false
+        };
+
+        return _bookingAccess.AddAndReturn(booking);
+    }
     public void CreateBooking(int userId, decimal totalPrice, int auditoriumId, string seats, int discountID, string movie, DateTime createdAt )
     {
         var booking = new Booking
@@ -81,6 +99,7 @@ public class BookingLogic
 
         _bookingAccess.Add(booking);
     }
+
     public void MarkAsPaid(int bookingId)
     {
         var booking = _bookingAccess.GetById(bookingId);
