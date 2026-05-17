@@ -13,6 +13,7 @@ public sealed class MovieSeatBookingView : Form
     private readonly IServiceProvider _serviceProvider;
     private readonly AppLoop _appLoop;
     private User _user;
+    private int _cinemaId;
     private MovieSchedule _movie;
     private readonly BookingLogic _bookingLogic;
     private Auditorium _auditorium;
@@ -41,10 +42,11 @@ public sealed class MovieSeatBookingView : Form
             ? SeatState.Reserved
             : SeatState.Available;
     }
-    public void SetView(User user, MovieSchedule movie, Auditorium auditorium)
+    public void SetView(User user, MovieSchedule movie, Auditorium auditorium, int cinemaId)
     {
         _user = user;
         _movie = movie;
+        _cinemaId = cinemaId;
         _auditorium = auditorium;
         _reservedSeats = GetReservedSeats();
         ClearChildren();
@@ -71,12 +73,11 @@ public sealed class MovieSeatBookingView : Form
         if (_auditorium.Capacity == 500){
             BuildAuditorium(seatMap, 'T');
         }        
-        Button("Snacks(TBD)").OnClick(() => Close());
-        Button("Confirm selected seat").OnClick(() =>         
+        Button("Confirm selected seats").OnClick(() =>         
         {
             Console.Clear();
             var reservationView = _serviceProvider.GetRequiredService<ReservationView>();
-            reservationView.SetView(_user, _movie, seatMap._selectedSeats, seatMap._selectedTypes, _auditorium.Id);
+            reservationView.SetView(_user, _movie, seatMap._selectedSeats, seatMap._selectedTypes, _auditorium.Id, _cinemaId);
             _appLoop.Display(reservationView);
         });
         Button(l10n("movies.seat_booking.actions.back")).OnClick(() => Close());

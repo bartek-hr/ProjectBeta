@@ -12,7 +12,12 @@ public class BookingSnackAccess
     {
         _context = context;
     }
-
+    public List<BookingSnack> GetAllByBookingId(int id)
+    {
+        return _context.BookingSnacks
+            .Where(s => s.BookingId == id)
+            .ToList();
+    }
     public List<BookingSnack> GetAll()
     {
         return _context.BookingSnacks.Include(bs => bs.Snack).ToList();

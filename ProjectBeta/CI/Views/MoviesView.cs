@@ -12,6 +12,7 @@ namespace ProjectBeta.CI.Views;
 public sealed class MoviesView : Form
 {
     private readonly MovieLogic _movieLogic;
+    public int _cinemaId;
     private readonly BookingLogic _bookingLogic;
     private DateOnly _selectedDate;
     private IReadOnlyList<MovieSchedule> _schedule = [];
@@ -58,10 +59,11 @@ public sealed class MoviesView : Form
         ClearChildren();
         InitializeForm();
     }
-    public void SetUser(User user)
+    public void SetUser(User user, int cinemaId)
     {
         _user = user;
         _searchQuery = string.Empty;
+        _cinemaId = cinemaId;
         ClearChildren();
         LoadSchedule();
         InitializeForm();
@@ -143,7 +145,7 @@ public sealed class MoviesView : Form
     {
             Console.Clear();
             var accountView = _serviceProvider.GetRequiredService<MovieSeatBookingView>();
-            accountView.SetView(_user, schedule, schedule.Auditorium);
+            accountView.SetView(_user, schedule, schedule.Auditorium, _cinemaId);
             _appLoop.Display(accountView);
     }
     
