@@ -49,7 +49,7 @@ public sealed class ReservationEditView : Form
             l10n("reservations.edit.table.seats"),
             l10n("reservations.edit.table.date"),
             l10n("reservations.edit.table.paid"),
-            l10n("reservations.edit.table.snacks"),
+            l10n("Snacks"),
             l10n("reservations.edit.table.total_price")
         )
         .EmptyMessage(l10n("reservations.edit.empty"));
@@ -80,7 +80,7 @@ public sealed class ReservationEditView : Form
         decimal totalPrice = _booking.TotalPrice;
         foreach(BookingSnack bookedSnack in _bookedSnacks) {
             Snack snack = _snackLogic.GetById(bookedSnack.SnackId);
-            totalPrice += snack.Price;
+            totalPrice += snack.Price * bookedSnack.BookedQuantity;
         }
         return totalPrice;
     }

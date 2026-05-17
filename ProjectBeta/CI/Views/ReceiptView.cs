@@ -62,6 +62,7 @@ public sealed class ReceiptView : Form
             bookedSnack.Snack.Price * bookedSnack.BookedQuantity
         );
         Label(l10n(line));
+        totalPrice += bookedSnack.Snack.Price * bookedSnack.BookedQuantity;
     }
 
     // Seats
@@ -69,6 +70,7 @@ public sealed class ReceiptView : Form
     {
         Label(l10n($"Seat {seat}"));
     }
+    Label(l10n(string.Format("{0,-38} {1,8:0.00}", "Seats Total", _booking.TotalPrice)));
 
     Divider();
 
