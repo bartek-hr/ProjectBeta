@@ -37,7 +37,7 @@ public class BookingLogic
 
         if (booking.AuditoriumId <= 0)
             throw new Exception(l10n("reservations.errors.invalid_screening"));
-    
+
         booking.CreatedAt = DateTime.Now;
 
         booking.Paid = false;
@@ -45,7 +45,7 @@ public class BookingLogic
         _bookingAccess.Add(booking);
     }
 
-    public void CreateBooking(int userId, decimal finalPrice, decimal basePrice, int auditoriumId, string seats, string seatAges, string? userSeat, string movie, DateTime createdAt, IEnumerable<int> appliedDiscountIds)
+    public Booking CreateBooking(int userId, decimal finalPrice, decimal basePrice, int auditoriumId, string seats, string seatAges, string? userSeat, string movie, DateTime createdAt, IEnumerable<int> appliedDiscountIds)
     {
         var booking = new Booking
         {
@@ -66,7 +66,7 @@ public class BookingLogic
                 .ToList()
         };
 
-        _bookingAccess.Add(booking);
+        return _bookingAccess.AddAndReturn(booking);
     }
 
     public void MarkAsPaid(int bookingId)

@@ -16,4 +16,7 @@ public class Auditorium
     // public ICollection<Screening> Screenings { get; set; } = [];
     public int CinemaId { get; set; }
     public Cinema Cinema { get; set; } = null!;
+
+    public int? LocationId { get; set; }
+    public Location? Location { get; set; }
 }

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProjectBeta.Data;
 
@@ -10,9 +11,11 @@ using ProjectBeta.Data;
 namespace ProjectBeta.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260517173150_AddLocationName")]
+    partial class AddLocationName
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.0");
@@ -78,11 +81,11 @@ namespace ProjectBeta.Migrations
                     b.Property<int?>("AuditoriumId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<decimal>("BasePrice")
-                        .HasColumnType("TEXT");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
+
+                    b.Property<int?>("DiscountId")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Movie")
                         .HasColumnType("TEXT");
@@ -92,9 +95,6 @@ namespace ProjectBeta.Migrations
 
                     b.Property<int>("ScreeningId")
                         .HasColumnType("INTEGER");
-
-                    b.Property<string>("SeatAges")
-                        .HasColumnType("TEXT");
 
                     b.Property<string>("Seats")
                         .IsRequired()
@@ -106,37 +106,11 @@ namespace ProjectBeta.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("UserSeat")
-                        .HasColumnType("TEXT");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("AuditoriumId");
 
                     b.HasIndex("UserId");
 
                     b.ToTable("Bookings");
-                });
-
-            modelBuilder.Entity("ProjectBeta.Model.BookingDiscount", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("BookingId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("DiscountId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BookingId");
-
-                    b.HasIndex("DiscountId");
-
-                    b.ToTable("BookingDiscounts");
                 });
 
             modelBuilder.Entity("ProjectBeta.Model.BookingSnack", b =>
@@ -193,45 +167,6 @@ namespace ProjectBeta.Migrations
                             City = "Rotterdam",
                             Name = "Darcy"
                         });
-                });
-
-            modelBuilder.Entity("ProjectBeta.Model.Discount", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("EffectiveFrom")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime?>("EffectiveUntil")
-                        .HasColumnType("TEXT");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("MaxAge")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("MinAge")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("MinGroupSize")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<decimal>("Percentage")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int?>("RequiredDayOfWeek")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Discounts");
                 });
 
             modelBuilder.Entity("ProjectBeta.Model.Location", b =>
@@ -339,31 +274,10 @@ namespace ProjectBeta.Migrations
                     b.ToTable("Receipts");
                 });
 
-            modelBuilder.Entity("ProjectBeta.Model.SeatPrice", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("SeatPrices");
-                });
-
             modelBuilder.Entity("ProjectBeta.Model.Snack", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("CinemaId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
@@ -401,9 +315,6 @@ namespace ProjectBeta.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<bool>("HasSubscription")
-                        .HasColumnType("INTEGER");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("INTEGER");
 
@@ -419,9 +330,6 @@ namespace ProjectBeta.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("SubscriptionSeatType")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("Username")
                         .IsRequired()
                         .HasMaxLength(20)
@@ -435,11 +343,10 @@ namespace ProjectBeta.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2026, 5, 17, 19, 35, 13, 117, DateTimeKind.Utc).AddTicks(1740),
+                            CreatedAt = new DateTime(2026, 5, 17, 17, 31, 49, 936, DateTimeKind.Utc).AddTicks(3267),
                             DateOfBirth = new DateOnly(1990, 1, 1),
                             Email = "admin@example.com",
                             FirstName = "Admin",
-                            HasSubscription = false,
                             IsActive = true,
                             LastName = "User",
                             PasswordHash = "password",
@@ -449,11 +356,10 @@ namespace ProjectBeta.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2026, 5, 17, 19, 35, 13, 117, DateTimeKind.Utc).AddTicks(1750),
+                            CreatedAt = new DateTime(2026, 5, 17, 17, 31, 49, 936, DateTimeKind.Utc).AddTicks(3270),
                             DateOfBirth = new DateOnly(1995, 5, 15),
                             Email = "user1@example.com",
                             FirstName = "User",
-                            HasSubscription = false,
                             IsActive = true,
                             LastName = "One",
                             PasswordHash = "password",
@@ -482,38 +388,13 @@ namespace ProjectBeta.Migrations
 
             modelBuilder.Entity("ProjectBeta.Model.Booking", b =>
                 {
-                    b.HasOne("ProjectBeta.Model.Auditorium", "Auditorium")
-                        .WithMany()
-                        .HasForeignKey("AuditoriumId");
-
                     b.HasOne("ProjectBeta.Model.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Auditorium");
-
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("ProjectBeta.Model.BookingDiscount", b =>
-                {
-                    b.HasOne("ProjectBeta.Model.Booking", "Booking")
-                        .WithMany("BookingDiscounts")
-                        .HasForeignKey("BookingId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ProjectBeta.Model.Discount", "Discount")
-                        .WithMany()
-                        .HasForeignKey("DiscountId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Booking");
-
-                    b.Navigation("Discount");
                 });
 
             modelBuilder.Entity("ProjectBeta.Model.BookingSnack", b =>
@@ -563,11 +444,6 @@ namespace ProjectBeta.Migrations
                         .IsRequired();
 
                     b.Navigation("Booking");
-                });
-
-            modelBuilder.Entity("ProjectBeta.Model.Booking", b =>
-                {
-                    b.Navigation("BookingDiscounts");
                 });
 
             modelBuilder.Entity("ProjectBeta.Model.Cinema", b =>

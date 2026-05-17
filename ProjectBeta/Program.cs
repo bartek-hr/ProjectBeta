@@ -42,15 +42,22 @@ namespace ProjectBeta
             services.AddScoped<SeatPriceAccess>();
             services.AddScoped<BookingLogic>();
             services.AddScoped<PricingLogic>();
+            services.AddScoped<LocationAccess>();
+            services.AddScoped<LocationLogic>();
             services.AddTransient<UserView>();
             services.AddTransient<UsersView>();
             services.AddTransient<MovieSeatBookingView>();
             services.AddTransient<ReservationView>();
+            services.AddTransient<ReceiptView>();
+            services.AddTransient<SnacksView>();
             services.AddTransient<LoginView>();
             services.AddTransient<AccountView>();
             services.AddTransient<CinemaView>();
             services.AddTransient<CinemaDetailView>();
             services.AddTransient<ReservationEditView>();
+            services.AddTransient<SnackEditView>();
+            services.AddTransient<SnackCreatorView>();
+            services.AddTransient<BookingSnacksView>();
             services.AddTransient<ReservationHistoryView>();
             services.AddTransient<UpcomingReservationsView>();
             services.AddTransient<CinemaDetailView>();
@@ -59,12 +66,13 @@ namespace ProjectBeta
             services.AddTransient<MoviesView>();
             services.AddTransient<SeatPriceView>();
             services.AddTransient<DiscountView>();
+            services.AddTransient<LocationView>();
             services.AddScoped<MainView>();
             var provider = services.BuildServiceProvider();
 
             // Initialize DB
             using var context = provider.GetRequiredService<AppDbContext>();
-            
+
             context.Database.Migrate();
             context.Seed();
 

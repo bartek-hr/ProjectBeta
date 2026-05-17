@@ -2,17 +2,20 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProjectBeta.Data;
 
 #nullable disable
 
-namespace ProjectBeta.Migrations
+namespace ProjectBeta.ProjectBeta.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260517193121_MergeSnapshot")]
+    partial class MergeSnapshot
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.0");
@@ -435,7 +438,7 @@ namespace ProjectBeta.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2026, 5, 17, 19, 35, 13, 117, DateTimeKind.Utc).AddTicks(1740),
+                            CreatedAt = new DateTime(2026, 5, 17, 19, 31, 20, 998, DateTimeKind.Utc).AddTicks(3710),
                             DateOfBirth = new DateOnly(1990, 1, 1),
                             Email = "admin@example.com",
                             FirstName = "Admin",
@@ -449,7 +452,7 @@ namespace ProjectBeta.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2026, 5, 17, 19, 35, 13, 117, DateTimeKind.Utc).AddTicks(1750),
+                            CreatedAt = new DateTime(2026, 5, 17, 19, 31, 20, 998, DateTimeKind.Utc).AddTicks(3720),
                             DateOfBirth = new DateOnly(1995, 5, 15),
                             Email = "user1@example.com",
                             FirstName = "User",

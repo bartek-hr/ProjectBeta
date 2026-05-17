@@ -105,6 +105,23 @@ public class MovieAccess
         return movie;
     }
 
+    public List<Movie> Search(string query)
+    {
+        return _context.Movies
+            .Where(m => m.Title.Contains(query))
+            .ToList();
+    }
+
+    public List<MovieSchedule> SearchSchedule(IReadOnlyList<MovieSchedule> schedule, string query)
+    {
+        if (string.IsNullOrWhiteSpace(query))
+            return schedule.ToList();
+
+        return schedule
+            .Where(s => s.Movie.Title.Contains(query, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+    }
+
     public void EnsureMoviesPersisted(IEnumerable<Movie> movies)
     {
         var candidates = movies

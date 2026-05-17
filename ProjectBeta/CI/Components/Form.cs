@@ -11,7 +11,7 @@ public class Form : RootComponent
 
     public void Display()
     {
-        ProjectBeta.Program.Display(this);
+        Program.Display(this);
     }
 
     public new Form Add(Component child)

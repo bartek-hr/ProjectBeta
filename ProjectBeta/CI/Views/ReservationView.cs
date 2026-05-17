@@ -20,9 +20,12 @@ public sealed class ReservationView : Form
     private string? _statusMessage;
     private List<int> _seatTypes;
     private int _auditoriumId;
+    private int _cinemaId;
     private bool _confirmingDelete;
     private Button? _noCancelButton;
     private Dictionary<string, string[]>? _fieldErrors;
+    private List<NumberInput> _ageInputs = new();
+    private Select? _userSeatSelect;
 
     public ReservationView(BookingLogic bookingLogic, PricingLogic pricingLogic, AppLoop appLoop, IServiceProvider serviceProvider)
     {
@@ -32,10 +35,11 @@ public sealed class ReservationView : Form
         _serviceProvider = serviceProvider;
     }
 
-    public void SetView(User user, MovieSchedule movie, List<string> reservedSeats, List<int> seatTypes, int auditoriumId)
+    public void SetView(User user, MovieSchedule movie, List<string> reservedSeats, List<int> seatTypes, int auditoriumId, int cinemaId)
     {
         _user = user;
         _movie = movie;
+        _cinemaId = cinemaId;
         _reservedSeats = reservedSeats;
         _seatTypes = seatTypes;
         _auditoriumId = auditoriumId;
@@ -83,21 +87,22 @@ public sealed class ReservationView : Form
         // If the user selected their own seat, that input is pre-filled
         Label(l10n("reservations.create.age_prompt"));
         int userAge = PricingLogic.ComputeAge(_user.DateOfBirth);
-        var ageInputs = new List<NumberInput>();
+        _ageInputs = new List<NumberInput>();
         for (int i = 0; i < _reservedSeats.Count; i++)
         {
             string seat = _reservedSeats[i];
             var input = NumberInput(l10n("reservations.create.age_label", new Dictionary<string, string> { ["seat"] = seat }))
                 .Min(0).Max(130)
                 .ReadOnly(() => userSeatSelect.Value == seat, userAge);
-            ageInputs.Add(input);
+            _ageInputs.Add(input);
         }
+        _userSeatSelect = userSeatSelect;
 
         Divider();
-        Add(new Message(() => BuildPricingSummary(ageInputs), Style.Default));
+        Add(new Message(() => BuildPricingSummary(_ageInputs), Style.Default));
         Message(() => _statusMessage);
-        Button(l10n("reservations.create.actions.save")).OnClick(form => OnSave(form, ageInputs, userSeatSelect));
-
+        Button(l10n("reservations.create.actions.save")).OnClick(form => OnSave(form, _ageInputs, _userSeatSelect!));
+        Button("Snacks").OnClick(OnSnacks);
         Button(l10n("reservations.create.actions.back")).OnClick(NavigateToMain).Hidden(() => _confirmingDelete);
     }
 
@@ -140,8 +145,8 @@ public sealed class ReservationView : Form
         string reservedseats = string.Join(",", _reservedSeats);
         DateTime startDateTime = _movie.ScheduleDate.ToDateTime(_movie.StartTime);
         var seatAges = BuildSeatAges(ageInputs);
-        string? userSeat = userSeatSelect.Value == l10n("reservations.create.user_seat_none") 
-            ? null 
+        string? userSeat = userSeatSelect.Value == l10n("reservations.create.user_seat_none")
+            ? null
             : userSeatSelect.Value;
 
         var pricing = _pricingLogic.CalculatePricing(_seatTypes, seatAges, startDateTime);
@@ -159,6 +164,41 @@ public sealed class ReservationView : Form
             pricing.Discounts.Select(d => d.Id)
         );
         NavigateToMain();
+    }
+    private void OnSnacks(Form form)
+    {
+        _fieldErrors = null;
+        _statusMessage = null;
+
+        string reservedseats = string.Join(",", _reservedSeats);
+        DateTime startDateTime = _movie.ScheduleDate.ToDateTime(_movie.StartTime);
+        var seatAges = BuildSeatAges(_ageInputs);
+        string? userSeat = _userSeatSelect?.Value == l10n("reservations.create.user_seat_none")
+            ? null
+            : _userSeatSelect?.Value;
+
+        var pricing = _pricingLogic.CalculatePricing(_seatTypes, seatAges, startDateTime);
+
+        Booking createdBooking = _bookingLogic.CreateBooking(
+            _user.Id,
+            pricing.FinalPrice,
+            pricing.BasePrice,
+            _auditoriumId,
+            reservedseats,
+            SerializeSeatAges(seatAges),
+            userSeat,
+            $"{_movie.Movie.Title}",
+            startDateTime,
+            pricing.Discounts.Select(d => d.Id)
+        );
+        NavigateToBookingSnacksView(createdBooking);
+    }
+    private void NavigateToBookingSnacksView(Booking createdBooking)
+    {
+        Console.Clear();
+        var mainView = _serviceProvider.GetRequiredService<BookingSnacksView>();
+        mainView.SetView(_user, createdBooking, _cinemaId);
+        _appLoop.Display(mainView);
     }
 
     private void NavigateToMain()
