@@ -27,7 +27,12 @@ public class BookingAccess
             _context.Bookings.Add(booking);
             _context.SaveChanges();
         }
-
+        public Booking AddAndReturn(Booking booking)
+        {
+            _context.Bookings.Add(booking);
+            _context.SaveChanges();
+            return booking;
+        }
         public void Update(Booking booking)
         {
             _context.Bookings.Update(booking);

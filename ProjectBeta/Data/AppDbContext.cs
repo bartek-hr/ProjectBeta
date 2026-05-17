@@ -138,6 +138,8 @@ public class AppDbContext : DbContext
             new Auditorium { Id = 3, Name = "Auditorium 3", CinemaId = 1, Capacity = 500 }
         );
 
+
+
         modelBuilder.Entity<BookingSnack>(entity =>
         {
             entity.HasOne(bs => bs.Snack)

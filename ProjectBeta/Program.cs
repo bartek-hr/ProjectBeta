@@ -43,11 +43,16 @@ namespace ProjectBeta
             services.AddTransient<UsersView>();
             services.AddTransient<MovieSeatBookingView>();
             services.AddTransient<ReservationView>();
+            services.AddTransient<ReceiptView>();
+            services.AddTransient<SnacksView>();
             services.AddTransient<LoginView>();
             services.AddTransient<AccountView>();
             services.AddTransient<CinemaView>();
             services.AddTransient<CinemaDetailView>();
             services.AddTransient<ReservationEditView>();
+            services.AddTransient<SnackEditView>();
+            services.AddTransient<SnackCreatorView>();
+            services.AddTransient<BookingSnacksView>();
             services.AddTransient<ReservationHistoryView>();
             services.AddTransient<UpcomingReservationsView>();
             services.AddTransient<CinemaDetailView>();

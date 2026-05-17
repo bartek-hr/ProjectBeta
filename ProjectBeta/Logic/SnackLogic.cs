@@ -16,7 +16,10 @@ public class SnackLogic
     {
         return _snackAccess.GetAll();
     }
-
+    public List<Snack> GetAllByCinemaId(int cinemaId)
+    {
+        return _snackAccess.GetAllByCinemaId(cinemaId);
+    }
     public Snack? GetById(int id)
     {
         return _snackAccess.GetById(id);

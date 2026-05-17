@@ -282,9 +282,13 @@ namespace ProjectBeta.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("CinemaId")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
 
                     b.ToTable("Snacks");
+
                 });
 
             modelBuilder.Entity("ProjectBeta.Model.User", b =>
