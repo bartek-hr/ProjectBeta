@@ -10,6 +10,8 @@ namespace ProjectBeta.CI.Views;
 public sealed class ReservationHistoryView : Form
 {
     private readonly BookingLogic _bookingLogic;
+    private readonly BookingSnackLogic _bookingSnackLogic;
+    private readonly SnackLogic _snackLogic;
     private readonly AppLoop _appLoop;
     private readonly IServiceProvider _serviceProvider;
     private User _user;
@@ -21,9 +23,11 @@ public sealed class ReservationHistoryView : Form
     private Button? _noCancelButton;
     private Dictionary<string, string[]>? _fieldErrors;
 
-    public ReservationHistoryView(BookingLogic bookingLogic, AppLoop appLoop, IServiceProvider serviceProvider)
+    public ReservationHistoryView(BookingLogic bookingLogic, BookingSnackLogic bookingSnackLogic, SnackLogic snackLogic, AppLoop appLoop, IServiceProvider serviceProvider)
     {
         _bookingLogic = bookingLogic;
+        _bookingSnackLogic = bookingSnackLogic;
+        _snackLogic = snackLogic;
         _appLoop = appLoop;
         _serviceProvider = serviceProvider;
     }
@@ -45,6 +49,7 @@ public sealed class ReservationHistoryView : Form
             l10n("reservations.history.table.seats"),
             l10n("reservations.history.table.date"),
             l10n("reservations.history.table.paid"),
+            l10n("reservations.history.table.snacks"),
             l10n("reservations.history.table.total_price")
         )
         .EmptyMessage(l10n("reservations.history.empty"))
@@ -54,6 +59,9 @@ public sealed class ReservationHistoryView : Form
         {
             if (reservation.CreatedAt <= DateTime.Now)
             {
+                var bookedSnacks = _bookingSnackLogic.GetAllByBookingId(reservation.Id);
+                string snackNames = GetSnackNames(bookedSnacks);
+                decimal totalPrice = CalculateTotalPrice(reservation, bookedSnacks);
                 table.AddRow(
                     reservation,
                     reservation.Movie,
@@ -61,7 +69,8 @@ public sealed class ReservationHistoryView : Form
                     reservation.Seats,
                     reservation.CreatedAt,
                     reservation.Paid,
-                    reservation.TotalPrice
+                    snackNames,
+                    totalPrice.ToString("F2")
                 );
             }
         }
@@ -74,6 +83,28 @@ public sealed class ReservationHistoryView : Form
     }
 
 
+
+    private decimal CalculateTotalPrice(Booking booking, List<BookingSnack> bookedSnacks)
+    {
+        decimal totalPrice = booking.TotalPrice;
+        foreach (var bookedSnack in bookedSnacks)
+        {
+            Snack snack = _snackLogic.GetById(bookedSnack.SnackId);
+            totalPrice += snack.Price * bookedSnack.BookedQuantity;
+        }
+        return Math.Round(totalPrice, 2, MidpointRounding.AwayFromZero);
+    }
+
+    private string GetSnackNames(List<BookingSnack> bookedSnacks)
+    {
+        var snackNames = new List<string>();
+        foreach (var bookedSnack in bookedSnacks)
+        {
+            Snack snack = _snackLogic.GetById(bookedSnack.SnackId);
+            snackNames.Add($"{snack.Name} x {bookedSnack.BookedQuantity}");
+        }
+        return snackNames.Count > 0 ? string.Join(", ", snackNames) : "-";
+    }
 
     private void NavigateToMain()
     {

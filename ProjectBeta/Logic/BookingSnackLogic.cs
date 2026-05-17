@@ -28,7 +28,7 @@ public class BookingSnackLogic
         return _bookingSnackAccess.GetById(id);
     }
 
-    public void Add(BookingSnack bookingSnack)
+    public void Add(BookingSnack bookingSnack, User currentUser)
     {
         if (bookingSnack.BookedQuantity <= 0)
             throw new ArgumentException(l10n("booking_snacks.errors.quantity_positive"));

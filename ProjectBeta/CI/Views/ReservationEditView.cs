@@ -62,9 +62,9 @@ public sealed class ReservationEditView : Form
             _booking.CreatedAt,
             _booking.Paid,
             snackNames,
-            totalPrice
+            totalPrice.ToString("F2")
         );
-        
+
 
         Add(table);
         Divider();
@@ -78,16 +78,18 @@ public sealed class ReservationEditView : Form
     private decimal CalculateTotalPrice()
     {
         decimal totalPrice = _booking.TotalPrice;
-        foreach(BookingSnack bookedSnack in _bookedSnacks) {
+        foreach (BookingSnack bookedSnack in _bookedSnacks)
+        {
             Snack snack = _snackLogic.GetById(bookedSnack.SnackId);
             totalPrice += snack.Price * bookedSnack.BookedQuantity;
         }
-        return totalPrice;
+        return Math.Round(totalPrice, 2, MidpointRounding.AwayFromZero);
     }
     private string GetSnackNames()
     {
         List<string> snackNames = new();
-        foreach(BookingSnack bookedSnack in _bookedSnacks) {
+        foreach (BookingSnack bookedSnack in _bookedSnacks)
+        {
             Snack snack = _snackLogic.GetById(bookedSnack.SnackId);
             snackNames.Add($"{snack.Name} x {bookedSnack.BookedQuantity}");
         }

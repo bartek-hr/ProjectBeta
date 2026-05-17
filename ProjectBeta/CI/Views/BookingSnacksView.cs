@@ -54,14 +54,14 @@ public sealed class BookingSnacksView : Form
 
         foreach (var snack in Snacks)
         {
-            
+
             table.AddRow(
                 snack,
                 snack.Name,
                 snack.Price,
                 _chosenSnacksCount.GetValueOrDefault(snack.Name, 0)
             );
-            
+
         }
 
         Add(table);
@@ -80,29 +80,35 @@ public sealed class BookingSnacksView : Form
     }
     private void SaveBookingSnacks()
     {
-        foreach (var chosenSnack in _chosenSnacks) {
-            BookingSnack SnackToAdd = new BookingSnack{
+        foreach (var chosenSnack in _chosenSnacks)
+        {
+            BookingSnack SnackToAdd = new BookingSnack
+            {
                 SnackId = chosenSnack.Id,
                 BookingId = _booking.Id,
                 BookedQuantity = _chosenSnacksCount[chosenSnack.Name]
             };
-            _bookingSnackLogic.Add(SnackToAdd);
+            _bookingSnackLogic.Add(SnackToAdd, _user);
         }
         NavigateToMain();
     }
-    
+
     private void OnSelectedSnack(Snack snack)
     {
-        if(!_chosenSnacksCount.ContainsKey(snack.Name)){
+        if (!_chosenSnacksCount.ContainsKey(snack.Name))
+        {
             _chosenSnacks.Add(snack);
         }
-        if (_chosenSnacksCount.ContainsKey(snack.Name)) {
+        if (_chosenSnacksCount.ContainsKey(snack.Name))
+        {
             _chosenSnacksCount[snack.Name]++;
-        }else {
+        }
+        else
+        {
             _chosenSnacksCount[snack.Name] = 1;
         }
 
-        Console.Clear();
         InitializeForm();
+        _appLoop.Display(this);
     }
 }

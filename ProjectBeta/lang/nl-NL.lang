@@ -102,6 +102,8 @@ movies:
     values:
       default_auditorium: 1
       unknown_space_left: ?
+    actions:
+      back: Terug
   seat_booking:
     heading: The Grand Cinema
     tagline: Een premium stoelkiezer voor het reserveringsproces van films.
@@ -159,6 +161,7 @@ reservations:
       seats: Stoelen
       date: Datum
       paid: Betaald
+      snacks: Snacks
       total_price: Totale prijs
     actions:
       back: Terug

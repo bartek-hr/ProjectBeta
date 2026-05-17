@@ -102,6 +102,8 @@ movies:
     values:
       default_auditorium: 1
       unknown_space_left: ?
+    actions:
+      back: Back
   seat_booking:
     heading: The Grand Cinema
     tagline: A premium seat picker for the movie reservation flow.
@@ -159,6 +161,7 @@ reservations:
       seats: Seats
       date: Date
       paid: Paid
+      snacks: Snacks
       total_price: Total Price
     actions:
       back: Back
