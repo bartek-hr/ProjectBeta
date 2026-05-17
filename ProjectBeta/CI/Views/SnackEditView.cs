@@ -35,14 +35,13 @@ public sealed class SnackEditView : Form
 
     private void InitializeForm()
     {
-        Heading(l10n("snacks.edit.heading"));
-        Label(l10n("snacks.edit.instructions"));
+
         var table = new Table(
-            l10n("snacks.edit.table.id"),
-            l10n("snacks.edit.table.cinemaid"),
-            l10n("snacks.edit.table.name"),
-            l10n("snacks.edit.table.quantity"),
-            l10n("snacks.edit.table.price")
+            l10n("Id"),
+            l10n("Cinemaid"),
+            l10n("Name"),
+            l10n("Quantity"),
+            l10n("Price")
         )
         .EmptyMessage(l10n("snacks.edit.empty"));
 
@@ -58,10 +57,10 @@ public sealed class SnackEditView : Form
         Add(table);
         Divider();
         Message(() => _statusMessage);
-        Button(l10n("snacks.edit.actions.delete")).OnClick(OnDelete);
-        Button(l10n("snacks.edit.actions.pay")).OnClick(OnRestock);
+        Button(l10n("Delete")).OnClick(OnDelete);
+        Button(l10n("Restock")).OnClick(OnRestock);
 
-        Button(l10n("snacks.edit.actions.back")).OnClick(NavigateToMain).Hidden(() => _confirmingDelete);
+        Button(l10n("Back")).OnClick(NavigateToMain).Hidden(() => _confirmingDelete);
     }
 
     private void OnDelete(Form form)
