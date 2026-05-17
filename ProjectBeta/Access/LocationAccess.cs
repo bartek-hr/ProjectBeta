@@ -52,4 +52,12 @@ public class LocationAccess
         location.Capacity = newCapacity;
         _context.SaveChanges();
     }
+
+    public List<Location> Search(string query)
+    {
+        return _context.Locations
+            .Include(l => l.Auditoriums)
+            .Where(l => l.Name.Contains(query))
+            .ToList();
+    }
 }

@@ -45,4 +45,12 @@ public class LocationLogic
 
         _locationAccess.UpdateCapacity(id, newCapacity);
     }
+
+    public List<Location> Search(string query)
+    {
+        if (string.IsNullOrWhiteSpace(query))
+            return _locationAccess.GetAll();
+
+        return _locationAccess.Search(query);
+    }
 }
