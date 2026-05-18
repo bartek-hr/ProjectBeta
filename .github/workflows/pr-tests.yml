@@ -1,0 +1,36 @@
+name: PR Tests
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore ProjectBeta.sln
+
+      - name: Build
+        run: dotnet build ProjectBeta.sln --configuration Release --no-restore
+
+      - name: Run tests
+        run: dotnet test ProjectBeta.sln --configuration Release --no-build
