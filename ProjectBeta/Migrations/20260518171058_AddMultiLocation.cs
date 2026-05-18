@@ -65,31 +65,19 @@ namespace ProjectBeta.Migrations
                 oldType: "INTEGER",
                 oldNullable: true);
 
-            migrationBuilder.InsertData(
-                table: "Locations",
-                columns: new[] { "Id", "Address", "City", "Name" },
-                values: new object[] { 1, "Main St 1", "Rotterdam", "Main Location" });
+            // INSERT OR IGNORE handles re-runs where Location Id=1 already exists
+            migrationBuilder.Sql(
+                "INSERT OR IGNORE INTO \"Locations\" (\"Id\", \"Address\", \"City\", \"Name\") " +
+                "VALUES (1, 'Main St 1', 'Rotterdam', 'Main Location');");
 
-            migrationBuilder.UpdateData(
-                table: "Auditoriums",
-                keyColumn: "Id",
-                keyValue: 1,
-                column: "LocationId",
-                value: 1);
+            // Fix any auditorium row that ended up with LocationId=0 (NULL → 0 from AlterColumn)
+            migrationBuilder.Sql(
+                "UPDATE \"Auditoriums\" SET \"LocationId\" = 1 WHERE \"LocationId\" = 0;");
 
-            migrationBuilder.UpdateData(
-                table: "Auditoriums",
-                keyColumn: "Id",
-                keyValue: 2,
-                column: "LocationId",
-                value: 1);
-
-            migrationBuilder.UpdateData(
-                table: "Auditoriums",
-                keyColumn: "Id",
-                keyValue: 3,
-                column: "LocationId",
-                value: 1);
+            // Fix any snack whose CinemaId (now LocationId) doesn't match an existing location
+            migrationBuilder.Sql(
+                "UPDATE \"Snacks\" SET \"LocationId\" = 1 " +
+                "WHERE \"LocationId\" NOT IN (SELECT \"Id\" FROM \"Locations\");");
 
             migrationBuilder.UpdateData(
                 table: "Users",
