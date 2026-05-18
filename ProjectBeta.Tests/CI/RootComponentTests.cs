@@ -283,6 +283,30 @@ public class RootComponentTests
         Assert.AreSame(form, app.ActiveInterface);
     }
 
+    [TestMethod]
+    public void Display_NullInterface_ThrowsArgumentNullException()
+    {
+        var app = new AppLoop();
+
+        Assert.ThrowsException<ArgumentNullException>(() => app.Display(null!));
+    }
+
+    [TestMethod]
+    public void Display_ReDisplayingExistingInterface_RemovesOlderStackEntry()
+    {
+        var app = new AppLoop();
+        var first = new Form(new FakeConsoleDriver());
+        var second = new Form(new FakeConsoleDriver());
+
+        app.Display(first);
+        app.Display(second);
+        app.Display(first);
+
+        first.Close();
+
+        Assert.AreSame(second, app.ActiveInterface);
+    }
+
     private sealed class StyledTextComponent : Component
     {
         private readonly string _text;

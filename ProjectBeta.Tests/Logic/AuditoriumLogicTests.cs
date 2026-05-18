@@ -102,4 +102,45 @@ public class AuditoriumLogicTests
         Assert.ThrowsException<UnauthorizedAccessException>(() =>
             _logic!.UpdateName(1, "New Name", RegularUser));
     }
+
+    [TestMethod]
+    public void GetByCinemaId_ExistingCinema_ReturnsAuditoriums()
+    {
+        var result = _logic!.GetByCinemaId(1);
+        Assert.IsTrue(result.Count > 0);
+        Assert.IsTrue(result.All(a => a.CinemaId == 1));
+    }
+
+    [TestMethod]
+    public void UpdateCapacity_AsAdmin_UpdatesCapacity()
+    {
+        _logic!.UpdateCapacity(1, 999, AdminUser);
+        var updated = _context!.Auditoriums.Find(1);
+        Assert.AreEqual(999, updated!.Capacity);
+    }
+
+    [TestMethod]
+    public void UpdateCapacity_AsNonAdmin_ThrowsUnauthorized()
+    {
+        Assert.ThrowsException<UnauthorizedAccessException>(() =>
+            _logic!.UpdateCapacity(1, 999, RegularUser));
+    }
+
+    [TestMethod]
+    public void UpdateCinema_AsAdmin_UpdatesCinemaId()
+    {
+        _context!.Cinemas.Add(new Cinema { Id = 2, Name = "Second", City = "Utrecht" });
+        _context.SaveChanges();
+
+        _logic!.UpdateCinema(1, 2, AdminUser);
+        var updated = _context.Auditoriums.Find(1);
+        Assert.AreEqual(2, updated!.CinemaId);
+    }
+
+    [TestMethod]
+    public void UpdateCinema_AsNonAdmin_ThrowsUnauthorized()
+    {
+        Assert.ThrowsException<UnauthorizedAccessException>(() =>
+            _logic!.UpdateCinema(1, 1, RegularUser));
+    }
 }

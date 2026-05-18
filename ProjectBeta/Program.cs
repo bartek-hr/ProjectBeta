@@ -40,6 +40,8 @@ namespace ProjectBeta
             services.AddScoped<BookingSnackLogic>();
             services.AddScoped<DiscountAccess>();
             services.AddScoped<SeatPriceAccess>();
+            services.AddScoped<ReceiptAccess>();
+            services.AddScoped<ReceiptLogic>();
             services.AddScoped<BookingLogic>();
             services.AddScoped<PricingLogic>();
             services.AddScoped<LocationAccess>();

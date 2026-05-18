@@ -243,4 +243,43 @@ public class LocationLogicTests
     {
         _logic!.UpdateCapacity(999, 5, AdminUser);
     }
+
+    // --- Search ---
+
+    [TestMethod]
+    public void Search_BlankQuery_ReturnsAllLocations()
+    {
+        _context!.Locations.AddRange(
+            new Location { Name = "Alpha", Capacity = 100 },
+            new Location { Name = "Beta",  Capacity = 200 }
+        );
+        _context.SaveChanges();
+
+        var result = _logic!.Search("   ");
+        Assert.AreEqual(2, result.Count);
+    }
+
+    [TestMethod]
+    public void Search_MatchingQuery_FiltersLocations()
+    {
+        _context!.Locations.AddRange(
+            new Location { Name = "Alpha", Capacity = 100 },
+            new Location { Name = "Beta",  Capacity = 200 }
+        );
+        _context.SaveChanges();
+
+        var result = _logic!.Search("Alpha");
+        Assert.AreEqual(1, result.Count);
+        Assert.AreEqual("Alpha", result[0].Name);
+    }
+
+    [TestMethod]
+    public void Search_NoMatch_ReturnsEmpty()
+    {
+        _context!.Locations.Add(new Location { Name = "Alpha", Capacity = 100 });
+        _context.SaveChanges();
+
+        var result = _logic!.Search("Zzzz");
+        Assert.AreEqual(0, result.Count);
+    }
 }

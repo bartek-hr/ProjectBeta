@@ -168,4 +168,104 @@ public class BookingLogicTest
 
         Assert.AreEqual(2, result.Count);
     }
+
+    // --- Overload with discounts ---
+
+    [TestMethod]
+    public void CreateBooking_Overload_SavesWithDiscounts()
+    {
+        _context!.Seed();
+        var discount = _context.Discounts.First();
+
+        var result = _logic!.CreateBooking(
+            userId: 1, finalPrice: 12.00m, basePrice: 15.00m,
+            auditoriumId: 1, seats: "A1,A2", seatAges: "30,12",
+            userSeat: null, movie: "Inception",
+            createdAt: DateTime.Now,
+            appliedDiscountIds: new[] { discount.Id }
+        );
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(1, _context.Bookings.Count());
+        Assert.IsFalse(result.Paid);
+        Assert.AreEqual(1, result.BookingDiscounts.Count);
+    }
+
+    [TestMethod]
+    public void CreateBooking_Overload_DeduplicatesDiscountIds()
+    {
+        _context!.Seed();
+        var discount = _context.Discounts.First();
+
+        var result = _logic!.CreateBooking(
+            userId: 1, finalPrice: 12.00m, basePrice: 15.00m,
+            auditoriumId: 1, seats: "A1", seatAges: "30",
+            userSeat: null, movie: "Film",
+            createdAt: DateTime.Now,
+            appliedDiscountIds: new[] { discount.Id, discount.Id }
+        );
+
+        Assert.AreEqual(1, result.BookingDiscounts.Count);
+    }
+
+    [TestMethod]
+    public void CreateBooking_Overload_DefaultsPaidToFalse()
+    {
+        var result = _logic!.CreateBooking(
+            userId: 1, finalPrice: 20m, basePrice: 20m,
+            auditoriumId: 1, seats: "B1", seatAges: "25",
+            userSeat: null, movie: "Film",
+            createdAt: DateTime.Now,
+            appliedDiscountIds: Array.Empty<int>()
+        );
+
+        Assert.IsFalse(result.Paid);
+    }
+
+    // --- MarkAsPaid not-found ---
+
+    [TestMethod]
+    [ExpectedException(typeof(Exception))]
+    public void MarkAsPaid_NotFound_ThrowsException()
+    {
+        _logic!.MarkAsPaid(9999);
+    }
+
+    // --- Filter methods ---
+
+    [TestMethod]
+    public void GetBookingsByUserId_ReturnsOnlyMatchingUser()
+    {
+        _context!.Bookings.AddRange(
+            new Booking { UserId = 1, AuditoriumId = 1, TotalPrice = 10, Seats = "" },
+            new Booking { UserId = 2, AuditoriumId = 1, TotalPrice = 20, Seats = "" }
+        );
+        _context.SaveChanges();
+
+        var result = _logic!.GetBookingsByUserId(1);
+        Assert.AreEqual(1, result.Count);
+        Assert.IsTrue(result.All(b => b.UserId == 1));
+    }
+
+    [TestMethod]
+    public void GetBookingsByUserId_NoMatch_ReturnsEmpty()
+    {
+        var result = _logic!.GetBookingsByUserId(999);
+        Assert.AreEqual(0, result.Count);
+    }
+
+    [TestMethod]
+    public void GetBookingsByCreatedAtAndAuditoriumID_ReturnsMatchingBookings()
+    {
+        var createdAt = new DateTime(2026, 1, 1, 12, 0, 0);
+        _context!.Bookings.AddRange(
+            new Booking { UserId = 1, AuditoriumId = 1, TotalPrice = 10, Seats = "", CreatedAt = createdAt },
+            new Booking { UserId = 1, AuditoriumId = 2, TotalPrice = 10, Seats = "", CreatedAt = createdAt }
+        );
+        _context.SaveChanges();
+
+        var result = _logic!.GetBookingsByCreatedAtAndAuditoriumID(createdAt, 1);
+        Assert.AreEqual(1, result.Count);
+        Assert.AreEqual(1, result[0].AuditoriumId);
+    }
 }
