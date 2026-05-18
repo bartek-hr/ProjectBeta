@@ -69,10 +69,12 @@ public sealed class ReservationEditView : Form
         Add(table);
         Divider();
         Message(() => _statusMessage);
-        Button(l10n("reservations.edit.actions.delete")).OnClick(OnDelete);
-        Button(l10n("reservations.edit.actions.pay")).OnClick(OnPay);
-
-        Button(l10n("reservations.edit.actions.back")).OnClick(NavigateToMain).Hidden(() => _confirmingDelete);
+        var backButton = new Button(l10n("reservations.edit.actions.back")).OnClick(NavigateToMain);
+        backButton.Hidden(() => _confirmingDelete);
+        Navigation(
+            Button(l10n("reservations.edit.actions.delete")).OnClick(OnDelete),
+            Button(l10n("reservations.edit.actions.pay")).OnClick(OnPay),
+            backButton);
     }
 
     private decimal CalculateTotalPrice()

@@ -39,16 +39,17 @@ public sealed class LocationView : Form
         Heading("Locations");
 
         var searchInput = TextInput("Search by name");
-        Button("Search").OnClick(() =>
-        {
-            _searchQuery = searchInput.Value ?? string.Empty;
-            RefreshView();
-        });
-        Button("Clear").OnClick(() =>
-        {
-            _searchQuery = string.Empty;
-            RefreshView();
-        });
+        Navigation(
+            Button("Search").OnClick(() =>
+            {
+                _searchQuery = searchInput.Value ?? string.Empty;
+                RefreshView();
+            }),
+            Button("Clear").OnClick(() =>
+            {
+                _searchQuery = string.Empty;
+                RefreshView();
+            }));
 
         Divider();
 

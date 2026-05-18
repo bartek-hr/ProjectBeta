@@ -35,10 +35,11 @@ public sealed class AuditoriumListView : Form
         Divider();
 
         var auditoriums = _auditoriumLogic.GetByCinemaId(_cinema.Id);
+        var auditoriumButtons = new List<Button>();
         foreach (var auditorium in auditoriums)
         {
             var a = auditorium;
-            Button(l10n("admin.auditoriums.list.auditorium_button", new Dictionary<string, string>
+            auditoriumButtons.Add(Button(l10n("admin.auditoriums.list.auditorium_button", new Dictionary<string, string>
             {
                 ["name"] = a.Name,
                 ["capacity"] = a.Capacity.ToString()
@@ -48,8 +49,9 @@ public sealed class AuditoriumListView : Form
                 var editView = _serviceProvider.GetRequiredService<AuditoriumEditView>();
                 editView.SetContext(_user, _cinema, a);
                 _appLoop.Display(editView);
-            });
+            }));
         }
+        Navigation(auditoriumButtons.ToArray());
 
         Divider();
         Button(l10n("admin.auditoriums.list.actions.back")).OnClick(() =>

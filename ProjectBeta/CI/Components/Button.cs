@@ -6,7 +6,6 @@ public sealed class Button : Component
 {
     private Action? _callback;
     private Action<Form>? _formCallback;
-    internal Form? ParentForm { get; set; }
 
     public Button(string label)
     {
@@ -33,10 +32,15 @@ public sealed class Button : Component
 
     public override int Render(ComponentRenderContext context)
     {
-        var buf = context.Buffer;
-        var focusStyle = IsFocused ? Style.Highlight : Style.Default;
+        return Render(context, IsFocused);
+    }
 
-        buf.Write(IsFocused ? "> " : "  ", IsFocused ? Style.Primary : Style.Muted);
+    internal int Render(ComponentRenderContext context, bool isFocused)
+    {
+        var buf = context.Buffer;
+        var focusStyle = isFocused ? Style.Highlight : Style.Default;
+
+        buf.Write(isFocused ? "> " : "  ", isFocused ? Style.Primary : Style.Muted);
         buf.Write($"[ {Label} ]", focusStyle);
         buf.WriteLine();
         return 1;
@@ -53,7 +57,7 @@ public sealed class Button : Component
         return false;
     }
 
-    private void Invoke()
+    internal void Invoke()
     {
         if (_formCallback != null && ParentForm != null)
         {

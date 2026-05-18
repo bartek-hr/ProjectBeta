@@ -25,6 +25,9 @@ public static class UI
     public static Button Button(string label)
         => new(label);
 
+    public static Navigation Navigation(params Button[] buttons)
+        => new(buttons);
+
     public static Heading Heading(string text)
         => new(text);
 

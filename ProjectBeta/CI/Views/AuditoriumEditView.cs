@@ -42,28 +42,28 @@ public sealed class AuditoriumEditView : Form
 
         Divider();
 
-        Button(l10n("admin.auditoriums.edit.actions.save")).OnClick(form =>
-        {
-            var name = form.Get<string>("name") ?? string.Empty;
-
-            try
+        Navigation(
+            Button(l10n("admin.auditoriums.edit.actions.save")).OnClick(form =>
             {
-                _auditoriumLogic.UpdateName(_auditorium.Id, name, _user);
-                _auditorium.Name = name;
-                _statusMessage = l10n("admin.auditoriums.edit.status.updated");
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                _statusMessage = ex.Message;
-            }
-        });
+                var name = form.Get<string>("name") ?? string.Empty;
 
-        Button(l10n("admin.auditoriums.edit.actions.back")).OnClick(() =>
-        {
-            Console.Clear();
-            var listView = _serviceProvider.GetRequiredService<AuditoriumListView>();
-            listView.SetContext(_user, _cinema);
-            _appLoop.Display(listView);
-        });
+                try
+                {
+                    _auditoriumLogic.UpdateName(_auditorium.Id, name, _user);
+                    _auditorium.Name = name;
+                    _statusMessage = l10n("admin.auditoriums.edit.status.updated");
+                }
+                catch (UnauthorizedAccessException ex)
+                {
+                    _statusMessage = ex.Message;
+                }
+            }),
+            Button(l10n("admin.auditoriums.edit.actions.back")).OnClick(() =>
+            {
+                Console.Clear();
+                var listView = _serviceProvider.GetRequiredService<AuditoriumListView>();
+                listView.SetContext(_user, _cinema);
+                _appLoop.Display(listView);
+            }));
     }
 }

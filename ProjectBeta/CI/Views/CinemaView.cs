@@ -33,10 +33,11 @@ public sealed class CinemaView : Form
         Divider();
 
         var cinemas = _cinemaLogic.GetAll();
+        var cinemaButtons = new List<Button>();
         foreach (var cinema in cinemas)
         {
             var c = cinema;
-            Button(l10n("admin.cinemas.list.cinema_button", new Dictionary<string, string>
+            cinemaButtons.Add(Button(l10n("admin.cinemas.list.cinema_button", new Dictionary<string, string>
             {
                 ["name"] = c.Name,
                 ["city"] = c.City
@@ -46,8 +47,9 @@ public sealed class CinemaView : Form
                 var detailView = _serviceProvider.GetRequiredService<CinemaDetailView>();
                 detailView.SetContext(_user, c);
                 _appLoop.Display(detailView);
-            });
+            }));
         }
+        Navigation(cinemaButtons.ToArray());
 
         Divider();
         Button(l10n("admin.cinemas.list.actions.back")).OnClick(() =>

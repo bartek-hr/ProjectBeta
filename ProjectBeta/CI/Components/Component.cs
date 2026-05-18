@@ -8,6 +8,7 @@ public abstract class Component
     public virtual bool IsFocusable => false;
 
     public bool IsFocused { get; internal set; }
+    internal Form? ParentForm { get; private set; }
 
     /// <summary>
     /// Whether this component is currently hidden (not rendered, not focusable, not validated).
@@ -37,5 +38,20 @@ public abstract class Component
     public virtual bool ProcessKey(ConsoleKeyInfo key)
     {
         return false;
+    }
+
+    internal void AttachToForm(Form form)
+    {
+        ParentForm = form;
+        OnAttachedToForm(form);
+    }
+
+    protected virtual void OnAttachedToForm(Form form)
+    {
+    }
+
+    public virtual (int Start, int End)? GetFocusedRowRange()
+    {
+        return null;
     }
 }

@@ -69,12 +69,13 @@ public sealed class SnackCreatorView : Form
         Divider();
 
         Message(() => _statusMessage);
-        Button(l10n("auth.register.actions.submit")).OnClick(OnSubmit);
-        Button(l10n("auth.register.actions.cancel")).OnClick(() =>
-        {
-            Console.Clear();
-            _appLoop.Display(_serviceProvider.GetRequiredService<LoginView>());
-        });
+        Navigation(
+            Button(l10n("auth.register.actions.submit")).OnClick(OnSubmit),
+            Button(l10n("auth.register.actions.cancel")).OnClick(() =>
+            {
+                Console.Clear();
+                _appLoop.Display(_serviceProvider.GetRequiredService<LoginView>());
+            }));
     }
 
     private string? GetError(string key)

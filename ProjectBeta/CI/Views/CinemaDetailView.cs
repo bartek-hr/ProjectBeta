@@ -31,21 +31,21 @@ public sealed class CinemaDetailView : Form
         Label(l10n("admin.cinemas.detail.city", new Dictionary<string, string> { ["city"] = _cinema.City }));
         Divider();
 
-        Button(l10n("admin.cinemas.detail.actions.update")).OnClick(() =>
-        {
-            Console.Clear();
-            var editView = _serviceProvider.GetRequiredService<CinemaEditView>();
-            editView.SetContext(_user, _cinema);
-            _appLoop.Display(editView);
-        });
-
-        Button(l10n("admin.cinemas.detail.actions.view_auditoriums")).OnClick(() =>
-        {
-            Console.Clear();
-            var listView = _serviceProvider.GetRequiredService<AuditoriumListView>();
-            listView.SetContext(_user, _cinema);
-            _appLoop.Display(listView);
-        });
+        Navigation(
+            Button(l10n("admin.cinemas.detail.actions.update")).OnClick(() =>
+            {
+                Console.Clear();
+                var editView = _serviceProvider.GetRequiredService<CinemaEditView>();
+                editView.SetContext(_user, _cinema);
+                _appLoop.Display(editView);
+            }),
+            Button(l10n("admin.cinemas.detail.actions.view_auditoriums")).OnClick(() =>
+            {
+                Console.Clear();
+                var listView = _serviceProvider.GetRequiredService<AuditoriumListView>();
+                listView.SetContext(_user, _cinema);
+                _appLoop.Display(listView);
+            }));
 
         Divider();
         Button(l10n("admin.cinemas.detail.actions.back")).OnClick(() =>

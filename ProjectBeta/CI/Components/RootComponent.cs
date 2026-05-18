@@ -49,6 +49,23 @@ public abstract class RootComponent : StaticTerminalInterface
         return AddRange(children.AsEnumerable());
     }
 
+    protected bool RemoveChild(Component child)
+    {
+        var removed = _children.Remove(child);
+        if (!removed)
+            return false;
+
+        if (ReferenceEquals(_focusedChild, child))
+        {
+            _focusedChild.IsFocused = false;
+            _focusedChild = null;
+            EnsureFocusValid();
+        }
+
+        child.IsFocused = false;
+        return true;
+    }
+
     public void ClearChildren()
     {
         _children.Clear();
@@ -235,6 +252,13 @@ public abstract class RootComponent : StaticTerminalInterface
         var (start, end) = _componentRowRanges[childIndex];
         if (start == end)
             return;
+
+        var focusedRange = _focusedChild.GetFocusedRowRange();
+        if (focusedRange.HasValue)
+        {
+            start += focusedRange.Value.Start;
+            end = start + Math.Max(1, focusedRange.Value.End - focusedRange.Value.Start);
+        }
 
         if (end > _scrollOffset + viewportHeight)
             _scrollOffset = end - viewportHeight;
