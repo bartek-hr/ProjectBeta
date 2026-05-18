@@ -18,6 +18,7 @@ public sealed class BookingSnacksView : Form
     private Booking _booking;
     private Dictionary<string, int> _chosenSnacksCount = new();
     private List<Snack> _chosenSnacks = new();
+    private string _searchQuery = string.Empty;
     private string? _statusMessage;
     private bool _confirmingDelete;
     private Button? _noCancelButton;
@@ -36,14 +37,31 @@ public sealed class BookingSnacksView : Form
         _user = user;
         _cinemaId = cinemaId;
         _booking = createdBooking;
+        _searchQuery = string.Empty;
         InitializeForm();
     }
 
     private void InitializeForm()
     {
         ClearChildren();
-        List<Snack> Snacks = _snackLogic.GetAllByCinemaId(_cinemaId);
+        List<Snack> Snacks = _snackLogic.Search(_cinemaId, _searchQuery);
         Heading(l10n("Current Snacks"));
+
+        var searchInput = TextInput("Search by name");
+        Button("Search").OnClick(() =>
+        {
+            _searchQuery = searchInput.Value ?? string.Empty;
+            InitializeForm();
+            _appLoop.Display(this);
+        });
+        Button("Clear").OnClick(() =>
+        {
+            _searchQuery = string.Empty;
+            InitializeForm();
+            _appLoop.Display(this);
+        });
+
+        Divider();
         var table = new Table<Snack>(
             l10n("Name"),
             l10n("Price"),

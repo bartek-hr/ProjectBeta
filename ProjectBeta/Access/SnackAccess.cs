@@ -28,6 +28,13 @@ public class SnackAccess
             .ToList();
     }
 
+    public List<Snack> Search(int cinemaId, string query)
+    {
+        return _context.Snacks
+            .Where(s => s.CinemaId == cinemaId && s.Name.Contains(query))
+            .ToList();
+    }
+
     public void Add(Snack snack)
     {
         _context.Snacks.Add(snack);
