@@ -1,4 +1,3 @@
-using System.Reflection.Metadata;
 using Microsoft.Extensions.DependencyInjection;
 using ProjectBeta.CI;
 using ProjectBeta.CI.Components;
@@ -13,24 +12,23 @@ public sealed class SnacksView : Form
     private readonly AppLoop _appLoop;
     private readonly IServiceProvider _serviceProvider;
     private User _user;
-    private int _cinemaId;
+    private int _locationId;
     private string _searchQuery = string.Empty;
     private string? _statusMessage;
     private bool _confirmingDelete;
-    private Button? _noCancelButton;
     private Dictionary<string, string[]>? _fieldErrors;
 
-    public SnacksView(SnackLogic SnackLogic, AppLoop appLoop, IServiceProvider serviceProvider)
+    public SnacksView(SnackLogic snackLogic, AppLoop appLoop, IServiceProvider serviceProvider)
     {
-        _snackLogic = SnackLogic;
+        _snackLogic = snackLogic;
         _appLoop = appLoop;
         _serviceProvider = serviceProvider;
     }
 
-    public void SetView(User user, int cinemaId)
+    public void SetView(User user, int locationId)
     {
         _user = user;
-        _cinemaId = cinemaId;
+        _locationId = locationId;
         _searchQuery = string.Empty;
         ClearChildren();
         InitializeForm();
@@ -44,7 +42,7 @@ public sealed class SnacksView : Form
 
     private void InitializeForm()
     {
-        List<Snack> Snacks = _snackLogic.Search(_cinemaId, _searchQuery);
+        List<Snack> snacks = _snackLogic.Search(_locationId, _searchQuery);
         Heading(l10n("Current Snacks"));
 
         var searchInput = TextInput("Search by name");
@@ -65,23 +63,21 @@ public sealed class SnacksView : Form
             l10n("Name"),
             l10n("Price"),
             l10n("Quantity"),
-            l10n("CinemaId")
+            l10n("LocationId")
         )
         .EmptyMessage(l10n("empty"))
         .OnSelect(OnSnackSelected);
 
-        foreach (var snack in Snacks)
+        foreach (var snack in snacks)
         {
-            
             table.AddRow(
                 snack,
                 snack.Id,
                 snack.Name,
                 snack.Price,
                 snack.Quantity,
-                snack.CinemaId
+                snack.LocationId
             );
-            
         }
 
         Add(table);
@@ -103,9 +99,10 @@ public sealed class SnacksView : Form
     {
         Console.Clear();
         var snackCreatorView = _serviceProvider.GetRequiredService<SnackCreatorView>();
-        snackCreatorView.SetView(_user);
+        snackCreatorView.SetView(_user, _locationId);
         _appLoop.Display(snackCreatorView);
-    }    
+    }
+
     private void OnSnackSelected(Snack snack)
     {
         Console.Clear();

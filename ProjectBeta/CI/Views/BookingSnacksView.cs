@@ -14,7 +14,7 @@ public sealed class BookingSnacksView : Form
     private readonly AppLoop _appLoop;
     private readonly IServiceProvider _serviceProvider;
     private User _user;
-    private int _cinemaId;
+    private int _locationId;
     private Booking _booking;
     private Dictionary<string, int> _chosenSnacksCount = new();
     private List<Snack> _chosenSnacks = new();
@@ -32,10 +32,10 @@ public sealed class BookingSnacksView : Form
         _serviceProvider = serviceProvider;
     }
 
-    public void SetView(User user, Booking createdBooking, int cinemaId)
+    public void SetView(User user, Booking createdBooking, int locationId)
     {
         _user = user;
-        _cinemaId = cinemaId;
+        _locationId = locationId;
         _booking = createdBooking;
         _searchQuery = string.Empty;
         InitializeForm();
@@ -44,7 +44,7 @@ public sealed class BookingSnacksView : Form
     private void InitializeForm()
     {
         ClearChildren();
-        List<Snack> Snacks = _snackLogic.Search(_cinemaId, _searchQuery);
+        List<Snack> Snacks = _snackLogic.Search(_locationId, _searchQuery);
         Heading(l10n("Current Snacks"));
 
         var searchInput = TextInput("Search by name");

@@ -21,7 +21,7 @@ public class AuditoriumAccess
     public Auditorium? GetById(int id)
     {
         return _context.Auditoriums
-            .Include(a => a.Cinema)
+            .Include(a => a.Location)
             .FirstOrDefault(a => a.Id == id);
     }
 
@@ -33,10 +33,10 @@ public class AuditoriumAccess
         _context.SaveChanges();
     }
 
-    public List<Auditorium> GetByCinemaId(int cinemaId)
+    public List<Auditorium> GetByLocationId(int locationId)
     {
         return _context.Auditoriums
-            .Where(a => a.CinemaId == cinemaId)
+            .Where(a => a.LocationId == locationId)
             .ToList();
     }
 
@@ -48,11 +48,11 @@ public class AuditoriumAccess
         _context.SaveChanges();
     }
 
-    public void UpdateCinema(int id, int newCinemaId)
+    public void UpdateLocation(int id, int newLocationId)
     {
         var auditorium = _context.Auditoriums.Find(id);
         if (auditorium == null) return;
-        auditorium.CinemaId = newCinemaId;
+        auditorium.LocationId = newLocationId;
         _context.SaveChanges();
     }
 }

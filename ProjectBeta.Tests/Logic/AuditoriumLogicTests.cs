@@ -82,9 +82,9 @@ public class AuditoriumLogicTests
     }
 
     [TestMethod]
-    public void GetByCinemaId_NonExistingCinema_ReturnsEmptyList()
+    public void GetByLocationId_NonExistingLocation_ReturnsEmptyList()
     {
-        var result = _logic!.GetByCinemaId(999);
+        var result = _logic!.GetByLocationId(999);
         Assert.AreEqual(0, result.Count);
     }
 

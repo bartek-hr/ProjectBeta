@@ -38,7 +38,7 @@ public sealed class SnackEditView : Form
 
         var table = new Table(
             l10n("Id"),
-            l10n("Cinemaid"),
+            l10n("LocationId"),
             l10n("Name"),
             l10n("Quantity"),
             l10n("Price")
@@ -47,7 +47,7 @@ public sealed class SnackEditView : Form
 
         table.AddRow(
             _snack.Id,
-            _snack.CinemaId,
+            _snack.LocationId,
             _snack.Name,
             _snack.Quantity,
             _snack.Price

@@ -22,9 +22,9 @@ public class AuditoriumLogic
         return _auditoriumAccess.GetById(id);
     }
 
-    public List<Auditorium> GetByCinemaId(int cinemaId)
+    public List<Auditorium> GetByLocationId(int locationId)
     {
-        return _auditoriumAccess.GetByCinemaId(cinemaId);
+        return _auditoriumAccess.GetByLocationId(locationId);
     }
 
     public void UpdateName(int auditoriumId, string newName, User currentUser)
@@ -43,11 +43,11 @@ public class AuditoriumLogic
         _auditoriumAccess.UpdateCapacity(auditoriumId, newCapacity);
     }
 
-    public void UpdateCinema(int auditoriumId, int newCinemaId, User currentUser)
+    public void UpdateLocation(int auditoriumId, int newLocationId, User currentUser)
     {
         if (!currentUser.IsAdmin())
             throw new UnauthorizedAccessException(l10n("admin.auditoriums.edit.errors.reassign_unauthorized"));
 
-        _auditoriumAccess.UpdateCinema(auditoriumId, newCinemaId);
+        _auditoriumAccess.UpdateLocation(auditoriumId, newLocationId);
     }
 }

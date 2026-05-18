@@ -20,7 +20,7 @@ public sealed class ReservationView : Form
     private string? _statusMessage;
     private List<int> _seatTypes;
     private int _auditoriumId;
-    private int _cinemaId;
+    private int _locationId;
     private bool _confirmingDelete;
     private Button? _noCancelButton;
     private Dictionary<string, string[]>? _fieldErrors;
@@ -35,11 +35,11 @@ public sealed class ReservationView : Form
         _serviceProvider = serviceProvider;
     }
 
-    public void SetView(User user, MovieSchedule movie, List<string> reservedSeats, List<int> seatTypes, int auditoriumId, int cinemaId)
+    public void SetView(User user, MovieSchedule movie, List<string> reservedSeats, List<int> seatTypes, int auditoriumId, int locationId)
     {
         _user = user;
         _movie = movie;
-        _cinemaId = cinemaId;
+        _locationId = locationId;
         _reservedSeats = reservedSeats;
         _seatTypes = seatTypes;
         _auditoriumId = auditoriumId;
@@ -197,7 +197,7 @@ public sealed class ReservationView : Form
     {
         Console.Clear();
         var mainView = _serviceProvider.GetRequiredService<BookingSnacksView>();
-        mainView.SetView(_user, createdBooking, _cinemaId);
+        mainView.SetView(_user, createdBooking, _locationId);
         _appLoop.Display(mainView);
     }
 
