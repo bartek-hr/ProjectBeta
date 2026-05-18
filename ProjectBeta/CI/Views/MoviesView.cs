@@ -70,6 +70,7 @@ public sealed class MoviesView : Form
     }
     private void LoadSchedule()
     {
+as
         _schedule = _movieLogic.GetOrGenerateSchedule(_selectedDate);
         var today = DateOnly.FromDateTime(DateTime.Today);
         _statusMessage = _schedule.Count == 0 && _selectedDate < today
