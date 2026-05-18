@@ -89,6 +89,14 @@ public class AuditoriumLogicTests
     }
 
     [TestMethod]
+    public void GetByLocationId_ExistingLocation_ReturnsAuditoriums()
+    {
+        var result = _logic!.GetByLocationId(1);
+        Assert.IsTrue(result.Count > 0);
+        Assert.IsTrue(result.All(a => a.LocationId == 1));
+    }
+
+    [TestMethod]
     public void UpdateName_AsAdmin_UpdatesName()
     {
         _logic!.UpdateName(1, "New Name", AdminUser);
@@ -101,5 +109,38 @@ public class AuditoriumLogicTests
     {
         Assert.ThrowsException<UnauthorizedAccessException>(() =>
             _logic!.UpdateName(1, "New Name", RegularUser));
+    }
+
+    [TestMethod]
+    public void UpdateCapacity_AsAdmin_UpdatesCapacity()
+    {
+        _logic!.UpdateCapacity(1, 999, AdminUser);
+        var updated = _context!.Auditoriums.Find(1);
+        Assert.AreEqual(999, updated!.Capacity);
+    }
+
+    [TestMethod]
+    public void UpdateCapacity_AsNonAdmin_ThrowsUnauthorized()
+    {
+        Assert.ThrowsException<UnauthorizedAccessException>(() =>
+            _logic!.UpdateCapacity(1, 999, RegularUser));
+    }
+
+    [TestMethod]
+    public void UpdateLocation_AsAdmin_UpdatesLocationId()
+    {
+        _context!.Locations.Add(new Location { Id = 2, Name = "Second", City = "Utrecht", Address = "Addr" });
+        _context.SaveChanges();
+
+        _logic!.UpdateLocation(1, 2, AdminUser);
+        var updated = _context.Auditoriums.Find(1);
+        Assert.AreEqual(2, updated!.LocationId);
+    }
+
+    [TestMethod]
+    public void UpdateLocation_AsNonAdmin_ThrowsUnauthorized()
+    {
+        Assert.ThrowsException<UnauthorizedAccessException>(() =>
+            _logic!.UpdateLocation(1, 1, RegularUser));
     }
 }

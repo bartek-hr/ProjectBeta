@@ -8,10 +8,12 @@ namespace ProjectBeta.Logic;
 public class ReceiptLogic
 {
     private readonly ReceiptAccess _receiptAccess;
+    private readonly BookingAccess _bookingAccess;
 
-    public ReceiptLogic(ReceiptAccess receiptAccess)
+    public ReceiptLogic(ReceiptAccess receiptAccess, BookingAccess bookingAccess)
     {
         _receiptAccess = receiptAccess;
+        _bookingAccess = bookingAccess;
     }
 
     public List<Receipt> GetReceipts()
@@ -34,13 +36,10 @@ public class ReceiptLogic
         if (receipt.Total <= 0)
             throw new Exception(l10n("receipts.errors.total_positive"));
 
-        if (receipt.BookingId <= 0)
+        if (receipt.BookingId <= 0 || _bookingAccess.GetById(receipt.BookingId) == null)
             throw new Exception(l10n("receipts.errors.invalid_booking"));
 
-
         receipt.CreatedAt = DateTime.Now;
-
-           
 
         _receiptAccess.Add(receipt);
     }
@@ -52,8 +51,12 @@ public class ReceiptLogic
         if (receipt == null)
             throw new Exception(l10n("receipts.errors.not_found"));
 
+        var booking = _bookingAccess.GetById(receipt.BookingId);
+        if (booking == null)
+            throw new Exception(l10n("receipts.errors.invalid_booking"));
 
-        _receiptAccess.Update(receipt);
+        booking.Paid = true;
+        _bookingAccess.Update(booking);
     }
 
     public void DeleteReceipt(int id)

@@ -101,9 +101,12 @@ public sealed class ReservationView : Form
         Divider();
         Add(new Message(() => BuildPricingSummary(_ageInputs), Style.Default));
         Message(() => _statusMessage);
-        Button(l10n("reservations.create.actions.save")).OnClick(form => OnSave(form, _ageInputs, _userSeatSelect!));
-        Button("Snacks").OnClick(OnSnacks);
-        Button(l10n("reservations.create.actions.back")).OnClick(NavigateToMain).Hidden(() => _confirmingDelete);
+        var backButton = Button(l10n("reservations.create.actions.back")).OnClick(NavigateToMain);
+        backButton.Hidden(() => _confirmingDelete);
+
+        Navigation(
+            Button(l10n("reservations.create.actions.save")).OnClick(form => OnSave(form, _ageInputs, _userSeatSelect!)),
+            backButton);
     }
 
     private static List<int?> BuildSeatAges(List<NumberInput> inputs)

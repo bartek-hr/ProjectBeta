@@ -85,16 +85,17 @@ public sealed class MoviesView : Form
         Message(() => _statusMessage);
 
         var searchInput = TextInput("Search by title");
-        Button("Search").OnClick(() =>
-        {
-            _searchQuery = searchInput.Value ?? string.Empty;
-            RefreshView();
-        });
-        Button("Clear").OnClick(() =>
-        {
-            _searchQuery = string.Empty;
-            RefreshView();
-        });
+        Navigation(
+            Button("Search").OnClick(() =>
+            {
+                _searchQuery = searchInput.Value ?? string.Empty;
+                RefreshView();
+            }),
+            Button("Clear").OnClick(() =>
+            {
+                _searchQuery = string.Empty;
+                RefreshView();
+            }));
 
         Divider();
 

@@ -64,14 +64,15 @@ public sealed class SnackCreatorView : Form
         Divider();
 
         Message(() => _statusMessage);
-        Button(l10n("auth.register.actions.submit")).OnClick(OnSubmit);
-        Button(l10n("auth.register.actions.cancel")).OnClick(() =>
-        {
-            Console.Clear();
-            var snacksView = _serviceProvider.GetRequiredService<SnacksView>();
-            snacksView.SetView(_user, _locationId);
-            _appLoop.Display(snacksView);
-        });
+        Navigation(
+            Button(l10n("auth.register.actions.submit")).OnClick(OnSubmit),
+            Button(l10n("auth.register.actions.cancel")).OnClick(() =>
+            {
+                Console.Clear();
+                var snacksView = _serviceProvider.GetRequiredService<SnacksView>();
+                snacksView.SetView(_user, _locationId);
+                _appLoop.Display(snacksView);
+            }));
     }
 
     private string? GetError(string key)

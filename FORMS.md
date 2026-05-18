@@ -21,7 +21,7 @@ public class LoginView : Form
 }
 ```
 
-`Tab` / `Shift+Tab` navigates. `Escape` exits.
+`Tab` / `Shift+Tab` navigates between focusable components. `Escape` exits.
 
 ---
 
@@ -40,6 +40,7 @@ public class LoginView : Form
   - [Toggle](#toggle)
 - Action
   - [Button](#button)
+  - [Navigation](#navigation)
 - Display
   - [Heading](#heading)
   - [Label](#label)
@@ -171,6 +172,29 @@ Button(string label)
 ```
 
 Keys: `Enter`/`Space`
+
+### Navigation
+
+Groups multiple buttons into a single tab stop.
+
+```csharp
+var save = new Button("Save").OnClick(() => { });
+Navigation(
+    save,
+    new Button("Cancel").OnClick(() => { }))
+    .SetActive(save);            // optional
+```
+
+Or:
+
+```csharp
+Navigation(
+    Button("Save").OnClick(() => { }),
+    Button("Cancel").OnClick(() => { }));
+```
+
+Keys: `Up`/`Down` to move between visible buttons (wraps around), `Enter`/`Space` to activate.
+`Tab` / `Shift+Tab` enters or leaves the whole group in one step.
 
 ### Heading
 

@@ -17,9 +17,7 @@ public class Form : RootComponent
     public new Form Add(Component child)
     {
         base.Add(child);
-
-        if (child is Button button)
-            button.ParentForm = this;
+        child.AttachToForm(this);
 
         return this;
     }
@@ -134,6 +132,22 @@ public class Form : RootComponent
     protected Button Button(string label)
     {
         var c = new Button(label);
+        Add(c);
+        return c;
+    }
+
+    protected Navigation Navigation()
+    {
+        return Navigation(Array.Empty<Button>());
+    }
+
+    protected Navigation Navigation(params Button[] buttons)
+    {
+        var c = new Navigation(buttons);
+
+        foreach (var button in buttons)
+            RemoveChild(button);
+
         Add(c);
         return c;
     }

@@ -15,6 +15,7 @@ public sealed class AccountView : Form
     private User? _adminUser;
     private string? _statusMessage;
     private bool _confirmingDelete;
+    private Navigation? _confirmDeleteNavigation;
     private Button? _noCancelButton;
     private Dictionary<string, string[]>? _fieldErrors;
 
@@ -107,31 +108,38 @@ public sealed class AccountView : Form
         Divider();
 
         Message(() => _statusMessage);
-        Button(l10n("account.profile.actions.save")).OnClick(OnSave);
-        Button(l10n("account.profile.actions.delete_account")).OnClick(() =>
+        var saveButton = new Button(l10n("account.profile.actions.save")).OnClick(OnSave);
+        saveButton.Hidden(() => _confirmingDelete);
+
+        var deleteButton = new Button(l10n("account.profile.actions.delete_account")).OnClick(() =>
         {
             _confirmingDelete = true;
-            Invalidate();
-            Render();
-            if (_noCancelButton != null)
+            if (_confirmDeleteNavigation != null && _noCancelButton != null)
             {
-                FocusChild(_noCancelButton);
+                _confirmDeleteNavigation.SetActive(_noCancelButton);
+                FocusChild(_confirmDeleteNavigation);
             }
 
+            Invalidate();
             Render();
-        }).Hidden(() => _confirmingDelete);
+        });
+        deleteButton.Hidden(() => _confirmingDelete);
+
+        var backButton = new Button(l10n("account.profile.actions.back")).OnClick(NavigateToMain);
+        backButton.Hidden(() => _confirmingDelete);
+        Navigation(saveButton, deleteButton, backButton);
 
         Message(() => _confirmingDelete ? l10n("account.profile.confirm_delete.message") : null);
-        Button(l10n("account.profile.confirm_delete.confirm")).OnClick(OnDelete).Hidden(() => !_confirmingDelete);
-        _noCancelButton = Button(l10n("account.profile.confirm_delete.cancel")).OnClick(() =>
+        var confirmDeleteButton = new Button(l10n("account.profile.confirm_delete.confirm")).OnClick(OnDelete);
+        confirmDeleteButton.Hidden(() => !_confirmingDelete);
+        _noCancelButton = new Button(l10n("account.profile.confirm_delete.cancel")).OnClick(() =>
         {
             _confirmingDelete = false;
             Invalidate();
             Render();
         });
         _noCancelButton.Hidden(() => !_confirmingDelete);
-
-        Button(l10n("account.profile.actions.back")).OnClick(NavigateToMain).Hidden(() => _confirmingDelete);
+        _confirmDeleteNavigation = Navigation(confirmDeleteButton, _noCancelButton);
     }
 
     private string? GetError(string key)

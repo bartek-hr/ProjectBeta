@@ -311,4 +311,5 @@ public class LocationLogicTests
         var result = _logic!.Search("ZZZZ");
         Assert.AreEqual(0, result.Count);
     }
+
 }

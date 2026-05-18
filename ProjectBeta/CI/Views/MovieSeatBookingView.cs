@@ -74,14 +74,16 @@ public sealed class MovieSeatBookingView : Form
         if (_auditorium.Capacity == 500){
             BuildAuditorium(seatMap, 'T');
         }        
-        Button("Confirm selected seats").OnClick(() =>         
-        {
-            Console.Clear();
-            var reservationView = _serviceProvider.GetRequiredService<ReservationView>();
-            reservationView.SetView(_user, _movie, seatMap._selectedSeats, seatMap._selectedTypes, _auditorium.Id, _locationId);
-            _appLoop.Display(reservationView);
-        });
-        Button(l10n("movies.seat_booking.actions.back")).OnClick(() => Close());
+        Navigation(
+            Button(l10n("movies.seat_booking.actions.confirm")).OnClick(() =>
+            {
+                Console.Clear();
+                var reservationView = _serviceProvider.GetRequiredService<ReservationView>();
+                reservationView.SetView(_user, _movie, seatMap._selectedSeats, seatMap._selectedTypes, _auditorium.Id, _locationId);
+                _appLoop.Display(reservationView);
+            }),
+            Button(l10n("movies.seat_booking.actions.back")).OnClick(() => Close())
+        );
     }
     
     public void BuildAuditorium(SeatMap seatMap, char EndRow)

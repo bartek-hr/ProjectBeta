@@ -48,18 +48,19 @@ public sealed class BookingSnacksView : Form
         Heading(l10n("Current Snacks"));
 
         var searchInput = TextInput("Search by name");
-        Button("Search").OnClick(() =>
-        {
-            _searchQuery = searchInput.Value ?? string.Empty;
-            InitializeForm();
-            _appLoop.Display(this);
-        });
-        Button("Clear").OnClick(() =>
-        {
-            _searchQuery = string.Empty;
-            InitializeForm();
-            _appLoop.Display(this);
-        });
+        Navigation(
+            Button("Search").OnClick(() =>
+            {
+                _searchQuery = searchInput.Value ?? string.Empty;
+                InitializeForm();
+                _appLoop.Display(this);
+            }),
+            Button("Clear").OnClick(() =>
+            {
+                _searchQuery = string.Empty;
+                InitializeForm();
+                _appLoop.Display(this);
+            }));
 
         Divider();
         var table = new Table<Snack>(
@@ -85,8 +86,11 @@ public sealed class BookingSnacksView : Form
         Add(table);
         Divider();
         Message(() => _statusMessage);
-        Button(l10n("Done")).OnClick(SaveBookingSnacks).Hidden(() => _confirmingDelete);
-        Button(l10n("Back")).OnClick(NavigateToMain).Hidden(() => _confirmingDelete);
+        var doneButton = Button(l10n("Done")).OnClick(SaveBookingSnacks);
+        doneButton.Hidden(() => _confirmingDelete);
+        var backButton = Button(l10n("Back")).OnClick(NavigateToMain);
+        backButton.Hidden(() => _confirmingDelete);
+        Navigation(doneButton, backButton);
     }
 
     private void NavigateToMain()
