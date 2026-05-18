@@ -50,17 +50,30 @@ public sealed class DiscountView : Form
             _selectedDiscountId = discounts[0].Id;
         }
 
+        var discountButtons = new List<Button>();
+        Button? selectedButton = null;
         foreach (var d in discounts)
         {
             var discount = d;
             var isSelected = !_createMode && _selectedDiscountId == discount.Id;
-            Button((isSelected ? "> " : "  ") + discount.Name).OnClick(() =>
+            var button = Button((isSelected ? "> " : "  ") + discount.Name).OnClick(() =>
             {
                 _createMode = false;
                 _selectedDiscountId = discount.Id;
                 _statusMessage = null;
                 SetUser(_user);
             });
+            discountButtons.Add(button);
+
+            if (isSelected)
+                selectedButton = button;
+        }
+
+        if (discountButtons.Count > 0)
+        {
+            var navigation = Navigation(discountButtons.ToArray());
+            if (selectedButton != null)
+                navigation.SetActive(selectedButton);
         }
 
         Divider();
@@ -78,7 +91,7 @@ public sealed class DiscountView : Form
 
         Divider();
 
-        Button((_createMode ? "> " : "  ") + l10n("admin.discounts.actions.create")).OnClick(() =>
+        var createButton = Button((_createMode ? "> " : "  ") + l10n("admin.discounts.actions.create")).OnClick(() =>
         {
             _createMode = true;
             _selectedDiscountId = null;
@@ -87,13 +100,15 @@ public sealed class DiscountView : Form
         });
 
         Message(() => _statusMessage);
-        Button(l10n("admin.discounts.actions.back")).OnClick(() =>
-        {
-            Console.Clear();
-            var mainView = _serviceProvider.GetRequiredService<MainView>();
-            mainView.SetUser(_user);
-            _appLoop.Display(mainView);
-        });
+        Navigation(
+            createButton,
+            Button(l10n("admin.discounts.actions.back")).OnClick(() =>
+            {
+                Console.Clear();
+                var mainView = _serviceProvider.GetRequiredService<MainView>();
+                mainView.SetUser(_user);
+                _appLoop.Display(mainView);
+            }));
     }
 
     private void RenderDetailForm(Discount discount)
@@ -128,51 +143,51 @@ public sealed class DiscountView : Form
         foreach (var opt in DayOptions) dowGroup.AddOption(opt);
         dowGroup.Default(DayOfWeekToOption(discount.RequiredDayOfWeek));
 
-        Button(l10n("admin.discounts.actions.save", new Dictionary<string, string> { ["name"] = discount.Name }))
-            .OnClick(_ =>
-            {
-                if (string.IsNullOrWhiteSpace(nameInput.Value))
-                { _statusMessage = l10n("admin.discounts.status.name_required"); return; }
-
-                if (!percentageInput.Value.HasValue || percentageInput.Value.Value < 0 || percentageInput.Value.Value > 100)
-                { _statusMessage = l10n("admin.discounts.status.invalid_percentage"); return; }
-
-                if (minAgeInput.Value.HasValue && maxAgeInput.Value.HasValue && minAgeInput.Value.Value > maxAgeInput.Value.Value)
-                { _statusMessage = l10n("admin.discounts.status.invalid_age_range"); return; }
-
-                if (!TryParseDate(effectiveFromInput.Value, out var parsedFrom))
-                { _statusMessage = l10n("admin.discounts.status.invalid_date"); return; }
-
-                DateTime? parsedUntil = null;
-                if (!string.IsNullOrWhiteSpace(effectiveUntilInput.Value))
+        Navigation(
+            Button(l10n("admin.discounts.actions.save", new Dictionary<string, string> { ["name"] = discount.Name }))
+                .OnClick(_ =>
                 {
-                    if (!TryParseDate(effectiveUntilInput.Value, out var until))
+                    if (string.IsNullOrWhiteSpace(nameInput.Value))
+                    { _statusMessage = l10n("admin.discounts.status.name_required"); return; }
+
+                    if (!percentageInput.Value.HasValue || percentageInput.Value.Value < 0 || percentageInput.Value.Value > 100)
+                    { _statusMessage = l10n("admin.discounts.status.invalid_percentage"); return; }
+
+                    if (minAgeInput.Value.HasValue && maxAgeInput.Value.HasValue && minAgeInput.Value.Value > maxAgeInput.Value.Value)
+                    { _statusMessage = l10n("admin.discounts.status.invalid_age_range"); return; }
+
+                    if (!TryParseDate(effectiveFromInput.Value, out var parsedFrom))
                     { _statusMessage = l10n("admin.discounts.status.invalid_date"); return; }
-                    parsedUntil = until;
-                }
 
-                discount.Name = nameInput.Value!.Trim();
-                discount.Percentage = (decimal)percentageInput.Value.Value;
-                discount.MinAge = minAgeInput.Value.HasValue ? (int)minAgeInput.Value.Value : null;
-                discount.MaxAge = maxAgeInput.Value.HasValue ? (int)maxAgeInput.Value.Value : null;
-                discount.MinGroupSize = minGroupSizeInput.Value.HasValue ? (int)minGroupSizeInput.Value.Value : null;
-                discount.EffectiveFrom = parsedFrom;
-                discount.EffectiveUntil = parsedUntil;
-                discount.RequiredDayOfWeek = OptionToDayOfWeek(dowGroup.Value);
-                _discountAccess.Update(discount);
-                _statusMessage = l10n("admin.discounts.status.saved", new Dictionary<string, string> { ["name"] = discount.Name });
-                SetUser(_user);
-            });
+                    DateTime? parsedUntil = null;
+                    if (!string.IsNullOrWhiteSpace(effectiveUntilInput.Value))
+                    {
+                        if (!TryParseDate(effectiveUntilInput.Value, out var until))
+                        { _statusMessage = l10n("admin.discounts.status.invalid_date"); return; }
+                        parsedUntil = until;
+                    }
 
-        Button(l10n("admin.discounts.actions.delete", new Dictionary<string, string> { ["name"] = discount.Name }))
-            .OnClick(_ =>
-            {
-                var name = discount.Name;
-                _discountAccess.Delete(discount.Id);
-                _selectedDiscountId = null;
-                _statusMessage = l10n("admin.discounts.status.deleted", new Dictionary<string, string> { ["name"] = name });
-                SetUser(_user);
-            });
+                    discount.Name = nameInput.Value!.Trim();
+                    discount.Percentage = (decimal)percentageInput.Value.Value;
+                    discount.MinAge = minAgeInput.Value.HasValue ? (int)minAgeInput.Value.Value : null;
+                    discount.MaxAge = maxAgeInput.Value.HasValue ? (int)maxAgeInput.Value.Value : null;
+                    discount.MinGroupSize = minGroupSizeInput.Value.HasValue ? (int)minGroupSizeInput.Value.Value : null;
+                    discount.EffectiveFrom = parsedFrom;
+                    discount.EffectiveUntil = parsedUntil;
+                    discount.RequiredDayOfWeek = OptionToDayOfWeek(dowGroup.Value);
+                    _discountAccess.Update(discount);
+                    _statusMessage = l10n("admin.discounts.status.saved", new Dictionary<string, string> { ["name"] = discount.Name });
+                    SetUser(_user);
+                }),
+            Button(l10n("admin.discounts.actions.delete", new Dictionary<string, string> { ["name"] = discount.Name }))
+                .OnClick(_ =>
+                {
+                    var name = discount.Name;
+                    _discountAccess.Delete(discount.Id);
+                    _selectedDiscountId = null;
+                    _statusMessage = l10n("admin.discounts.status.deleted", new Dictionary<string, string> { ["name"] = name });
+                    SetUser(_user);
+                }));
     }
 
     private void RenderCreateForm()

@@ -93,37 +93,37 @@ public sealed class MainView : Form
                 _appLoop.Display(cinemaView);
             }));
 
-            Button(l10n("main.dashboard.actions.seat_prices")).OnClick(() =>
+            actionButtons.Add(Button(l10n("main.dashboard.actions.seat_prices")).OnClick(() =>
             {
                 Console.Clear();
                 var seatPriceView = _serviceProvider.GetRequiredService<SeatPriceView>();
                 seatPriceView.SetUser(_user);
                 _appLoop.Display(seatPriceView);
-            });
+            }));
 
-            Button(l10n("main.dashboard.actions.discounts")).OnClick(() =>
+            actionButtons.Add(Button(l10n("main.dashboard.actions.discounts")).OnClick(() =>
             {
                 Console.Clear();
                 var discountView = _serviceProvider.GetRequiredService<DiscountView>();
                 discountView.SetUser(_user);
                 _appLoop.Display(discountView);
-            });
+            }));
 
-            Button("Locations").OnClick(() =>
+            actionButtons.Add(Button("Locations").OnClick(() =>
             {
                 Console.Clear();
                 var locationView = _serviceProvider.GetRequiredService<LocationView>();
                 locationView.SetUser(_user);
                 _appLoop.Display(locationView);
-            });
+            }));
 
-            Button(l10n("Snacks Manager")).OnClick(() =>
+            actionButtons.Add(Button(l10n("Snacks Manager")).OnClick(() =>
             {
                 Console.Clear();
                 var snacksView = _serviceProvider.GetRequiredService<SnacksView>();
                 snacksView.SetView(_user, _cinemaId);
                 _appLoop.Display(snacksView);
-            });
+            }));
         }
 
         Navigation(actionButtons.ToArray());
