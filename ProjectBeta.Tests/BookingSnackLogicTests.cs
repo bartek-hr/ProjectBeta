@@ -226,4 +226,52 @@ public class BookingSnackLogicTests
 
         Assert.ThrowsException<Exception>(() => logic.Delete(999, Admin));
     }
+
+    [TestMethod]
+    public void GetAllByBookingId_ReturnsOnlyMatchingBookingSnacks()
+    {
+        var (logic, context) = CreateLogic();
+        var booking1 = SeedBooking(context);
+        var booking2 = SeedBooking(context);
+        var snack = new Snack { Name = "Chips", Price = 2.50m, Quantity = 50 };
+        context.Snacks.Add(snack);
+        context.SaveChanges();
+        context.BookingSnacks.AddRange(
+            new BookingSnack { SnackId = snack.Id, BookingId = booking1.Id, BookedQuantity = 1, BookedAt = DateTime.UtcNow },
+            new BookingSnack { SnackId = snack.Id, BookingId = booking2.Id, BookedQuantity = 2, BookedAt = DateTime.UtcNow }
+        );
+        context.SaveChanges();
+
+        var result = logic.GetAllByBookingId(booking1.Id);
+
+        Assert.AreEqual(1, result.Count);
+        Assert.AreEqual(booking1.Id, result[0].BookingId);
+    }
+
+    [TestMethod]
+    public void GetAllByBookingId_NoSnacks_ReturnsEmpty()
+    {
+        var (logic, context) = CreateLogic();
+        var booking = SeedBooking(context);
+
+        var result = logic.GetAllByBookingId(booking.Id);
+
+        Assert.AreEqual(0, result.Count);
+    }
+
+    [TestMethod]
+    public void Update_WithZeroQuantity_ThrowsArgumentException()
+    {
+        var (logic, context) = CreateLogic();
+        var booking = SeedBooking(context);
+        var snack = new Snack { Name = "Nachos", Price = 4m, Quantity = 100 };
+        context.Snacks.Add(snack);
+        context.SaveChanges();
+        context.BookingSnacks.Add(new BookingSnack { SnackId = snack.Id, BookingId = booking.Id, BookedQuantity = 2, BookedAt = DateTime.UtcNow });
+        context.SaveChanges();
+        var bs = context.BookingSnacks.First();
+        bs.BookedQuantity = 0;
+
+        Assert.ThrowsException<ArgumentException>(() => logic.Update(bs, Admin));
+    }
 }
