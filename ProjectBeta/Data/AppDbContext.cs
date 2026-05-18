@@ -19,6 +19,10 @@ public class AppDbContext : DbContext
     public DbSet<MovieSchedule> MovieSchedules { get; set; }
     public DbSet<Snack> Snacks { get; set; }
     public DbSet<BookingSnack> BookingSnacks { get; set; }
+    public DbSet<Location> Locations { get; set; }
+    public DbSet<Discount> Discounts { get; set; }
+    public DbSet<BookingDiscount> BookingDiscounts { get; set; }
+    public DbSet<SeatPrice> SeatPrices { get; set; }
 
     public AppDbContext()
     {
@@ -99,7 +103,9 @@ public class AppDbContext : DbContext
                 LastName = "User",
                 DateOfBirth = new DateOnly(1990, 1, 1),
                 CreatedAt = DateTime.UtcNow,
-                IsActive = true
+                IsActive = true,
+                HasSubscription = false,
+                SubscriptionSeatType = null
             },
             new User
             {
@@ -112,7 +118,9 @@ public class AppDbContext : DbContext
                 LastName = "One",
                 DateOfBirth = new DateOnly(1995, 5, 15),
                 CreatedAt = DateTime.UtcNow,
-                IsActive = true
+                IsActive = true,
+                HasSubscription = false,
+                SubscriptionSeatType = null
             }
         );
 
@@ -120,6 +128,12 @@ public class AppDbContext : DbContext
             .HasOne(a => a.Cinema)
             .WithMany(c => c.Auditoriums)
             .HasForeignKey(a => a.CinemaId);
+
+        modelBuilder.Entity<Auditorium>()
+            .HasOne(a => a.Location)
+            .WithMany(l => l.Auditoriums)
+            .HasForeignKey(a => a.LocationId)
+            .OnDelete(DeleteBehavior.SetNull);
 
         modelBuilder.Entity<Cinema>().HasData(
             new Cinema { Id = 1, Name = "Darcy", City = "Rotterdam" }
@@ -130,6 +144,8 @@ public class AppDbContext : DbContext
             new Auditorium { Id = 2, Name = "Auditorium 2", CinemaId = 1, Capacity = 300 },
             new Auditorium { Id = 3, Name = "Auditorium 3", CinemaId = 1, Capacity = 500 }
         );
+
+
 
         modelBuilder.Entity<BookingSnack>(entity =>
         {
@@ -143,5 +159,59 @@ public class AppDbContext : DbContext
                 .HasForeignKey(bs => bs.BookingId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
+
+        modelBuilder.Entity<BookingDiscount>(entity =>
+        {
+            // Restrict so soft-deleting a Discount doesn't wipe booking history.
+            entity.HasOne(bd => bd.Discount)
+                .WithMany()
+                .HasForeignKey(bd => bd.DiscountId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+    }
+
+    // Seeds default data if the table is empty. Safe to call on every startup
+    public void Seed()
+    {
+        if (!Discounts.Any())
+        {
+            Discounts.AddRange(
+                new Discount
+                {
+                    Name = "Child Discount",
+                    Percentage = 50m,
+                    MaxAge = 12,
+                    IsActive = true,
+                    EffectiveFrom = DateTime.UtcNow
+                },
+                new Discount
+                {
+                    Name = "Senior Discount",
+                    Percentage = 20m,
+                    MinAge = 65,
+                    IsActive = true,
+                    EffectiveFrom = DateTime.UtcNow
+                },
+                new Discount
+                {
+                    Name = "Group Discount",
+                    Percentage = 20m,
+                    MinGroupSize = 6,
+                    IsActive = true,
+                    EffectiveFrom = DateTime.UtcNow
+                }
+            );
+            SaveChanges();
+        }
+
+        if (!SeatPrices.Any())
+        {
+            SeatPrices.AddRange(
+                new SeatPrice { Id = 1, Name = "Standard", Price = 15.00m },
+                new SeatPrice { Id = 2, Name = "VIP",      Price = 17.50m },
+                new SeatPrice { Id = 3, Name = "King",     Price = 20.00m }
+            );
+            SaveChanges();
+        }
     }
 }

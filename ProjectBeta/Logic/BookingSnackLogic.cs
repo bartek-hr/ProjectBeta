@@ -18,6 +18,10 @@ public class BookingSnackLogic
     {
         return _bookingSnackAccess.GetAll();
     }
+    public List<BookingSnack> GetAllByBookingId(int bookingId)
+    {
+        return _bookingSnackAccess.GetAllByBookingId(bookingId);
+    }
 
     public BookingSnack? GetById(int id)
     {
@@ -26,9 +30,6 @@ public class BookingSnackLogic
 
     public void Add(BookingSnack bookingSnack, User currentUser)
     {
-        if (!currentUser.IsAdmin())
-            throw new UnauthorizedAccessException(l10n("booking_snacks.errors.add_unauthorized"));
-
         if (bookingSnack.BookedQuantity <= 0)
             throw new ArgumentException(l10n("booking_snacks.errors.quantity_positive"));
 

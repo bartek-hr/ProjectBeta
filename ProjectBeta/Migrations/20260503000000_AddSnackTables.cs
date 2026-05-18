@@ -19,13 +19,32 @@ namespace ProjectBeta.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(type: "TEXT", nullable: false),
                     Price = table.Column<decimal>(type: "TEXT", nullable: false),
-                    Quantity = table.Column<int>(type: "INTEGER", nullable: false)
+                    Quantity = table.Column<int>(type: "INTEGER", nullable: true),
+                    CinemaId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Snacks", x => x.Id);
                 });
-
+                migrationBuilder.Sql(@"
+                    INSERT INTO Snacks (Id, Name, Price, Quantity, CinemaId) VALUES
+                    (1, 'Pepsi', 3.99, 300, 1),
+                    (2, 'Cola', 3.99, 300, 1),
+                    (3, 'Sprite', 3.99, 300, 1),
+                    (4, 'Cola Zero', 3.99, 300, 1),
+                    (5, 'Pepsi Zero', 3.99, 300, 1),
+                    (6, 'Fuze Tea Peach', 3.99, 300, 1),
+                    (7, 'Fuze Tea Lemon', 3.99, 300, 1),
+                    (8, 'Fuze Tea Peach Sparkling', 3.99, 300, 1),
+                    (9, 'Fuze Tea Lemon Sparkling', 3.99, 300, 1),
+                    (10, 'Fanta Orange', 3.99, 300, 1),
+                    (11, 'Spa Red', 1.99, 300, 1),
+                    (12, 'Spa Blue', 1.99, 300, 1),
+                    (13, 'Lipton Ice Tea Peach', 3.99, 300, 1),
+                    (14, 'Lipton Ice Tea Lemon', 3.99, 300, 1),
+                    (15, 'Popcorn', 6.99, 300, 1),
+                    (16, 'Nachos', 7.99, 300, 1)
+                ");
             migrationBuilder.CreateTable(
                 name: "BookingSnacks",
                 columns: table => new

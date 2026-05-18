@@ -169,6 +169,8 @@ namespace ProjectBeta.Migrations
                     { 2, new DateTime(2026, 5, 2, 11, 6, 12, 533, DateTimeKind.Utc).AddTicks(980), new DateOnly(1995, 5, 15), "user1@example.com", "User", true, "One", "password", "User", "user1" }
                 });
 
+
+
             migrationBuilder.InsertData(
                 table: "Auditoriums",
                 columns: new[] { "Id", "Capacity", "CinemaId", "Name" },
@@ -178,6 +180,7 @@ namespace ProjectBeta.Migrations
                     { 2, 300, 1, "Auditorium 2" },
                     { 3, 500, 1, "Auditorium 3" }
                 });
+               
 
             migrationBuilder.CreateIndex(
                 name: "IX_Auditoriums_CinemaId",

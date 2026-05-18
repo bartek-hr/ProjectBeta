@@ -28,6 +28,19 @@ public class MovieLogic
         return _movieScheduleAccess.GetScheduleForDate(date);
     }
 
+    public List<Movie> Search(string query)
+    {
+        if (string.IsNullOrWhiteSpace(query))
+            return [];
+
+        return _movieAccess.Search(query);
+    }
+
+    public List<MovieSchedule> SearchSchedule(IReadOnlyList<MovieSchedule> schedule, string query)
+    {
+        return _movieAccess.SearchSchedule(schedule, query);
+    }
+
     public IReadOnlyList<MovieSchedule> GetOrGenerateSchedule(DateOnly date)
     {
         var existingSchedule = GetScheduleForDate(date);

@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using ProjectBeta.Model;
 using ProjectBeta.Access;
 
@@ -29,23 +27,6 @@ public class BookingLogic
         return booking;
     }
 
-
-    public decimal DetermineTotalPrice(List<int> selectedSeatTypes)
-    {
-        decimal totalPrice = 0.0m;
-        foreach (int selectedSeatType in selectedSeatTypes){
-            if (selectedSeatType == 1) {
-                totalPrice = totalPrice + 15.00m;
-            }
-            if (selectedSeatType == 2) {
-                totalPrice = totalPrice + 17.50m;
-            }
-            if (selectedSeatType == 3) {
-                totalPrice = totalPrice + 20.00m;
-            }                        
-        }
-        return totalPrice;
-    }
     public void CreateBooking(Booking booking)
     {
         if (booking.TotalPrice <= 0)
@@ -56,31 +37,38 @@ public class BookingLogic
 
         if (booking.AuditoriumId <= 0)
             throw new Exception(l10n("reservations.errors.invalid_screening"));
-    
+
         booking.CreatedAt = DateTime.Now;
 
-           
         booking.Paid = false;
 
         _bookingAccess.Add(booking);
     }
-    public void CreateBooking(int userId, decimal totalPrice, int auditoriumId, string seats, int discountID, string movie, DateTime createdAt )
+
+    public Booking CreateBooking(int userId, decimal finalPrice, decimal basePrice, int auditoriumId, string seats, string seatAges, string? userSeat, string movie, DateTime createdAt, IEnumerable<int> appliedDiscountIds)
     {
         var booking = new Booking
         {
             UserId = userId,
             Seats = seats,
-            DiscountId = discountID,
+            SeatAges = seatAges,
+            UserSeat = userSeat,
             AuditoriumId = auditoriumId,
-            TotalPrice = totalPrice,
+            TotalPrice = finalPrice,
+            BasePrice = basePrice,
             CreatedAt = createdAt,
             ScreeningId = 1,
             Movie = movie,
-            Paid = false
+            Paid = false,
+            BookingDiscounts = appliedDiscountIds
+                .Distinct()
+                .Select(id => new BookingDiscount { DiscountId = id })
+                .ToList()
         };
 
-        _bookingAccess.Add(booking);
+        return _bookingAccess.AddAndReturn(booking);
     }
+
     public void MarkAsPaid(int bookingId)
     {
         var booking = _bookingAccess.GetById(bookingId);

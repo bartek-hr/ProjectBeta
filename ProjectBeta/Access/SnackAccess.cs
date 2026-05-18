@@ -21,6 +21,19 @@ public class SnackAccess
     {
         return _context.Snacks.FirstOrDefault(s => s.Id == id);
     }
+    public List<Snack> GetAllByCinemaId(int id)
+    {
+        return _context.Snacks
+            .Where(s => s.CinemaId == id)
+            .ToList();
+    }
+
+    public List<Snack> Search(int cinemaId, string query)
+    {
+        return _context.Snacks
+            .Where(s => s.CinemaId == cinemaId && s.Name.Contains(query))
+            .ToList();
+    }
 
     public void Add(Snack snack)
     {

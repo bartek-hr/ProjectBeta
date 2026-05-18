@@ -12,6 +12,9 @@ public sealed class NumberInput : Component, IValidatable, IValueComponent
     private double _step = 1.0;
     private int _precision;
     private bool _isRequired;
+    private bool _readOnly;
+    private Func<bool>? _readOnlyPredicate;
+    private double? _readOnlyValue;
     private List<string> _errors = [];
 
     public NumberInput(string label)
@@ -20,11 +23,14 @@ public sealed class NumberInput : Component, IValidatable, IValueComponent
         FieldKey = label;
     }
 
-    public override bool IsFocusable => true;
+    private bool IsReadOnly => _readOnly || (_readOnlyPredicate?.Invoke() ?? false);
+
+    public override bool IsFocusable => !IsReadOnly;
 
     public string Label { get; }
     public string FieldKey { get; private set; }
     public double? Value => _value;
+    public double? EffectiveValue => IsReadOnly && _readOnlyValue.HasValue ? _readOnlyValue : _value;
     object? IValueComponent.Value => _value;
 
     public NumberInput Key(string fieldKey)
@@ -60,6 +66,27 @@ public sealed class NumberInput : Component, IValidatable, IValueComponent
     public NumberInput Required()
     {
         _isRequired = true;
+        return this;
+    }
+
+    public NumberInput ReadOnly()
+    {
+        _readOnly = true;
+        return this;
+    }
+
+    public NumberInput ReadOnly(Func<bool> predicate, double? overrideValue = null)
+    {
+        _readOnlyPredicate = predicate;
+        _readOnlyValue = overrideValue;
+        return this;
+    }
+
+    public NumberInput Default(double value)
+    {
+        _value = value;
+        _textBuffer = value.ToString(_precision > 0 ? $"F{_precision}" : "G");
+        _cursorPos = _textBuffer.Length;
         return this;
     }
 
@@ -103,14 +130,26 @@ public sealed class NumberInput : Component, IValidatable, IValueComponent
         var buf = context.Buffer;
         var boxWidth = InputBox.GetBoxWidth(context.Width);
         var innerWidth = InputBox.GetInnerWidth(boxWidth);
-        var borderStyle = InputBox.GetBorderStyle(IsFocused, _errors.Count > 0);
+        var readOnly = IsReadOnly;
+        var borderStyle = readOnly
+            ? Style.Muted
+            : InputBox.GetBorderStyle(IsFocused, _errors.Count > 0);
 
         InputBox.WriteTopBorder(buf, Label, boxWidth, borderStyle);
 
         string fullText;
         Style textStyle;
 
-        if (string.IsNullOrEmpty(_textBuffer))
+        string? readOnlyDisplay = readOnly && _readOnlyValue.HasValue
+            ? _readOnlyValue.Value.ToString("G")
+            : null;
+
+        if (readOnlyDisplay != null)
+        {
+            fullText = readOnlyDisplay;
+            textStyle = Style.Muted;
+        }
+        else if (string.IsNullOrEmpty(_textBuffer))
         {
             fullText = "0";
             textStyle = Style.Muted;
@@ -118,7 +157,7 @@ public sealed class NumberInput : Component, IValidatable, IValueComponent
         else
         {
             fullText = _textBuffer;
-            textStyle = _value != null ? Style.Default : Style.Error;
+            textStyle = readOnly ? Style.Muted : (_value != null ? Style.Default : Style.Error);
         }
 
         var viewOffset = 0;
@@ -147,6 +186,9 @@ public sealed class NumberInput : Component, IValidatable, IValueComponent
 
     public override bool ProcessKey(ConsoleKeyInfo key)
     {
+        if (IsReadOnly)
+            return false;
+
         switch (key.Key)
         {
             case ConsoleKey.UpArrow:

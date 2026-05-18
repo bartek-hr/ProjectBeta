@@ -113,7 +113,7 @@ public class BookingSnackLogicTests
     }
 
     [TestMethod]
-    public void Add_RegularUser_ThrowsUnauthorized()
+    public void Add_RegularUser_AddsBookingSnack()
     {
         var (logic, context) = CreateLogic();
         var booking = SeedBooking(context);
@@ -122,7 +122,9 @@ public class BookingSnackLogicTests
         context.SaveChanges();
         var bookingSnack = new BookingSnack { SnackId = snack.Id, BookingId = booking.Id, BookedQuantity = 2, BookedAt = DateTime.UtcNow };
 
-        Assert.ThrowsException<UnauthorizedAccessException>(() => logic.Add(bookingSnack, RegularUser));
+        logic.Add(bookingSnack, RegularUser);
+
+        Assert.AreEqual(1, context.BookingSnacks.Count());
     }
 
     [TestMethod]

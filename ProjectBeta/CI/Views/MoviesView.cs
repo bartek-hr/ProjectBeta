@@ -12,10 +12,12 @@ namespace ProjectBeta.CI.Views;
 public sealed class MoviesView : Form
 {
     private readonly MovieLogic _movieLogic;
+    public int _cinemaId;
     private readonly BookingLogic _bookingLogic;
     private DateOnly _selectedDate;
     private IReadOnlyList<MovieSchedule> _schedule = [];
     private string? _statusMessage;
+    private string _searchQuery = string.Empty;
     private User _user = null!;
     private readonly IServiceProvider _serviceProvider;
     private readonly AppLoop _appLoop;
@@ -57,11 +59,13 @@ public sealed class MoviesView : Form
         ClearChildren();
         InitializeForm();
     }
-    public void SetUser(User user)
+    public void SetUser(User user, int cinemaId)
     {
         _user = user;
+        _searchQuery = string.Empty;
+        _cinemaId = cinemaId;
         ClearChildren();
-        LoadSchedule();  
+        LoadSchedule();
         InitializeForm();
     }
     private void LoadSchedule()
@@ -80,6 +84,22 @@ public sealed class MoviesView : Form
         }));
         Message(() => _statusMessage);
 
+        var searchInput = TextInput("Search by title");
+        Button("Search").OnClick(() =>
+        {
+            _searchQuery = searchInput.Value ?? string.Empty;
+            RefreshView();
+        });
+        Button("Clear").OnClick(() =>
+        {
+            _searchQuery = string.Empty;
+            RefreshView();
+        });
+
+        Divider();
+
+        var filteredSchedule = _movieLogic.SearchSchedule(_schedule, _searchQuery);
+
         var table = new Table<MovieSchedule>(
             l10n("movies.list.table.movie"),
             l10n("movies.list.table.rating"),
@@ -90,7 +110,7 @@ public sealed class MoviesView : Form
         )
         .EmptyMessage(l10n("movies.list.empty"))
         .OnSelect(OnMovieSelected);
-        foreach (var schedule in _schedule)
+        foreach (var schedule in filteredSchedule)
         {
             table.AddRow(
                 schedule,
@@ -103,7 +123,8 @@ public sealed class MoviesView : Form
             );
         }
         Add(table);
-
+        Divider();
+        Button(l10n("movies.list.actions.back")).OnClick(NavigateToMain);
     }
     private int DetermineSpaceLeft(MovieSchedule schedule)
     {
@@ -123,10 +144,18 @@ public sealed class MoviesView : Form
 
     private void OnMovieSelected(MovieSchedule schedule)
     {
-            Console.Clear();
-            var accountView = _serviceProvider.GetRequiredService<MovieSeatBookingView>();
-            accountView.SetView(_user, schedule, schedule.Auditorium);
-            _appLoop.Display(accountView);
+        Console.Clear();
+        var accountView = _serviceProvider.GetRequiredService<MovieSeatBookingView>();
+        accountView.SetView(_user, schedule, schedule.Auditorium, _cinemaId);
+        _appLoop.Display(accountView);
     }
-    
+
+    private void NavigateToMain()
+    {
+        Console.Clear();
+        var mainView = _serviceProvider.GetRequiredService<MainView>();
+        mainView.SetUser(_user);
+        _appLoop.Display(mainView);
+    }
+
 }

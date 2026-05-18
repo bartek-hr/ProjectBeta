@@ -82,6 +82,8 @@ main:
       reports: Reports (TBD)
       users: Users
       cinemas: Cinemas
+      seat_prices: Seat Prices
+      discounts: Discounts
     status:
       reports_tbd: TBD
 movies:
@@ -100,6 +102,8 @@ movies:
     values:
       default_auditorium: 1
       unknown_space_left: ?
+    actions:
+      back: Back
   seat_booking:
     heading: The Grand Cinema
     tagline: A premium seat picker for the movie reservation flow.
@@ -121,6 +125,10 @@ reservations:
       end: End
       auditorium: Auditorium
       snacks: Snacks
+    age_prompt: "Optional: enter each person's age below to apply age-based discounts"
+    age_label: "Age for seat :seat (optional)"
+    user_seat_label: "Which seat is yours? (optional, for subscription use)"
+    user_seat_none: None
     total_price: Total Price: :amount
     values:
       default_auditorium: 1
@@ -153,6 +161,7 @@ reservations:
       seats: Seats
       date: Date
       paid: Paid
+      snacks: Snacks
       total_price: Total Price
     actions:
       back: Back
@@ -288,6 +297,56 @@ admin:
         update_name_unauthorized: Only admins can update auditorium names.
         update_capacity_unauthorized: Only admins can update auditorium capacity.
         reassign_unauthorized: Only admins can reassign auditoriums.
+  seat_prices:
+    heading: Seat Prices
+    instructions: Update the base price for each seat type. Changes apply to future bookings only.
+    price_label: ":name (current: €:price)"
+    actions:
+      save: Save :name price
+      back: Back
+    status:
+      saved: ":name price updated to €:price."
+      invalid_price: Please enter a valid price (0 or higher).
+  discounts:
+    heading: Discounts
+    instructions: View and manage discount rules.
+    active_badge: ACTIVE
+    inactive_badge: INACTIVE
+    fields:
+      percentage:
+        label: "Percentage (%)"
+      effective_from:
+        label: Effective from (YYYY-MM-DD)
+      effective_until:
+        label: Effective until (YYYY-MM-DD, leave blank for no end)
+      is_active:
+        label: Active
+      name:
+        label: Name
+      min_age:
+        label: Min age (leave blank for none)
+      max_age:
+        label: Max age (leave blank for none)
+      min_group_size:
+        label: Min group size (leave blank for none)
+      required_day_of_week:
+        label: Day of week
+    actions:
+      edit: Edit :name
+      save: Save :name
+      delete: Delete :name
+      back: Back
+      create: Create Discount
+    create:
+      heading: Create New Discount
+    status:
+      saved: ":name updated."
+      deleted: ":name deleted."
+      created: ":name created."
+      invalid_percentage: Percentage must be between 0 and 100.
+      invalid_age_range: Min age must be less than or equal to max age.
+      invalid_date: Invalid date format. Use YYYY-MM-DD.
+      name_required: Name is required.
 components:
   form:
     date_placeholder: YYYY-MM-DD

@@ -1,10 +1,8 @@
 using ProjectBeta.Data;
 using ProjectBeta.Model;
+using ProjectBeta.Access;
 
 namespace ProjectBeta.Logic;
-
-
-using ProjectBeta.Access;
 
 public class UserLogic
 {
