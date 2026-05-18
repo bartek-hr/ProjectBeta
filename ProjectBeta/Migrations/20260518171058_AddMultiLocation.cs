@@ -65,6 +65,11 @@ namespace ProjectBeta.Migrations
                 oldType: "INTEGER",
                 oldNullable: true);
 
+            migrationBuilder.InsertData(
+                table: "Locations",
+                columns: new[] { "Id", "Address", "City", "Name" },
+                values: new object[] { 1, "Main St 1", "Rotterdam", "Main Location" });
+
             migrationBuilder.UpdateData(
                 table: "Auditoriums",
                 keyColumn: "Id",
@@ -85,11 +90,6 @@ namespace ProjectBeta.Migrations
                 keyValue: 3,
                 column: "LocationId",
                 value: 1);
-
-            migrationBuilder.InsertData(
-                table: "Locations",
-                columns: new[] { "Id", "Address", "City", "Name" },
-                values: new object[] { 1, "Main St 1", "Rotterdam", "Main Location" });
 
             migrationBuilder.UpdateData(
                 table: "Users",
