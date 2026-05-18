@@ -17,8 +17,8 @@ auth:
   login:
     heading: Login
     instructions:
-      default: Please enter credentials. Tab to navigate, Shift+Tab to go back, Escape to exit.
-      invalid: One of the credentials is wrong. Please try again. Tab to navigate, Shift+Tab to go back, Escape to exit.
+      default: Please enter credentials. Tab moves between fields and action groups, Shift+Tab goes back, Escape exits.
+      invalid: One of the credentials is wrong. Please try again. Tab moves between fields and action groups, Shift+Tab goes back, Escape exits.
     fields:
       identity:
         label: Username or Email
@@ -37,7 +37,7 @@ auth:
       invalid_credentials: Invalid credentials.
   register:
     heading: User Information
-    instructions: Please enter user details. Tab to navigate, Shift+Tab to go back, Escape to exit.
+    instructions: Please enter user details. Tab moves between fields and action groups, Shift+Tab goes back, Escape exits.
     sections:
       account: Account Info
     fields:
@@ -103,7 +103,7 @@ movies:
   seat_booking:
     heading: The Grand Cinema
     tagline: A premium seat picker for the movie reservation flow.
-    instructions: Tab to focus the buttons. Escape exits the app.
+    instructions: Tab moves between the seat map and the action group. Use arrows in the seat map and Up/Down in the action group. Escape exits the app.
     auditorium: Hall 1 · Dolby Atmos
     actions:
       snacks: Snacks (TBD)
@@ -112,7 +112,7 @@ movies:
 reservations:
   create:
     heading: Reservation Details
-    instructions: Tab to navigate, Shift+Tab to go back.
+    instructions: Tab moves between components and action groups. Use Up/Down inside action groups. Shift+Tab goes back.
     table:
       movie: Movie
       seat: Seat
@@ -130,7 +130,7 @@ reservations:
       back: Back
   edit:
     heading: Reservation Details
-    instructions: Tab to navigate, Shift+Tab to go back.
+    instructions: Tab moves between components and action groups. Use Up/Down inside action groups. Shift+Tab goes back.
     empty: No movies scheduled.
     table:
       movie: Movie
@@ -177,7 +177,7 @@ reservations:
 account:
   profile:
     heading: Account Details
-    instructions: Update your account info. Tab to navigate, Shift+Tab to go back.
+    instructions: Update your account info. Tab moves between fields and action groups, Shift+Tab goes back.
     sections:
       account: Account Info
     fields:
@@ -241,7 +241,7 @@ admin:
   cinemas:
     list:
       heading: Cinema Management
-      instructions: Select a cinema to manage.
+      instructions: Tab focuses the cinema list once. Use Up/Down to choose a cinema.
       cinema_button: :name — :city
       actions:
         back: Back
@@ -269,7 +269,7 @@ admin:
   auditoriums:
     list:
       heading: :cinema — Auditoriums
-      instructions: Select an auditorium to edit.
+      instructions: Tab focuses the auditorium list once. Use Up/Down to choose an auditorium.
       auditorium_button: :name (Capacity: :capacity)
       actions:
         back: Back
@@ -327,7 +327,7 @@ components:
 demo:
   user_registration:
     heading: Register
-    instructions: Demo registration form. Tab moves focus, Enter activates the button, Escape exits.
+    instructions: Demo registration form. Tab moves between fields and action groups, Up/Down changes the active button, Escape exits.
     fields:
       username:
         label: Username

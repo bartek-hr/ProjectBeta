@@ -41,54 +41,59 @@ public sealed class MainView : Form
             ["name"] = $"{_user.FirstName} {_user.LastName}"
         }));
 
-
-        Button(l10n("main.dashboard.actions.movies")).OnClick(() => 
-        {    Console.Clear();
-            var moviesVies = _serviceProvider.GetRequiredService<MoviesView>();
-            moviesVies.SetUser(_user);
-            _appLoop.Display(moviesVies);
-        });
-
-        Button(l10n("main.dashboard.actions.reservation_history")).OnClick(() =>
+        var actionButtons = new List<Button>
         {
-            Console.Clear();
-            var reservationHistoryView = _serviceProvider.GetRequiredService<ReservationHistoryView>();
-            reservationHistoryView.SetView(_user);
-            _appLoop.Display(reservationHistoryView);
-        });
-
-        Button(l10n("main.dashboard.actions.upcoming_reservations")).OnClick(() =>
-        {
-            Console.Clear();
-            var upcomingReservationsView = _serviceProvider.GetRequiredService<UpcomingReservationsView>();
-            upcomingReservationsView.SetView(_user);
-            _appLoop.Display(upcomingReservationsView);
-        });
-        Button(l10n("main.dashboard.actions.account_details")).OnClick(() =>
-        {
-            Console.Clear();
-            var accountView = _serviceProvider.GetRequiredService<AccountView>();
-            accountView.SetUser(_user);
-            _appLoop.Display(accountView);
-        });
+            Button(l10n("main.dashboard.actions.movies")).OnClick(() =>
+            {
+                Console.Clear();
+                var moviesVies = _serviceProvider.GetRequiredService<MoviesView>();
+                moviesVies.SetUser(_user);
+                _appLoop.Display(moviesVies);
+            }),
+            Button(l10n("main.dashboard.actions.reservation_history")).OnClick(() =>
+            {
+                Console.Clear();
+                var reservationHistoryView = _serviceProvider.GetRequiredService<ReservationHistoryView>();
+                reservationHistoryView.SetView(_user);
+                _appLoop.Display(reservationHistoryView);
+            }),
+            Button(l10n("main.dashboard.actions.upcoming_reservations")).OnClick(() =>
+            {
+                Console.Clear();
+                var upcomingReservationsView = _serviceProvider.GetRequiredService<UpcomingReservationsView>();
+                upcomingReservationsView.SetView(_user);
+                _appLoop.Display(upcomingReservationsView);
+            }),
+            Button(l10n("main.dashboard.actions.account_details")).OnClick(() =>
+            {
+                Console.Clear();
+                var accountView = _serviceProvider.GetRequiredService<AccountView>();
+                accountView.SetUser(_user);
+                _appLoop.Display(accountView);
+            })
+        };
         if (_user.IsAdmin())
         {
-            Button(l10n("main.dashboard.actions.reports")).OnClick(form => { _statusMessage = l10n("main.dashboard.status.reports_tbd"); });
-            Button(l10n("main.dashboard.actions.users")).OnClick(() =>
+            actionButtons.Add(Button(l10n("main.dashboard.actions.reports")).OnClick(form =>
+            {
+                _statusMessage = l10n("main.dashboard.status.reports_tbd");
+            }));
+            actionButtons.Add(Button(l10n("main.dashboard.actions.users")).OnClick(() =>
             {
                 Console.Clear();
                 var usersView = _serviceProvider.GetRequiredService<UsersView>();
                 usersView.SetUser(_user);
                 _appLoop.Display(usersView);
-            });
-            Button(l10n("main.dashboard.actions.cinemas")).OnClick(() =>
+            }));
+            actionButtons.Add(Button(l10n("main.dashboard.actions.cinemas")).OnClick(() =>
             {
                 Console.Clear();
                 var cinemaView = _serviceProvider.GetRequiredService<CinemaView>();
                 cinemaView.SetUser(_user);
                 _appLoop.Display(cinemaView);
-            });
+            }));
         }
+        Navigation(actionButtons.ToArray());
         Divider();
         Message(() => _statusMessage);
         LogoutButton(_appLoop, _serviceProvider);

@@ -40,32 +40,32 @@ public sealed class CinemaEditView : Form
 
         Divider();
 
-        Button(l10n("admin.cinemas.edit.actions.save")).OnClick(form =>
-        {
-            var name = form.Get<string>("name") ?? string.Empty;
-            var city = form.Get<string>("city") ?? string.Empty;
-
-            try
+        Navigation(
+            Button(l10n("admin.cinemas.edit.actions.save")).OnClick(form =>
             {
-                _cinemaLogic.UpdateName(_cinema.Id, name, _user);
-                _cinemaLogic.UpdateCity(_cinema.Id, city, _user);
-                _cinema.Name = name;
-                _cinema.City = city;
-                _statusMessage = l10n("admin.cinemas.edit.status.updated");
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                _statusMessage = ex.Message;
-            }
-        });
+                var name = form.Get<string>("name") ?? string.Empty;
+                var city = form.Get<string>("city") ?? string.Empty;
 
-        Button(l10n("admin.cinemas.edit.actions.back")).OnClick(() =>
-        {
-            Console.Clear();
-            var updated = _cinemaLogic.GetById(_cinema.Id) ?? _cinema;
-            var detailView = _serviceProvider.GetRequiredService<CinemaDetailView>();
-            detailView.SetContext(_user, updated);
-            _appLoop.Display(detailView);
-        });
+                try
+                {
+                    _cinemaLogic.UpdateName(_cinema.Id, name, _user);
+                    _cinemaLogic.UpdateCity(_cinema.Id, city, _user);
+                    _cinema.Name = name;
+                    _cinema.City = city;
+                    _statusMessage = l10n("admin.cinemas.edit.status.updated");
+                }
+                catch (UnauthorizedAccessException ex)
+                {
+                    _statusMessage = ex.Message;
+                }
+            }),
+            Button(l10n("admin.cinemas.edit.actions.back")).OnClick(() =>
+            {
+                Console.Clear();
+                var updated = _cinemaLogic.GetById(_cinema.Id) ?? _cinema;
+                var detailView = _serviceProvider.GetRequiredService<CinemaDetailView>();
+                detailView.SetContext(_user, updated);
+                _appLoop.Display(detailView);
+            }));
     }
 }

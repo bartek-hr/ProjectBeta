@@ -74,9 +74,11 @@ public sealed class ReservationView : Form
             ["amount"] = _bookingLogic.DetermineTotalPrice(_seatTypes).ToString()
         }));
         Message(() => _statusMessage);
-        Button(l10n("reservations.create.actions.save")).OnClick(OnSave);
-
-        Button(l10n("reservations.create.actions.back")).OnClick(NavigateToMain).Hidden(() => _confirmingDelete);
+        var backButton = new Button(l10n("reservations.create.actions.back")).OnClick(NavigateToMain);
+        backButton.Hidden(() => _confirmingDelete);
+        Navigation(
+            Button(l10n("reservations.create.actions.save")).OnClick(OnSave),
+            backButton);
     }
 
     private void OnSave(Form form)

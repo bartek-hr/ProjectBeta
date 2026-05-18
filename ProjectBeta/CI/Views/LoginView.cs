@@ -54,8 +54,9 @@ public sealed class LoginView : Form
         Divider();
 
         Message(() => _statusMessage);
-        Button(l10n("auth.login.actions.submit")).OnClick(OnSubmit);
-        Button(l10n("auth.login.actions.register")).OnClick(NavigateToUserView);
+        Navigation(
+            Button(l10n("auth.login.actions.submit")).OnClick(OnSubmit),
+            Button(l10n("auth.login.actions.register")).OnClick(NavigateToUserView));
     }
 
     private string? GetError(string key)

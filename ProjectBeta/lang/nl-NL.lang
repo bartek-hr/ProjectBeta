@@ -17,8 +17,8 @@ auth:
   login:
     heading: Inloggen
     instructions:
-      default: Vul je gegevens in. Tab om te navigeren, Shift+Tab om terug te gaan, Escape om af te sluiten.
-      invalid: Een van de inloggegevens is onjuist. Probeer het opnieuw. Tab om te navigeren, Shift+Tab om terug te gaan, Escape om af te sluiten.
+      default: Vul je gegevens in. Tab verplaatst tussen velden en actiegroepen, Shift+Tab gaat terug, Escape sluit af.
+      invalid: Een van de inloggegevens is onjuist. Probeer het opnieuw. Tab verplaatst tussen velden en actiegroepen, Shift+Tab gaat terug, Escape sluit af.
     fields:
       identity:
         label: Gebruikersnaam of e-mail
@@ -37,7 +37,7 @@ auth:
       invalid_credentials: Ongeldige inloggegevens.
   register:
     heading: Gebruikersinformatie
-    instructions: Vul je gegevens in. Tab om te navigeren, Shift+Tab om terug te gaan, Escape om af te sluiten.
+    instructions: Vul je gegevens in. Tab verplaatst tussen velden en actiegroepen, Shift+Tab gaat terug, Escape sluit af.
     sections:
       account: Accountinformatie
     fields:
@@ -103,7 +103,7 @@ movies:
   seat_booking:
     heading: The Grand Cinema
     tagline: Een premium stoelkiezer voor het reserveringsproces van films.
-    instructions: Tab om de knoppen te selecteren. Escape sluit de app af.
+    instructions: Tab verplaatst tussen de stoelenkaart en de actiegroep. Gebruik pijltjes in de stoelenkaart en Omhoog/Omlaag in de actiegroep. Escape sluit de app af.
     auditorium: Zaal 1 · Dolby Atmos
     actions:
       snacks: Snacks (NOG TE DOEN)
@@ -112,7 +112,7 @@ movies:
 reservations:
   create:
     heading: Reserveringsdetails
-    instructions: Tab om te navigeren, Shift+Tab om terug te gaan.
+    instructions: Tab verplaatst tussen componenten en actiegroepen. Gebruik Omhoog/Omlaag binnen actiegroepen. Shift+Tab gaat terug.
     table:
       movie: Film
       seat: Stoel
@@ -130,7 +130,7 @@ reservations:
       back: Terug
   edit:
     heading: Reserveringsdetails
-    instructions: Tab om te navigeren, Shift+Tab om terug te gaan.
+    instructions: Tab verplaatst tussen componenten en actiegroepen. Gebruik Omhoog/Omlaag binnen actiegroepen. Shift+Tab gaat terug.
     empty: Geen films ingepland.
     table:
       movie: Film
@@ -177,7 +177,7 @@ reservations:
 account:
   profile:
     heading: Accountgegevens
-    instructions: Werk je accountinformatie bij. Tab om te navigeren, Shift+Tab om terug te gaan.
+    instructions: Werk je accountinformatie bij. Tab verplaatst tussen velden en actiegroepen, Shift+Tab gaat terug.
     sections:
       account: Accountinformatie
     fields:
@@ -241,7 +241,7 @@ admin:
   cinemas:
     list:
       heading: Bioscoopbeheer
-      instructions: Selecteer een bioscoop om te beheren.
+      instructions: Tab focust de bioscooplijst in één keer. Gebruik Omhoog/Omlaag om een bioscoop te kiezen.
       cinema_button: :name — :city
       actions:
         back: Terug
@@ -269,7 +269,7 @@ admin:
   auditoriums:
     list:
       heading: :cinema — Zalen
-      instructions: Selecteer een zaal om te bewerken.
+      instructions: Tab focust de zaal-lijst in één keer. Gebruik Omhoog/Omlaag om een zaal te kiezen.
       auditorium_button: :name (Capaciteit: :capacity)
       actions:
         back: Terug
@@ -327,7 +327,7 @@ components:
 demo:
   user_registration:
     heading: Registreren
-    instructions: Demo-registratieformulier. Tab verplaatst de focus, Enter activeert de knop, Escape sluit af.
+    instructions: Demo-registratieformulier. Tab verplaatst tussen velden en actiegroepen, Omhoog/Omlaag wisselt de actieve knop, Escape sluit af.
     fields:
       username:
         label: Gebruikersnaam
