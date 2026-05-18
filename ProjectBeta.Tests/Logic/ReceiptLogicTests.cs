@@ -28,7 +28,7 @@ public class ReceiptLogicTests
         _context.Database.EnsureCreated();
         _receiptAccess = new ReceiptAccess(_context);
         _bookingAccess = new BookingAccess(_context);
-        _logic = new ReceiptLogic(_receiptAccess);
+        _logic = new ReceiptLogic(_receiptAccess, _bookingAccess);
     }
 
     [TestCleanup]
@@ -119,13 +119,21 @@ public class ReceiptLogicTests
     }
 
     [TestMethod]
-    public void MarkAsPaid_ExistingReceipt_CallsUpdate()
+    public void CreateReceipt_NonexistentBooking_ThrowsException()
+    {
+        Assert.ThrowsException<Exception>(() =>
+            _logic!.CreateReceipt(new Receipt { BookingId = 999, Total = 15m }));
+    }
+
+    [TestMethod]
+    public void MarkAsPaid_ExistingReceipt_MarksBookingAsPaid()
     {
         var bookingId = SeedBooking();
         _logic!.CreateReceipt(new Receipt { BookingId = bookingId, Total = 15m });
         var id = _context!.Receipts.First().Id;
-        // MarkAsPaid should not throw for an existing receipt
         _logic.MarkAsPaid(id);
+        var booking = _context.Bookings.Find(bookingId);
+        Assert.IsTrue(booking!.Paid);
     }
 
     [TestMethod]

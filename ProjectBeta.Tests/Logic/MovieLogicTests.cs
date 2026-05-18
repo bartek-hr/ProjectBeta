@@ -207,6 +207,7 @@ public class MovieLogicTests
         var date = DateOnly.FromDateTime(DateTime.Today.AddDays(7));
         var result = logic.GenerateSchedule(date);
         Assert.IsTrue(result.Count > 0);
+        Assert.AreEqual(1, _context!.Movies.Count(movie => movie.Id == "dup"));
     }
 
     [TestMethod]
@@ -217,6 +218,30 @@ public class MovieLogicTests
         Assert.IsTrue(result.Count > 0);
         Assert.IsTrue(_context!.Movies.Any());
         Assert.IsTrue(_context.MovieSchedules.Any(s => s.ScheduleDate == date));
+    }
+
+    [TestMethod]
+    public void GenerateSchedule_RespectsOpeningClosingAndBreakConstraints()
+    {
+        var date = DateOnly.FromDateTime(DateTime.Today.AddDays(9));
+        var result = _logic!.GenerateSchedule(date);
+
+        Assert.IsTrue(result.Count > 0);
+
+        foreach (var auditoriumSchedules in result.GroupBy(schedule => schedule.AuditoriumId))
+        {
+            var ordered = auditoriumSchedules.OrderBy(schedule => schedule.StartTime).ToList();
+            Assert.IsTrue(ordered.All(schedule => schedule.StartTime >= TimeOnly.ParseExact(MovieLogic.OpeningTime, "HH:mm")));
+            Assert.IsTrue(ordered.All(schedule => schedule.EndTime <= TimeOnly.ParseExact(MovieLogic.ClosingTime, "HH:mm")));
+
+            for (var i = 1; i < ordered.Count; i++)
+            {
+                var breakMinutes = (ordered[i].StartTime - ordered[i - 1].EndTime).TotalMinutes;
+                Assert.IsTrue(
+                    breakMinutes >= MovieLogic.MinimumBreakMinutes,
+                    $"Expected at least {MovieLogic.MinimumBreakMinutes} minutes between screenings, but got {breakMinutes}.");
+            }
+        }
     }
 
     [TestMethod]

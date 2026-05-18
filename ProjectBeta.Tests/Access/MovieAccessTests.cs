@@ -106,6 +106,13 @@ public class MovieAccessTests
         Assert.ThrowsException<HttpRequestException>(() => access.GetTrendingMovies());
     }
 
+    [TestMethod]
+    public void GetTrendingMovies_MalformedPayload_ThrowsJsonException()
+    {
+        var access = CreateAccess("{");
+        Assert.ThrowsException<System.Text.Json.JsonException>(() => access.GetTrendingMovies());
+    }
+
     // --- GetMovieById ---
 
     [TestMethod]
