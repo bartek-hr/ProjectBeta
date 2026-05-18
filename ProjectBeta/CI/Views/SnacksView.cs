@@ -14,6 +14,7 @@ public sealed class SnacksView : Form
     private readonly IServiceProvider _serviceProvider;
     private User _user;
     private int _cinemaId;
+    private string _searchQuery = string.Empty;
     private string? _statusMessage;
     private bool _confirmingDelete;
     private Button? _noCancelButton;
@@ -30,13 +31,35 @@ public sealed class SnacksView : Form
     {
         _user = user;
         _cinemaId = cinemaId;
+        _searchQuery = string.Empty;
+        ClearChildren();
+        InitializeForm();
+    }
+
+    private void RefreshView()
+    {
+        ClearChildren();
         InitializeForm();
     }
 
     private void InitializeForm()
     {
-        List<Snack> Snacks = _snackLogic.GetAllByCinemaId(_cinemaId);
+        List<Snack> Snacks = _snackLogic.Search(_cinemaId, _searchQuery);
         Heading(l10n("Current Snacks"));
+
+        var searchInput = TextInput("Search by name");
+        Button("Search").OnClick(() =>
+        {
+            _searchQuery = searchInput.Value ?? string.Empty;
+            RefreshView();
+        });
+        Button("Clear").OnClick(() =>
+        {
+            _searchQuery = string.Empty;
+            RefreshView();
+        });
+
+        Divider();
         var table = new Table<Snack>(
             l10n("Id"),
             l10n("Name"),
