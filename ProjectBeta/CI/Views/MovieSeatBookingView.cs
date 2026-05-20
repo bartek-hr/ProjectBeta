@@ -65,15 +65,16 @@ public sealed class MovieSeatBookingView : Form
             showtime: $"{_movie.ScheduleDate:yyyy-MM-dd} {_movie.StartTime:HH:mm}",
             capacity: $"{_auditorium.Capacity}"
         );
-        if (_auditorium.Capacity == 150){
-            BuildAuditorium(seatMap, 'N');
+        if (_auditorium.Capacity >= 500){
+            BuildAuditorium(seatMap, 'T');
         }
-        if (_auditorium.Capacity == 300){
+        else if (_auditorium.Capacity >= 300){
             BuildAuditorium(seatMap, 'S');
         }
-        if (_auditorium.Capacity == 500){
-            BuildAuditorium(seatMap, 'T');
-        }        
+        else {
+            BuildAuditorium(seatMap, 'N');
+        }
+
         Navigation(
             Button(l10n("movies.seat_booking.actions.confirm")).OnClick(() =>
             {

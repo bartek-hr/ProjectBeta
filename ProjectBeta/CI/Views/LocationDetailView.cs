@@ -44,6 +44,28 @@ public sealed class LocationDetailView : Form
             _appLoop.Display(moviesView);
         });
 
+        if (_user.IsSuperAdmin())
+        {
+            Button("Edit Location").OnClick(() =>
+            {
+                Console.Clear();
+                var editView = _serviceProvider.GetRequiredService<LocationEditView>();
+                editView.SetView(_user, _location);
+                _appLoop.Display(editView);
+            });
+        }
+
+        if (_user.IsAdmin())
+        {
+            Button("Add Auditoriums").OnClick(() =>
+            {
+                Console.Clear();
+                var addAuditoriumsView = _serviceProvider.GetRequiredService<AddAuditoriumsView>();
+                addAuditoriumsView.SetView(_user, _location);
+                _appLoop.Display(addAuditoriumsView);
+            });
+        }
+
         Button("Snack Manager").OnClick(() =>
         {
             Console.Clear();

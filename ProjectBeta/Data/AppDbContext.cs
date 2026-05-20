@@ -207,5 +207,22 @@ public class AppDbContext : DbContext
             );
             SaveChanges();
         }
+
+        var staleAuditoriums = Auditoriums.Where(a =>
+            (a.Name.StartsWith("Small")  && a.Capacity != 150) ||
+            (a.Name.StartsWith("Medium") && a.Capacity != 300) ||
+            (a.Name.StartsWith("Large")  && a.Capacity != 500)
+        ).ToList();
+
+        if (staleAuditoriums.Count > 0)
+        {
+            foreach (var a in staleAuditoriums)
+            {
+                if (a.Name.StartsWith("Small"))  a.Capacity = 150;
+                else if (a.Name.StartsWith("Medium")) a.Capacity = 300;
+                else if (a.Name.StartsWith("Large"))  a.Capacity = 500;
+            }
+            SaveChanges();
+        }
     }
 }

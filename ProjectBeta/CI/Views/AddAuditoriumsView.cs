@@ -5,29 +5,27 @@ using ProjectBeta.Model;
 
 namespace ProjectBeta.CI.Views;
 
-public sealed class LocationEditView : Form
+public sealed class AddAuditoriumsView : Form
 {
-    private readonly LocationLogic _locationLogic;
     private readonly AuditoriumLogic _auditoriumLogic;
     private readonly AppLoop _appLoop;
     private readonly IServiceProvider _serviceProvider;
     private User _user = null!;
-    private Location? _existing;
+    private Location _location = null!;
     private string? _statusMessage;
     private Dictionary<string, string[]>? _fieldErrors;
 
-    public LocationEditView(LocationLogic locationLogic, AuditoriumLogic auditoriumLogic, AppLoop appLoop, IServiceProvider serviceProvider)
+    public AddAuditoriumsView(AuditoriumLogic auditoriumLogic, AppLoop appLoop, IServiceProvider serviceProvider)
     {
-        _locationLogic = locationLogic;
         _auditoriumLogic = auditoriumLogic;
         _appLoop = appLoop;
         _serviceProvider = serviceProvider;
     }
 
-    public void SetView(User user, Location? existing = null)
+    public void SetView(User user, Location location)
     {
         _user = user;
-        _existing = existing;
+        _location = location;
         _statusMessage = null;
         _fieldErrors = null;
         ClearChildren();
@@ -36,25 +34,11 @@ public sealed class LocationEditView : Form
 
     private void InitializeForm()
     {
-        Heading(_existing == null ? "Add Location" : "Edit Location");
+        Heading($"Add Auditoriums — {_location.Name}");
         Divider();
 
         Message(() => GetError("general"));
 
-        var nameInput = TextInput("Name").Key("name").Required().Min(1).Max(100);
-        if (!string.IsNullOrEmpty(_existing?.Name)) nameInput.Default(_existing.Name);
-        Message(() => GetError("name"));
-
-        var cityInput = TextInput("City").Key("city").Required().Min(1).Max(100);
-        if (!string.IsNullOrEmpty(_existing?.City)) cityInput.Default(_existing.City);
-        Message(() => GetError("city"));
-
-        var addressInput = TextInput("Address").Key("address").Required().Min(1).Max(200);
-        if (!string.IsNullOrEmpty(_existing?.Address)) addressInput.Default(_existing.Address);
-        Message(() => GetError("address"));
-
-        Divider();
-        Heading("Auditoriums to add");
         Label("Small  (150 seats)");
         var smallInput = TextInput("Number of small auditoriums").Key("small").Default("0");
         Message(() => GetError("small"));
@@ -69,7 +53,7 @@ public sealed class LocationEditView : Form
 
         Divider();
         Message(() => _statusMessage);
-        Button("Save").OnClick(OnSave);
+        Button("Add").OnClick(OnSave);
         Button("Cancel").OnClick(NavigateBack);
     }
 
@@ -85,9 +69,6 @@ public sealed class LocationEditView : Form
         _fieldErrors = null;
         _statusMessage = null;
 
-        var name = form.Get<string>("name") ?? string.Empty;
-        var city = form.Get<string>("city") ?? string.Empty;
-        var address = form.Get<string>("address") ?? string.Empty;
         var smallRaw = form.Get<string>("small") ?? "0";
         var mediumRaw = form.Get<string>("medium") ?? "0";
         var largeRaw = form.Get<string>("large") ?? "0";
@@ -109,27 +90,19 @@ public sealed class LocationEditView : Form
             return;
         }
 
+        if (smallCount + mediumCount + largeCount == 0)
+        {
+            _fieldErrors = new Dictionary<string, string[]> { ["general"] = ["Enter at least one auditorium to add."] };
+            ClearChildren();
+            InitializeForm();
+            return;
+        }
+
         try
         {
-            int locationId;
-            if (_existing == null)
-            {
-                var location = new Location { Name = name, City = city, Address = address };
-                _locationLogic.Add(location, _user);
-                locationId = location.Id;
-            }
-            else
-            {
-                locationId = _existing.Id;
-                _locationLogic.UpdateName(locationId, name, _user);
-                _locationLogic.UpdateCity(locationId, city, _user);
-                _locationLogic.UpdateAddress(locationId, address, _user);
-            }
-
-            AddAuditoriums(locationId, "Small", 150, smallCount);
-            AddAuditoriums(locationId, "Medium", 300, mediumCount);
-            AddAuditoriums(locationId, "Large", 500, largeCount);
-
+            AddAuditoriums("Small", 150, smallCount);
+            AddAuditoriums("Medium", 300, mediumCount);
+            AddAuditoriums("Large", 500, largeCount);
             NavigateBack();
         }
         catch (Exception ex)
@@ -140,9 +113,9 @@ public sealed class LocationEditView : Form
         }
     }
 
-    private void AddAuditoriums(int locationId, string sizeName, int capacity, int count)
+    private void AddAuditoriums(string sizeName, int capacity, int count)
     {
-        var existing = _auditoriumLogic.GetByLocationId(locationId);
+        var existing = _auditoriumLogic.GetByLocationId(_location.Id);
         var sameSize = existing.Count(a => a.Name.StartsWith(sizeName + " "));
         for (int i = 1; i <= count; i++)
         {
@@ -150,7 +123,7 @@ public sealed class LocationEditView : Form
             {
                 Name = $"{sizeName} {sameSize + i}",
                 Capacity = capacity,
-                LocationId = locationId
+                LocationId = _location.Id
             }, _user);
         }
     }
@@ -158,8 +131,8 @@ public sealed class LocationEditView : Form
     private void NavigateBack()
     {
         Console.Clear();
-        var locationView = _serviceProvider.GetRequiredService<LocationView>();
-        locationView.SetUser(_user);
-        _appLoop.Display(locationView);
+        var detailView = _serviceProvider.GetRequiredService<LocationDetailView>();
+        detailView.SetView(_user, _location);
+        _appLoop.Display(detailView);
     }
 }

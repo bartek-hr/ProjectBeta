@@ -65,6 +65,7 @@ namespace ProjectBeta
             services.AddTransient<LocationPickerView>();
             services.AddTransient<LocationDetailView>();
             services.AddTransient<LocationEditView>();
+            services.AddTransient<AddAuditoriumsView>();
             services.AddScoped<MainView>();
             var provider = services.BuildServiceProvider();
 
