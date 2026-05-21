@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ProjectBeta.Access;
 using ProjectBeta.CI;
@@ -31,8 +31,6 @@ namespace ProjectBeta
             services.AddScoped<UserLogic>();
             services.AddScoped<AuditoriumAccess>();
             services.AddScoped<AuditoriumLogic>();
-            services.AddScoped<CinemaAccess>();
-            services.AddScoped<CinemaLogic>();
             services.AddScoped<MovieLogic>();
             services.AddScoped<SnackAccess>();
             services.AddScoped<SnackLogic>();
@@ -54,21 +52,20 @@ namespace ProjectBeta
             services.AddTransient<SnacksView>();
             services.AddTransient<LoginView>();
             services.AddTransient<AccountView>();
-            services.AddTransient<CinemaView>();
-            services.AddTransient<CinemaDetailView>();
             services.AddTransient<ReservationEditView>();
             services.AddTransient<SnackEditView>();
             services.AddTransient<SnackCreatorView>();
             services.AddTransient<BookingSnacksView>();
             services.AddTransient<ReservationHistoryView>();
             services.AddTransient<UpcomingReservationsView>();
-            services.AddTransient<CinemaDetailView>();
-            services.AddTransient<AuditoriumListView>();
-            services.AddTransient<AuditoriumEditView>();
             services.AddTransient<MoviesView>();
             services.AddTransient<SeatPriceView>();
             services.AddTransient<DiscountView>();
             services.AddTransient<LocationView>();
+            services.AddTransient<LocationPickerView>();
+            services.AddTransient<LocationDetailView>();
+            services.AddTransient<LocationEditView>();
+            services.AddTransient<AddAuditoriumsView>();
             services.AddScoped<MainView>();
             var provider = services.BuildServiceProvider();
 

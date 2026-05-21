@@ -10,6 +10,7 @@ public sealed class SnackCreatorView : Form
     private readonly SnackLogic _snackLogic;
     private readonly AppLoop _appLoop;
     private User _user;
+    private int _locationId;
     private readonly IServiceProvider _serviceProvider;
     private string? _statusMessage;
     private Dictionary<string, string[]>? _fieldErrors;
@@ -20,9 +21,10 @@ public sealed class SnackCreatorView : Form
         _appLoop = appLoop;
         _serviceProvider = serviceProvider;
     }
-    public void SetView(User user)
+    public void SetView(User user, int locationId)
     {
         _user = user;
+        _locationId = locationId;
         InitializeForm();
     }
     private void InitializeForm(UserFormState? state = null)
@@ -44,13 +46,6 @@ public sealed class SnackCreatorView : Form
         if (!string.IsNullOrEmpty(state?.Name))
             nameInput.Default(state.Name);
         Message(() => GetError("name"));
-
-        var cinemaInput = TextInput(l10n("CinemaId"))
-            .Key("cinemaid")
-            .Required();
-        if (state?.CinemaId > 0)
-            cinemaInput.Default(state.CinemaId.ToString());
-        Message(() => GetError("cinemaid"));
 
         var priceInput = TextInput(l10n("Price"))
             .Key("price")
@@ -74,7 +69,9 @@ public sealed class SnackCreatorView : Form
             Button(l10n("auth.register.actions.cancel")).OnClick(() =>
             {
                 Console.Clear();
-                _appLoop.Display(_serviceProvider.GetRequiredService<LoginView>());
+                var snacksView = _serviceProvider.GetRequiredService<SnacksView>();
+                snacksView.SetView(_user, _locationId);
+                _appLoop.Display(snacksView);
             }));
     }
 
@@ -89,22 +86,22 @@ public sealed class SnackCreatorView : Form
     {
         _fieldErrors = null;
         _statusMessage = null;
-        Snack SnackToAdd = new Snack{
+        Snack snackToAdd = new Snack
+        {
             Name = form.Get<string>("name")!,
-            CinemaId = int.Parse(form.Get<string>("cinemaid")!),
+            LocationId = _locationId,
             Price = decimal.Parse(form.Get<string>("price")!),
             Quantity = int.Parse(form.Get<string>("quantity")!)
         };
-        _snackLogic.Add(SnackToAdd, _user);
+        _snackLogic.Add(snackToAdd, _user);
         _statusMessage = l10n("auth.register.status.success");
         _fieldErrors = null;
         Invalidate();
         Render();
         Thread.Sleep(1500);
         Console.Clear();
-        NavigateToMain();
+        NavigateToSnacks();
     }
-
 
     private void SwitchLanguage()
     {
@@ -117,25 +114,25 @@ public sealed class SnackCreatorView : Form
         Invalidate();
         Render();
     }
-    private void NavigateToMain()
+
+    private void NavigateToSnacks()
     {
         Console.Clear();
-        var mainView = _serviceProvider.GetRequiredService<MainView>();
-        mainView.SetUser(_user);
-        _appLoop.Display(mainView);
+        var snacksView = _serviceProvider.GetRequiredService<SnacksView>();
+        snacksView.SetView(_user, _locationId);
+        _appLoop.Display(snacksView);
     }
+
     private static UserFormState CaptureState(Form form)
     {
         return new UserFormState(
             form.Get<string>("name"),
-            form.Get<int>("cinemaid"),
             form.Get<decimal>("price"),
             form.Get<int>("quantity"));
     }
 
     private sealed record UserFormState(
         string? Name,
-        int? CinemaId,
         decimal? Price,
         int? Quantity);
 }

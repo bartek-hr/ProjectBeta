@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git checkout *)",
+      "Read(//c/Users/FlorisLandman/source/repos/ProjectBeta/**)",
+      "Read(//c/Users/FlorisLandman/source/repos/ProjectBeta/ProjectBeta.Tests/**)",
+      "Bash(dotnet test *)",
+      "Bash(dotnet build *)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\FlorisLandman\\\\source\\\\repos\\\\ProjectBeta\\\\ProjectBeta\" -Recurse -File -Filter \"*.cs\")",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(Sort-Object)"
+    ]
+  }
+}

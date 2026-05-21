@@ -42,6 +42,7 @@ public sealed class UpcomingReservationsView : Form
         var table = new Table<Booking>(
             l10n("reservations.upcoming.table.movie"),
             l10n("reservations.upcoming.table.auditorium"),
+            "Location",
             l10n("reservations.upcoming.table.seats"),
             l10n("reservations.upcoming.table.date"),
             l10n("reservations.upcoming.table.paid"),
@@ -58,6 +59,7 @@ public sealed class UpcomingReservationsView : Form
                     reservation,
                     reservation.Movie,
                     reservation.AuditoriumId,
+                    reservation.Auditorium?.Location?.Name ?? "-",
                     reservation.Seats,
                     reservation.CreatedAt,
                     reservation.Paid,
