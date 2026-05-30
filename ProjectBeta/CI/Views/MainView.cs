@@ -39,6 +39,13 @@ public sealed class MainView : Form
 
         var actionButtons = new List<Button>
         {
+            Button(l10n("main.dashboard.actions.movies")).OnClick(() =>
+            {
+                Console.Clear();
+                var locationPickerView = _serviceProvider.GetRequiredService<LocationPickerView>();
+                locationPickerView.SetUser(_user);
+                _appLoop.Display(locationPickerView);
+            }),
             Button(l10n("main.dashboard.actions.reservation_history")).OnClick(() =>
             {
                 Console.Clear();

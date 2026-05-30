@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using ProjectBeta.Logic;
 using ProjectBeta.Model;
 using ProjectBeta.CI.Components;
+using ProjectBeta.CI.Rendering;
 using ProjectBeta.Localization;
 
 namespace ProjectBeta.CI.Views;
@@ -14,6 +15,7 @@ public sealed class UserSubscriptionView : Form
     private User _user = null!;
     private string? _statusMessage;
     private int? _selectedSubscriptionId;
+    private string? _connectEmail;
 
     public UserSubscriptionView(SubscriptionLogic subscriptionLogic, IServiceProvider serviceProvider, AppLoop appLoop)
     {
@@ -59,8 +61,8 @@ public sealed class UserSubscriptionView : Form
             else if (activeSub.IsConnectAllowed)
             {
                 Divider();
-                Label(l10n("user.subscriptions.connect.heading"));
-                Label(l10n("user.subscriptions.connect.instructions"));
+                Label(l10n("user.subscriptions.connect.heading"), Style.Warning);
+                Label(l10n("user.subscriptions.connect.instructions"), Style.Warning);
                 var emailInput = TextInput(l10n("user.subscriptions.connect.email_label")).Key("connect_email");
                 Navigation(
                     Button(l10n("user.subscriptions.connect.button")).OnClick(_ =>
@@ -91,17 +93,17 @@ public sealed class UserSubscriptionView : Form
         }
         else
         {
-            Label(l10n("user.subscriptions.no_active"));
+            Label(l10n("user.subscriptions.no_active"), Style.Warning);
             Divider();
 
             var available = allSubs;
             if (available.Count == 0)
             {
-                Label(l10n("user.subscriptions.no_available"));
+                Label(l10n("user.subscriptions.no_available"), Style.Warning);
             }
             else
             {
-                Label(l10n("user.subscriptions.available_label"));
+                Label(l10n("user.subscriptions.available_label"), Style.Default);
 
                 if (!_selectedSubscriptionId.HasValue && available.Count > 0)
                     _selectedSubscriptionId = available[0].Id;
@@ -134,14 +136,55 @@ public sealed class UserSubscriptionView : Form
                     if (selected != null)
                     {
                         Divider();
+
+                        var friendCheck = !string.IsNullOrWhiteSpace(_connectEmail) && selected.IsConnectAllowed && selected.ConnectDiscount > 0
+                            ? _subscriptionLogic.CheckFriendSubscription(selected.Id, _connectEmail)
+                            : SubscriptionLogic.FriendCheckResult.NotFound;
+                        bool discountApplied = friendCheck == SubscriptionLogic.FriendCheckResult.HasSubscription;
+
+                        if (selected.IsConnectAllowed && selected.ConnectDiscount > 0)
+                        {
+                            var discountPct = (int)(selected.ConnectDiscount * 100);
+                            Label(l10n("user.subscriptions.connect.discount_info",
+                                new Dictionary<string, string> { ["discount"] = discountPct.ToString() }), Style.Primary);
+                            var connectEmailInput = TextInput(l10n("user.subscriptions.connect.email_label"))
+                                .Key("connect_email")
+                                .Default(_connectEmail ?? "");
+                            Navigation(
+                                Button(l10n("user.subscriptions.connect.apply_discount")).OnClick(_ =>
+                                {
+                                    _connectEmail = connectEmailInput.Value?.Trim();
+                                    _statusMessage = null;
+                                    SetUser(_user);
+                                })
+                            );
+                            if (discountApplied)
+                                Label(l10n("user.subscriptions.connect.discount_applied",
+                                    new Dictionary<string, string> { ["discount"] = discountPct.ToString() }));
+                            else if (friendCheck == SubscriptionLogic.FriendCheckResult.NotFound && !string.IsNullOrWhiteSpace(_connectEmail))
+                                Label(l10n("user.subscriptions.errors.user_not_found"), Style.Error);
+                            else if (friendCheck == SubscriptionLogic.FriendCheckResult.NoSubscription)
+                                Label(l10n("user.subscriptions.errors.friend_no_subscription"), Style.Error);
+                        }
+
+                        var effectivePrice = discountApplied
+                            ? selected.Price * (1 - selected.ConnectDiscount)
+                            : selected.Price;
+
                         Navigation(
-                            Button(l10n("user.subscriptions.actions.pay", new Dictionary<string, string> { ["price"] = selected.Price.ToString("C") })).OnClick(_ =>
+                            Button(l10n("user.subscriptions.actions.pay", new Dictionary<string, string> { ["price"] = effectivePrice.ToString("C") })).OnClick(_ =>
                             {
                                 try
                                 {
                                     _subscriptionLogic.BuySubscription(_user.Id, selected.Id);
+                                    if (discountApplied)
+                                    {
+                                        try { _subscriptionLogic.ConnectSubscription(_user.Id, _connectEmail!); }
+                                        catch { /* connect is best-effort; subscription purchase already succeeded */ }
+                                    }
                                     _statusMessage = l10n("user.subscriptions.status.bought", new Dictionary<string, string> { ["name"] = selected.Name });
                                     _selectedSubscriptionId = null;
+                                    _connectEmail = null;
                                 }
                                 catch (InvalidOperationException ex)
                                 {

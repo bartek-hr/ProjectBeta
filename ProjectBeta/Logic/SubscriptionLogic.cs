@@ -91,6 +91,20 @@ namespace ProjectBeta.Logic
             _context.SaveChanges();
         }
 
+        public enum FriendCheckResult { NotFound, NoSubscription, HasSubscription }
+
+        public FriendCheckResult CheckFriendSubscription(int subscriptionId, string otherEmail)
+        {
+            var otherUser = _context.Users.FirstOrDefault(u => u.Email == otherEmail);
+            if (otherUser == null) return FriendCheckResult.NotFound;
+            return _context.UserSubscriptions.Any(us =>
+                us.UserId == otherUser.Id &&
+                us.SubscriptionId == subscriptionId &&
+                us.IsActive)
+                ? FriendCheckResult.HasSubscription
+                : FriendCheckResult.NoSubscription;
+        }
+
         public void ConnectSubscription(int userId, string otherEmail)
         {
             if (string.IsNullOrWhiteSpace(otherEmail))

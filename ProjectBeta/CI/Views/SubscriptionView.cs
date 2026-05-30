@@ -139,8 +139,8 @@ public sealed class SubscriptionView : Form
         var nameInput = TextInput(l10n("admin.subscriptions.fields.name.label")).Key("name");
         var priceInput = NumberInput(l10n("admin.subscriptions.fields.price.label")).Min(0).Step(0.01).Precision(2).Default(0);
         var seatPriceIdInput = NumberInput(l10n("admin.subscriptions.fields.seat_type_id.label")).Min(1).Default(1);
-        var sharedAllowedInput = Checkbox(l10n("admin.subscriptions.fields.is_shared_allowed.label"));
-        var sharedDiscountInput = NumberInput(l10n("admin.subscriptions.fields.shared_discount.label")).Min(0).Max(1).Step(0.01).Precision(2).Default(0);
+        var sharedAllowedInput = Checkbox(l10n("admin.subscriptions.fields.is_connect_allowed.label"));
+        var sharedDiscountInput = NumberInput(l10n("admin.subscriptions.fields.connect_discount.label")).Min(0).Max(1).Step(0.01).Precision(2).Default(0);
         var effectiveFromInput = TextInput(l10n("admin.subscriptions.fields.effective_from.label")).Key("effective_from").Default(DateTime.UtcNow.ToString("yyyy-MM-dd"));
         var effectiveUntilInput = TextInput(l10n("admin.subscriptions.fields.effective_until.label")).Key("effective_until");
 
