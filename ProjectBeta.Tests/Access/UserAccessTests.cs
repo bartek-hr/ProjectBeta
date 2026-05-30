@@ -108,7 +108,7 @@ public class UserAccessTests
     public void GetAllUsers_ReturnsAllSeededUsers()
     {
         var result = _access!.GetAllUsers();
-        Assert.AreEqual(2, result.Count);
+        Assert.AreEqual(3, result.Count);
     }
 
     [TestMethod]
@@ -135,7 +135,7 @@ public class UserAccessTests
             FirstName = "Test", LastName = "User", DateOfBirth = new DateOnly(2000, 1, 1)
         };
         _access!.AddUser(newUser);
-        Assert.AreEqual(3, _context!.Users.Count());
+        Assert.AreEqual(4, _context!.Users.Count());
     }
 
     [TestMethod]

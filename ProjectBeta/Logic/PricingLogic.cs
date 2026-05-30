@@ -7,7 +7,13 @@ public record AppliedDiscount(int Id, string Name, decimal Percentage);
 
 // Per-seat pricing line: base price, final price
 // (after best-match discount), and which discount was applied (null if none).
-public record SeatPricingLine(decimal BasePrice, decimal FinalPrice, AppliedDiscount? Discount);
+public record SeatPricingLine(decimal BasePrice, decimal FinalPrice, AppliedDiscount? Discount, string? SubscriptionNote = null);
+
+// Subscription data needed by PricingLogic to apply seat discounts at booking time.
+public record SubscriptionPricingContext(
+    int? ApplicableDayOfWeek,
+    decimal SubscriptionSeatPrice
+);
 
 public record PricingResult(
     decimal BasePrice,
@@ -34,7 +40,9 @@ public class PricingLogic
     public PricingResult CalculatePricing(
         List<int> seatTypes,
         List<int?> seatAges,
-        DateTime screeningDate)
+        DateTime screeningDate,
+        int? userSeatIndex = null,
+        SubscriptionPricingContext? subscription = null)
     {
         var activeDiscounts = _discountAccess.GetActive();
         var seatPrices = _seatAccess.GetAll().ToDictionary(st => st.Id, st => st.Price);
@@ -49,6 +57,29 @@ public class PricingLogic
             int seatType = seatTypes[i];
             int? seatAge = i < seatAges.Count ? seatAges[i] : null;
             decimal seatBase = seatPrices.GetValueOrDefault(seatType, 0m);
+
+            // Apply subscription to the user's own seat when the day matches.
+            if (i == userSeatIndex && subscription != null)
+            {
+                bool dayMatches = !subscription.ApplicableDayOfWeek.HasValue ||
+                    (int)screeningDate.DayOfWeek == subscription.ApplicableDayOfWeek.Value;
+
+                if (dayMatches)
+                {
+                    decimal afterSub = seatBase <= subscription.SubscriptionSeatPrice
+                        ? 0m
+                        : seatBase - subscription.SubscriptionSeatPrice;
+
+                    string note = seatBase <= subscription.SubscriptionSeatPrice
+                        ? "Subscription (free)"
+                        : $"Subscription (−€{subscription.SubscriptionSeatPrice:F2})";
+
+                    finalPrice += afterSub;
+                    seatLines.Add(new SeatPricingLine(seatBase, afterSub, null, note));
+                    continue;
+                }
+            }
+
             var candidates = new List<(int Id, string Name, decimal Pct)>();
 
             foreach (var discount in activeDiscounts)

@@ -39,6 +39,13 @@ public sealed class MainView : Form
 
         var actionButtons = new List<Button>
         {
+            Button(l10n("main.dashboard.actions.movies")).OnClick(() =>
+            {
+                Console.Clear();
+                var locationPickerView = _serviceProvider.GetRequiredService<LocationPickerView>();
+                locationPickerView.SetUser(_user);
+                _appLoop.Display(locationPickerView);
+            }),
             Button(l10n("main.dashboard.actions.reservation_history")).OnClick(() =>
             {
                 Console.Clear();
@@ -61,6 +68,14 @@ public sealed class MainView : Form
                 _appLoop.Display(accountView);
             })
         };
+        actionButtons.Add(Button(l10n("main.dashboard.actions.my_subscription")).OnClick(() =>
+        {
+            Console.Clear();
+            var userSubscriptionView = _serviceProvider.GetRequiredService<UserSubscriptionView>();
+            userSubscriptionView.SetUser(_user);
+            _appLoop.Display(userSubscriptionView);
+        }));
+
         if (_user.IsAdmin())
         {
             actionButtons.Add(Button(l10n("main.dashboard.actions.reports")).OnClick(form =>
@@ -97,6 +112,14 @@ public sealed class MainView : Form
                 var locationView = _serviceProvider.GetRequiredService<LocationView>();
                 locationView.SetUser(_user);
                 _appLoop.Display(locationView);
+            }));
+
+            actionButtons.Add(Button(l10n("main.dashboard.actions.subscriptions")).OnClick(() =>
+            {
+                Console.Clear();
+                var subscriptionView = _serviceProvider.GetRequiredService<SubscriptionView>();
+                subscriptionView.SetUser(_user);
+                _appLoop.Display(subscriptionView);
             }));
         }
 

@@ -38,12 +38,15 @@ namespace ProjectBeta
             services.AddScoped<BookingSnackLogic>();
             services.AddScoped<DiscountAccess>();
             services.AddScoped<SeatPriceAccess>();
+            services.AddScoped<SubscriptionAccess>();
             services.AddScoped<ReceiptAccess>();
             services.AddScoped<ReceiptLogic>();
             services.AddScoped<BookingLogic>();
             services.AddScoped<PricingLogic>();
             services.AddScoped<LocationAccess>();
             services.AddScoped<LocationLogic>();
+            services.AddScoped<SubscriptionLogic>();
+
             services.AddTransient<UserView>();
             services.AddTransient<UsersView>();
             services.AddTransient<MovieSeatBookingView>();
@@ -66,6 +69,9 @@ namespace ProjectBeta
             services.AddTransient<LocationDetailView>();
             services.AddTransient<LocationEditView>();
             services.AddTransient<AddAuditoriumsView>();
+            services.AddTransient<SubscriptionView>();
+            services.AddTransient<UserSubscriptionView>();
+
             services.AddScoped<MainView>();
             var provider = services.BuildServiceProvider();
 

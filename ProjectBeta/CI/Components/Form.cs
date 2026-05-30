@@ -159,9 +159,9 @@ public class Form : RootComponent
         return c;
     }
 
-    protected Label Label(string text)
+    protected Label Label(string text, Style? style = null)
     {
-        var c = new Label(text);
+        var c = new Label(text, style);
         Add(c);
         return c;
     }
