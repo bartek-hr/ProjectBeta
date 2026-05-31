@@ -74,7 +74,13 @@ public sealed class LocationDetailView : Form
             _appLoop.Display(snacksView);
         });
 
-        Button("Reports").OnClick(_ => { _statusMessage = "Reports — coming soon."; });
+        Button("Reports").OnClick(() =>
+        {
+            Console.Clear();
+            var reportsView = _serviceProvider.GetRequiredService<ReportsView>();
+            reportsView.SetView(_user, _location);
+            _appLoop.Display(reportsView);
+        });
 
         Divider();
         Message(() => _statusMessage);

@@ -78,10 +78,7 @@ public sealed class MainView : Form
 
         if (_user.IsAdmin())
         {
-            actionButtons.Add(Button(l10n("main.dashboard.actions.reports")).OnClick(form =>
-            {
-                _statusMessage = l10n("main.dashboard.status.reports_tbd");
-            }));
+
             actionButtons.Add(Button(l10n("main.dashboard.actions.users")).OnClick(() =>
             {
                 Console.Clear();
