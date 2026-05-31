@@ -234,6 +234,28 @@ public class RootComponentTests
     }
 
     [TestMethod]
+    public void FormGet_UsesStableFieldKeyWhenProvided()
+    {
+        var form = new Form(new FakeConsoleDriver());
+        var input = new InputText("Localized Username").Key("username");
+        input.Value = "alice";
+        form.Add(input);
+
+        Assert.AreEqual("alice", form.Get<string>("username"));
+    }
+
+    [TestMethod]
+    public void FormGet_FallsBackToLabelForLegacyCallSites()
+    {
+        var form = new Form(new FakeConsoleDriver());
+        var input = new InputText("Username");
+        input.Value = "alice";
+        form.Add(input);
+
+        Assert.AreEqual("alice", form.Get<string>("Username"));
+    }
+
+    [TestMethod]
     public void Close_RestoresPreviouslyDisplayedView()
     {
         var app = new AppLoop();
@@ -259,6 +281,30 @@ public class RootComponentTests
 
         Assert.IsFalse(form.IsClosed);
         Assert.AreSame(form, app.ActiveInterface);
+    }
+
+    [TestMethod]
+    public void Display_NullInterface_ThrowsArgumentNullException()
+    {
+        var app = new AppLoop();
+
+        Assert.ThrowsException<ArgumentNullException>(() => app.Display(null!));
+    }
+
+    [TestMethod]
+    public void Display_ReDisplayingExistingInterface_RemovesOlderStackEntry()
+    {
+        var app = new AppLoop();
+        var first = new Form(new FakeConsoleDriver());
+        var second = new Form(new FakeConsoleDriver());
+
+        app.Display(first);
+        app.Display(second);
+        app.Display(first);
+
+        first.Close();
+
+        Assert.AreSame(second, app.ActiveInterface);
     }
 
     private sealed class StyledTextComponent : Component

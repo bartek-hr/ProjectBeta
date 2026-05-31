@@ -20,11 +20,13 @@ public class InputText : Component, IValidatable, IValueComponent
     public InputText(string label)
     {
         Label = label;
+        FieldKey = label;
     }
 
     public override bool IsFocusable => true;
 
     public string Label { get; }
+    public string FieldKey { get; private set; }
 
     public string Value
     {
@@ -37,6 +39,12 @@ public class InputText : Component, IValidatable, IValueComponent
     }
 
     object? IValueComponent.Value => _value;
+
+    public InputText Key(string fieldKey)
+    {
+        FieldKey = string.IsNullOrWhiteSpace(fieldKey) ? Label : fieldKey;
+        return this;
+    }
 
     public InputText Placeholder(string placeholder)
     {
@@ -75,6 +83,13 @@ public class InputText : Component, IValidatable, IValueComponent
         return this;
     }
 
+    public InputText Default(string value)
+    {
+        _value = value ?? string.Empty;
+        ClampCursorIndex();
+        return this;
+    }
+
     /// <summary>
     /// Adds a custom validator. Return an error message string to indicate failure, or null for success.
     /// </summary>
@@ -89,13 +104,17 @@ public class InputText : Component, IValidatable, IValueComponent
         var errors = new List<string>();
 
         if (_isRequired && string.IsNullOrEmpty(_value))
-            errors.Add($"{Label} is required");
+            errors.Add(l10n("validation.common.required", new Dictionary<string, string> { ["field"] = Label }));
 
         if (_minLength.HasValue && _value.Length < _minLength.Value && _value.Length > 0)
-            errors.Add($"{Label} must be at least {_minLength.Value} characters");
+            errors.Add(l10n("validation.common.min_length", new Dictionary<string, string>
+            {
+                ["field"] = Label,
+                ["min"] = _minLength.Value.ToString()
+            }));
 
         if (_pattern != null && _value.Length > 0 && !Regex.IsMatch(_value, _pattern))
-            errors.Add(_patternMessage ?? $"{Label} is invalid");
+            errors.Add(_patternMessage ?? l10n("validation.common.invalid", new Dictionary<string, string> { ["field"] = Label }));
 
         foreach (var validator in _customValidators)
         {

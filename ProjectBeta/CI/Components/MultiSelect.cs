@@ -13,11 +13,13 @@ public sealed class MultiSelect : Component, IValidatable, IValueComponent
     public MultiSelect(string label)
     {
         Label = label;
+        FieldKey = label;
     }
 
     public override bool IsFocusable => true;
 
     public string Label { get; }
+    public string FieldKey { get; private set; }
 
     public string[] Value
     {
@@ -38,6 +40,12 @@ public sealed class MultiSelect : Component, IValidatable, IValueComponent
     public string[] SelectedValues => Value;
 
     object? IValueComponent.Value => Value;
+
+    public MultiSelect Key(string fieldKey)
+    {
+        FieldKey = string.IsNullOrWhiteSpace(fieldKey) ? Label : fieldKey;
+        return this;
+    }
 
     public MultiSelect AddOption(string option)
     {
@@ -67,7 +75,7 @@ public sealed class MultiSelect : Component, IValidatable, IValueComponent
     {
         var errors = new List<string>();
         if (_isRequired && _selectedIndices.Count == 0)
-            errors.Add($"{Label} requires at least one selection");
+            errors.Add(l10n("validation.common.selection_required", new Dictionary<string, string> { ["field"] = Label }));
         return errors;
     }
 
@@ -102,14 +110,14 @@ public sealed class MultiSelect : Component, IValidatable, IValueComponent
 
             if (_options.Length == 0)
             {
-                InputBox.WriteFixedContentRow(buf, boxWidth, borderStyle, "(no options)", Style.Muted);
+                InputBox.WriteFixedContentRow(buf, boxWidth, borderStyle, l10n("components.multiselect.no_options"), Style.Muted);
                 lines++;
             }
         }
         else
         {
             var selected = Value;
-            var displayText = selected.Length > 0 ? string.Join(", ", selected) : "(none)";
+            var displayText = selected.Length > 0 ? string.Join(", ", selected) : l10n("components.form.none");
             var textStyle = selected.Length > 0 ? Style.Default : Style.Muted;
             InputBox.WriteFixedContentRow(buf, boxWidth, borderStyle, displayText, textStyle);
             lines++;

@@ -100,7 +100,7 @@ public class AppLoop
         }
 
         Console.Clear();
-        Console.WriteLine("Exited application");
+        Console.WriteLine(l10n("app.exited"));
     }
 
     private void RunAnimatedLoop(AnimatedTerminalInterface activeInterface)

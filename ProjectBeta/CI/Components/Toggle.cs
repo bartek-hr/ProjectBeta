@@ -9,13 +9,21 @@ public sealed class Toggle : Component, IValueComponent
     public Toggle(string label)
     {
         Label = label;
+        FieldKey = label;
     }
 
     public override bool IsFocusable => true;
 
     public string Label { get; }
+    public string FieldKey { get; private set; }
     public bool Value => _value;
     object? IValueComponent.Value => _value;
+
+    public Toggle Key(string fieldKey)
+    {
+        FieldKey = string.IsNullOrWhiteSpace(fieldKey) ? Label : fieldKey;
+        return this;
+    }
 
     public Toggle Default(bool value)
     {
@@ -41,12 +49,12 @@ public sealed class Toggle : Component, IValueComponent
         if (_value)
         {
             buf.Write("(\u25cf) ", Style.Success);
-            buf.Write("ON", Style.Success.WithBold());
+            buf.Write(l10n("components.toggle.on"), Style.Success.WithBold());
         }
         else
         {
             buf.Write("(\u25cb) ", Style.Muted);
-            buf.Write("OFF", Style.Muted);
+            buf.Write(l10n("components.toggle.off"), Style.Muted);
         }
 
         // Pad remaining space

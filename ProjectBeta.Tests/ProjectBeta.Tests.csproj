@@ -25,4 +25,11 @@
     <ProjectReference Include="..\ProjectBeta\ProjectBeta.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="..\ProjectBeta\lang\**\*.lang">
+      <Link>lang\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

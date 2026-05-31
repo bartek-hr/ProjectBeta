@@ -11,15 +11,13 @@ public class Form : RootComponent
 
     public void Display()
     {
-        ProjectBeta.Program.Display(this);
+        Program.Display(this);
     }
 
     public new Form Add(Component child)
     {
         base.Add(child);
-
-        if (child is Button button)
-            button.ParentForm = this;
+        child.AttachToForm(this);
 
         return this;
     }
@@ -41,7 +39,10 @@ public class Form : RootComponent
     {
         var component = Children
             .OfType<IValueComponent>()
-            .FirstOrDefault(c => c.Label == label);
+            .FirstOrDefault(c => c.FieldKey == label)
+            ?? Children
+                .OfType<IValueComponent>()
+                .FirstOrDefault(c => c.Label == label);
 
         return component?.Value is T val ? val : default;
     }
@@ -135,6 +136,22 @@ public class Form : RootComponent
         return c;
     }
 
+    protected Navigation Navigation()
+    {
+        return Navigation(Array.Empty<Button>());
+    }
+
+    protected Navigation Navigation(params Button[] buttons)
+    {
+        var c = new Navigation(buttons);
+
+        foreach (var button in buttons)
+            RemoveChild(button);
+
+        Add(c);
+        return c;
+    }
+
     protected Heading Heading(string text)
     {
         var c = new Heading(text);
@@ -142,9 +159,9 @@ public class Form : RootComponent
         return c;
     }
 
-    protected Label Label(string text)
+    protected Label Label(string text, Style? style = null)
     {
-        var c = new Label(text);
+        var c = new Label(text, style);
         Add(c);
         return c;
     }
@@ -152,6 +169,20 @@ public class Form : RootComponent
     protected Message Message(Func<string?> messageProvider)
     {
         var c = new Message(messageProvider);
+        Add(c);
+        return c;
+    }
+
+    protected Table Table(params string[] headers)
+    {
+        var c = new Table(headers);
+        Add(c);
+        return c;
+    }
+
+    protected Table<T> Table<T>(params string[] headers) where T : class
+    {
+        var c = new Table<T>(headers);
         Add(c);
         return c;
     }
@@ -168,5 +199,34 @@ public class Form : RootComponent
         var c = new Spacer(lines);
         Add(c);
         return c;
+    }
+
+    protected LogoutButton LogoutButton(AppLoop appLoop, IServiceProvider serviceProvider)
+    {
+        var c = new LogoutButton(appLoop, serviceProvider);
+        Add(c);
+        return c;
+    }
+
+    protected Button LanguageToggle(Action onSwitch, Func<bool>? hidden = null)
+    {
+        var label = new Label("Language / Taal");
+        if (hidden != null)
+            label.Hidden(hidden);
+        Add(label);
+
+        var currentLocale = GetLocale();
+        var targetLocale = SupportedLocales.Keys.FirstOrDefault(locale =>
+            !string.Equals(locale, currentLocale, StringComparison.OrdinalIgnoreCase))
+            ?? currentLocale;
+        var buttonLabel = SupportedLocales.TryGetValue(targetLocale, out var displayName)
+            ? displayName
+            : targetLocale;
+
+        var button = new Button(buttonLabel).OnClick(onSwitch);
+        if (hidden != null)
+            button.Hidden(hidden);
+        Add(button);
+        return button;
     }
 }

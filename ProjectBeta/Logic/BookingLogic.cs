@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using ProjectBeta.Model;
 using ProjectBeta.Access;
 
@@ -24,28 +22,51 @@ public class BookingLogic
         var booking = _bookingAccess.GetById(id);
 
         if (booking == null)
-            throw new Exception("Booking not found");
+            throw new Exception(l10n("reservations.errors.booking_not_found"));
 
         return booking;
     }
 
     public void CreateBooking(Booking booking)
     {
-        if (booking.Total_Price <= 0)
-            throw new Exception("Total price must be greater than 0");
+        if (booking.TotalPrice <= 0)
+            throw new Exception(l10n("reservations.errors.total_price_positive"));
 
-        if (booking.User_Id <= 0)
-            throw new Exception("Invalid user");
+        if (booking.UserId <= 0)
+            throw new Exception(l10n("reservations.errors.invalid_user"));
 
-        if (booking.Screening_ID <= 0)
-            throw new Exception("Invalid screening");
-    
+        if (booking.AuditoriumId <= 0)
+            throw new Exception(l10n("reservations.errors.invalid_screening"));
+
         booking.CreatedAt = DateTime.Now;
 
-           
         booking.Paid = false;
 
         _bookingAccess.Add(booking);
+    }
+
+    public Booking CreateBooking(int userId, decimal finalPrice, decimal basePrice, int auditoriumId, string seats, string seatAges, string? userSeat, string movie, DateTime createdAt, IEnumerable<int> appliedDiscountIds)
+    {
+        var booking = new Booking
+        {
+            UserId = userId,
+            Seats = seats,
+            SeatAges = seatAges,
+            UserSeat = userSeat,
+            AuditoriumId = auditoriumId,
+            TotalPrice = finalPrice,
+            BasePrice = basePrice,
+            CreatedAt = createdAt,
+            ScreeningId = 1,
+            Movie = movie,
+            Paid = false,
+            BookingDiscounts = appliedDiscountIds
+                .Distinct()
+                .Select(id => new BookingDiscount { DiscountId = id })
+                .ToList()
+        };
+
+        return _bookingAccess.AddAndReturn(booking);
     }
 
     public void MarkAsPaid(int bookingId)
@@ -53,11 +74,25 @@ public class BookingLogic
         var booking = _bookingAccess.GetById(bookingId);
 
         if (booking == null)
-            throw new Exception("Booking not found");
+            throw new Exception(l10n("reservations.errors.booking_not_found"));
 
         booking.Paid = true;
 
         _bookingAccess.Update(booking);
+    }
+
+    public List<Booking> GetBookingsByCreatedAtAndAuditoriumID(DateTime createdAt, int auditoriumId)
+    {
+        return _bookingAccess.GetAll()
+            .Where(b => b.AuditoriumId == auditoriumId && b.CreatedAt == createdAt)
+            .ToList();
+    }
+
+    public List<Booking> GetBookingsByUserId(int userId)
+    {
+        return _bookingAccess.GetAll()
+            .Where(b => b.UserId == userId)
+            .ToList();
     }
 
     public void DeleteBooking(int id)

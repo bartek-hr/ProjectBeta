@@ -1,0 +1,596 @@
+app:
+  title: Project Beta NL
+  exited: Applicatie afgesloten
+home:
+  welcome: Welkom
+inventory:
+  car_detailed: {0}geen auto's|{1}auto|{2,}:count auto's
+  car_simple: auto|auto's
+  minutes_ago: {1}:count minuut geleden|[2,*]:count minuten geleden
+login:
+  username: Gebruikersnaam
+messages:
+  loud_welcome: Welkom, :NAME!
+  title_welcome: Welkom, :Name!
+  welcome: Welkom, :name!
+auth:
+  login:
+    heading: Inloggen
+    instructions:
+      default: Vul je gegevens in. Tab verplaatst tussen velden en actiegroepen, Shift+Tab gaat terug, Escape sluit af.
+      invalid: Een van de inloggegevens is onjuist. Probeer het opnieuw. Tab verplaatst tussen velden en actiegroepen, Shift+Tab gaat terug, Escape sluit af.
+    fields:
+      identity:
+        label: Gebruikersnaam of e-mail
+        placeholder: jane_doe of jane@example.com
+      password:
+        label: Wachtwoord
+        placeholder: Kies een wachtwoord
+    actions:
+      submit: Inloggen
+      register: Registreren
+    status:
+      failed: Inloggen mislukt. Probeer het opnieuw.
+      success: Hoi :name.
+    errors:
+      required_fields: Vul alle verplichte velden in.
+      invalid_credentials: Ongeldige inloggegevens.
+  register:
+    heading: Gebruikersinformatie
+    instructions: Vul je gegevens in. Tab verplaatst tussen velden en actiegroepen, Shift+Tab gaat terug, Escape sluit af.
+    sections:
+      account: Accountinformatie
+    fields:
+      username:
+        label: Gebruikersnaam
+        placeholder: jane_doe
+      email:
+        label: E-mail
+        placeholder: jane@example.com
+      password:
+        label: Wachtwoord
+        placeholder: Kies een wachtwoord
+      first_name:
+        label: Voornaam
+        placeholder: Jane
+      last_name:
+        label: Achternaam
+        placeholder: Doe
+      date_of_birth:
+        label: Geboortedatum
+    actions:
+      submit: Verzenden
+      reset: Resetten
+      cancel: Annuleren
+    status:
+      success: Gebruiker succesvol geregistreerd. Doorsturen naar het inlogscherm.
+    errors:
+      required_fields: Vul alle verplichte velden in.
+      username_taken: Gebruikersnaam is al in gebruik. Kies een andere.
+      email_registered: E-mailadres is al geregistreerd. Gebruik een ander e-mailadres.
+      save_failed: Er is een fout opgetreden bij het opslaan van de gebruiker. Probeer het opnieuw.
+main:
+  dashboard:
+    heading: Welkom :name
+    email: E-mail: :email
+    full_name: Volledige naam: :name
+    actions:
+      movies: Films
+      reservation_history: Reserveringsgeschiedenis
+      upcoming_reservations: Aankomende reserveringen
+      account_details: Accountgegevens
+      reports: Rapporten (NOG TE DOEN)
+      users: Gebruikers
+      cinemas: Bioscopen
+      seat_prices: Stoelprijzen
+      discounts: Kortingen
+      subscriptions: Abonnementen
+      my_subscription: Mijn Abonnement
+      back: Terug
+    status:
+      reports_tbd: NOG TE DOEN
+movies:
+  list:
+    heading: Films voor datum: :date
+    empty: Geen films ingepland.
+    status:
+      no_schedule_for_date: Geen planning voor deze datum.
+    table:
+      movie: Film
+      rating: Beoordeling
+      start: Start
+      end: Einde
+      auditorium: Zaal
+      space_left: Plaatsen over
+    values:
+      default_auditorium: 1
+      unknown_space_left: ?
+    actions:
+      back: Terug
+  seat_booking:
+    heading: The Grand Cinema
+    tagline: Een premium stoelkiezer voor het reserveringsproces van films.
+    instructions: Tab verplaatst tussen de stoelenkaart en de actiegroep. Gebruik pijltjes in de stoelenkaart en Omhoog/Omlaag in de actiegroep. Escape sluit de app af.
+    auditorium: Zaal 1 · Dolby Atmos
+    actions:
+      snacks: Snacks (NOG TE DOEN)
+      confirm: Geselecteerde stoel bevestigen
+      back: Terug
+reservations:
+  create:
+    heading: Reserveringsdetails
+    instructions: Tab verplaatst tussen componenten en actiegroepen. Gebruik Omhoog/Omlaag binnen actiegroepen. Shift+Tab gaat terug.
+    table:
+      movie: Film
+      seat: Stoel
+      date: Datum
+      start: Start
+      end: Einde
+      auditorium: Zaal
+      snacks: Snacks
+    age_prompt: "Optioneel: vul hieronder de leeftijd per persoon in voor leeftijdskorting"
+    age_label: "Leeftijd voor stoel :seat (optioneel)"
+    user_seat_label: "Welke stoel is van jou? (optioneel, voor abonnement)"
+    user_seat_none: Geen
+    total_price: Totale prijs: :amount
+    values:
+      default_auditorium: 1
+      no_snacks: Geen
+    actions:
+      save: Opslaan
+      back: Terug
+  edit:
+    heading: Reserveringsdetails
+    instructions: Tab verplaatst tussen componenten en actiegroepen. Gebruik Omhoog/Omlaag binnen actiegroepen. Shift+Tab gaat terug.
+    empty: Geen films ingepland.
+    table:
+      movie: Film
+      auditorium: Zaal
+      seats: Stoelen
+      date: Datum
+      paid: Betaald
+      total_price: Totale prijs
+    actions:
+      delete: Verwijderen
+      pay: Betalen
+      back: Terug
+  history:
+    heading: Reserveringsdetails
+    instructions: Tab om te navigeren, Shift+Tab om terug te gaan.
+    empty: Geen films ingepland.
+    table:
+      movie: Film
+      auditorium: Zaal
+      seats: Stoelen
+      date: Datum
+      paid: Betaald
+      snacks: Snacks
+      total_price: Totale prijs
+    actions:
+      back: Terug
+  upcoming:
+    heading: Reserveringsdetails
+    instructions: Tab om te navigeren, Shift+Tab om terug te gaan.
+    empty: Geen films ingepland.
+    table:
+      movie: Film
+      auditorium: Zaal
+      seats: Stoelen
+      date: Datum
+      paid: Betaald
+      total_price: Totale prijs
+    actions:
+      back: Terug
+  errors:
+    booking_not_found: Reservering niet gevonden.
+    total_price_positive: Totale prijs moet groter zijn dan 0.
+    invalid_user: Ongeldige gebruiker.
+    invalid_screening: Ongeldige vertoning.
+account:
+  profile:
+    heading: Accountgegevens
+    instructions: Werk je accountinformatie bij. Tab verplaatst tussen velden en actiegroepen, Shift+Tab gaat terug.
+    sections:
+      account: Accountinformatie
+    fields:
+      username:
+        label: Gebruikersnaam
+        placeholder: jane_doe
+      email:
+        label: E-mail
+        placeholder: jane@example.com
+      new_password:
+        label: Nieuw wachtwoord
+        placeholder: Laat leeg om het huidige te behouden
+      first_name:
+        label: Voornaam
+        placeholder: Jane
+      last_name:
+        label: Achternaam
+        placeholder: Doe
+      date_of_birth:
+        label: Geboortedatum
+      role:
+        label: Rol
+    actions:
+      save: Opslaan
+      delete_account: Account verwijderen
+      back: Terug
+    confirm_delete:
+      message: Weet je zeker dat je je account wilt verwijderen? Dit kan niet ongedaan worden gemaakt.
+      confirm: Ja, verwijderen
+      cancel: Nee, annuleren
+    status:
+      updated: Account succesvol bijgewerkt.
+      deleted: Account verwijderd. Doorsturen naar inloggen.
+    errors:
+      required_fields: Vul alle verplichte velden in.
+      username_taken: Gebruikersnaam is al in gebruik.
+      email_registered: E-mailadres is al geregistreerd.
+      user_not_found: Gebruiker niet gevonden.
+      role_invalid: Rol moet User of Admin zijn.
+      role_update_unauthorized: Je mag de rol van deze gebruiker niet wijzigen.
+      update_failed: Er is een fout opgetreden bij het bijwerken. Probeer het opnieuw.
+      delete_failed: Er is een fout opgetreden bij het verwijderen. Probeer het opnieuw.
+roles:
+  user: User
+  admin: Admin
+  superadmin: SuperAdmin
+admin:
+  users:
+    heading: Gebruikers
+    empty: Geen gebruikers gevonden.
+    actions:
+      back: Terug
+    table:
+      username: Gebruikersnaam
+      name: Naam
+      email: E-mail
+      role: Rol
+    errors:
+      none_found: Geen gebruikers gevonden.
+      load_failed: Er is een fout opgetreden bij het ophalen van gebruikers. Probeer het opnieuw.
+  cinemas:
+    list:
+      heading: Bioscoopbeheer
+      instructions: Tab focust de bioscooplijst in één keer. Gebruik Omhoog/Omlaag om een bioscoop te kiezen.
+      cinema_button: :name — :city
+      actions:
+        back: Terug
+    detail:
+      city: Stad: :city
+      actions:
+        update: Bioscoop bijwerken
+        view_auditoriums: Zalen bekijken
+        back: Terug
+    edit:
+      heading: Bioscoop bewerken: :name
+      status:
+        updated: Bioscoop succesvol bijgewerkt.
+      fields:
+        name:
+          label: Naam
+        city:
+          label: Stad
+      actions:
+        save: Opslaan
+        back: Terug
+      errors:
+        update_name_unauthorized: Alleen beheerders mogen bioscoopnamen aanpassen.
+        update_city_unauthorized: Alleen beheerders mogen bioscoopsteden aanpassen.
+  auditoriums:
+    list:
+      heading: :cinema — Zalen
+      instructions: Tab focust de zaal-lijst in één keer. Gebruik Omhoog/Omlaag om een zaal te kiezen.
+      auditorium_button: :name (Capaciteit: :capacity)
+      actions:
+        back: Terug
+    edit:
+      heading: Zaal bewerken: :name
+      cinema: Bioscoop: :cinema
+      status:
+        updated: Zaal succesvol bijgewerkt.
+      fields:
+        name:
+          label: Naam
+      actions:
+        save: Opslaan
+        back: Terug
+      errors:
+        update_name_unauthorized: Alleen beheerders mogen zaelnamen aanpassen.
+        update_capacity_unauthorized: Alleen beheerders mogen zaalcapaciteit aanpassen.
+        reassign_unauthorized: Alleen beheerders mogen zalen opnieuw toewijzen.
+  seat_prices:
+    heading: Stoelprijzen
+    instructions: Pas de basisprijs per stoeltype aan. Wijzigingen gelden alleen voor toekomstige boekingen.
+    price_label: ":name (huidig: €:price)"
+    actions:
+      save: :name prijs opslaan
+      back: Terug
+    status:
+      saved: ":name prijs bijgewerkt naar €:price."
+      invalid_price: Voer een geldige prijs in (0 of hoger).
+  discounts:
+    heading: Kortingen
+    instructions: Bekijk en beheer kortingsregels.
+    active_badge: ACTIEF
+    inactive_badge: INACTIEF
+    fields:
+      percentage:
+        label: "Percentage (%)"
+      effective_from:
+        label: Geldig vanaf (JJJJ-MM-DD)
+      effective_until:
+        label: "Geldig tot (JJJJ-MM-DD, leeg = geen einddatum)"
+      is_active:
+        label: Actief
+      name:
+        label: Naam
+      min_age:
+        label: Minimumleeftijd (leeg = geen)
+      max_age:
+        label: Maximumleeftijd (leeg = geen)
+      min_group_size:
+        label: Minimale groepsgrootte (leeg = geen)
+      required_day_of_week:
+        label: Dag van de week
+    actions:
+      edit: :name bewerken
+      save: :name opslaan
+      delete: :name verwijderen
+      back: Terug
+      create: Korting aanmaken
+    create:
+      heading: Nieuwe korting aanmaken
+    status:
+      saved: ":name bijgewerkt."
+      deleted: ":name verwijderd."
+      created: ":name aangemaakt."
+      invalid_percentage: Percentage moet tussen 0 en 100 liggen.
+      invalid_age_range: Minimumleeftijd moet kleiner zijn dan of gelijk aan de maximumleeftijd.
+      invalid_date: Ongeldig datumformaat. Gebruik JJJJ-MM-DD.
+      name_required: Naam is verplicht.
+  subscriptions:
+    heading: Abonnementenbeheer
+    instructions: Beheer en bekijk abonnementstypes.
+    active_badge: ACTIEF
+    inactive_badge: NIET ACTIEF
+    fields:
+      name:
+        label: Naam
+      price:
+        label: Prijs
+      seat_type_id:
+        label: Stoeltype-id
+      seat_type:
+        label: Stoeltype
+      applicable_day:
+        label: Geldige dag
+      is_connect_allowed:
+        label: Verbinden toegestaan
+      connect_discount:
+        label: Verbindingskorting
+      effective_from:
+        label: Geldig vanaf (JJJJ-MM-DD)
+      effective_until:
+        label: "Geldig tot (JJJJ-MM-DD, leeg = geen einddatum)"
+    actions:
+      add: Abonnement toevoegen
+      edit: Bewerk :name
+      save: Sla :name op
+      delete: Verwijder :name
+      remove: Abonnement verwijderen
+      back: Terug
+      create: Abonnement aanmaken
+    create:
+      heading: Nieuw abonnement aanmaken
+    status:
+      added: Abonnement toegevoegd.
+      saved: ":name bijgewerkt."
+      deleted: ":name verwijderd."
+      created: ":name aangemaakt."
+      removed: Abonnement verwijderd.
+      invalid_price: Voer een geldige prijs in (0 of hoger).
+      name_required: Naam is verplicht.
+      invalid_date: Ongeldig datumformaat. Gebruik JJJJ-MM-DD.
+    menu:
+      no_subscriptions: Geen abonnementen beschikbaar.
+      active_subscription: Actief abonnement
+subscriptions:
+  status:
+    invalid_date: Ongeldig datumformaat. Gebruik JJJJ-MM-DD.
+    invalid_effective_from: Ongeldige begindatum. Gebruik JJJJ-MM-DD.
+    invalid_effective_until: Ongeldige einddatum. Gebruik JJJJ-MM-DD.
+components:
+  form:
+    date_placeholder: JJJJ-MM-DD
+    none: (geen)
+  table:
+    no_rows: Geen rijen
+  select:
+    no_options: (geen opties)
+  multiselect:
+    no_options: (geen opties)
+  radiogroup:
+    no_options: (geen opties)
+  toggle:
+    on: AAN
+    off: UIT
+  logout:
+    button: Uitloggen
+  seat_map:
+    title: BIOSCOOP STOELSELECTIE
+    none: Geen
+    labels:
+      movie: Film:
+      hall: Zaal:
+      time: Tijd:
+      pick: Keuze:
+      legend: Legenda:
+    legend:
+      available: Beschikbaar
+      reserved: Gereserveerd
+      king: King
+      vip: VIP
+      selected: Geselecteerd
+    status:
+      hovering: Zweeft boven :seat
+      already_taken: :seat is al bezet.
+      reserved: Stoel :seat gereserveerd.
+demo:
+  user_registration:
+    heading: Registreren
+    instructions: Demo-registratieformulier. Tab verplaatst tussen velden en actiegroepen, Omhoog/Omlaag wisselt de actieve knop, Escape sluit af.
+    fields:
+      username:
+        label: Gebruikersnaam
+        placeholder: jane_doe
+      fullname:
+        label: Volledige naam
+        placeholder: Jane Doe
+      email:
+        label: E-mail
+        placeholder: jane@example.com
+      password:
+        label: Wachtwoord
+        placeholder: Kies een wachtwoord
+      confirm_password:
+        label: Bevestig wachtwoord
+        placeholder: Herhaal het wachtwoord
+      age:
+        label: Leeftijd
+        placeholder: 18
+    actions:
+      register: Registreren
+    validation:
+      email_invalid: E-mailadres is niet geldig.
+      password_mismatch: Wachtwoorden komen niet overeen.
+      age_positive: Leeftijd moet een positief getal zijn.
+    status:
+      registered: Alleen demo: :name (:username) geregistreerd met e-mail :email, leeftijd :age.
+legacy:
+  common:
+    invalid_choice: Ongeldige keuze. Druk op een toets...
+    press_any_key: Druk op een toets...
+  main_screen:
+    heading: === Hoofdmenu ===
+    prompt: Keuze:
+    options:
+      users: 1. Gebruikers
+      exit: 0. Afsluiten
+  user_screen:
+    heading: === Gebruikersmenu ===
+    prompt: Keuze:
+    options:
+      add_user: 1. Gebruiker toevoegen
+      list_users: 2. Gebruikers tonen
+      back: 0. Terug
+    fields:
+      username:
+        label: Gebruikersnaam
+        placeholder: Voer gebruikersnaam in
+      password:
+        label: Wachtwoord
+        placeholder: Voer wachtwoord in
+    add_user:
+      heading: === Gebruiker toevoegen ===
+      instructions: Tab verplaatst de focus. Enter verzendt. Escape keert terug naar het menu.
+      actions:
+        create: Gebruiker aanmaken
+      status:
+        created: Gebruiker toegevoegd! Druk op Escape om terug te gaan of blijf bewerken om nog een gebruiker toe te voegen.
+        username_exists: Gebruikersnaam bestaat al.
+    list:
+      empty: Geen gebruikers gevonden.
+      item: - :username (:role)
+snacks:
+  errors:
+    add_unauthorized: Alleen beheerders mogen snacks toevoegen.
+    update_unauthorized: Alleen beheerders mogen snacks bijwerken.
+    delete_unauthorized: Alleen beheerders mogen snacks verwijderen.
+    name_required: Naam is verplicht.
+    price_non_negative: Prijs mag niet negatief zijn.
+    quantity_non_negative: Aantal mag niet negatief zijn.
+    not_found: Snack niet gevonden.
+booking_snacks:
+  errors:
+    add_unauthorized: Alleen beheerders mogen boekingssnacks toevoegen.
+    update_unauthorized: Alleen beheerders mogen boekingssnacks bijwerken.
+    delete_unauthorized: Alleen beheerders mogen boekingssnacks verwijderen.
+    quantity_positive: Geboekt aantal moet groter zijn dan nul.
+    snack_not_found: Snack niet gevonden.
+    not_found: Boekingssnack niet gevonden.
+receipts:
+  errors:
+    not_found: Bon niet gevonden.
+    total_positive: Totale prijs moet groter zijn dan 0.
+    invalid_booking: Ongeldige boeking.
+validation:
+  common:
+    invalid: De waarde is ongeldig.
+    required: :field is verplicht
+    min_length: :field moet minimaal :min tekens bevatten
+    min_value: :field moet minimaal :min zijn
+    max_value: :field mag maximaal :max zijn
+    invalid_number: :field is geen geldig getal
+    invalid_date: :field is geen geldige datum
+    date_on_or_after: :field moet op of na :date liggen
+    date_on_or_before: :field moet op of vóór :date liggen
+    selection_required: :field vereist minimaal één selectie
+  user:
+    username:
+      required: Gebruikersnaam is verplicht.
+      length: Gebruikersnaam moet tussen 3 en 20 tekens bevatten.
+      pattern: Gebruikersnaam mag alleen letters, cijfers en underscores bevatten.
+    password:
+      required: Wachtwoord is verplicht.
+    role:
+      required: Rol is verplicht.
+    email:
+      required: E-mail is verplicht.
+      invalid: Moet een geldig e-mailadres zijn
+    first_name:
+      required: Voornaam is verplicht.
+    last_name:
+      required: Achternaam is verplicht.
+    date_of_birth:
+      required: Geboortedatum is verplicht.
+
+user:
+  subscriptions:
+    heading: Mijn Abonnement
+    current_label: Uw actieve abonnement
+    no_active: U heeft geen actief abonnement.
+    available_label: Beschikbare abonnementen
+    no_available: Er zijn momenteel geen abonnementen beschikbaar.
+    price_label: Prijs
+    seat_label: Stoeltype
+    day_label: Dag
+    any_day: Elke dag
+    connected_with: Verbonden met
+    connected_discount: Verbonden korting
+    connect:
+      heading: Verbinden met een vriend
+      instructions: "Voer het e-mailadres in van een andere gebruiker met hetzelfde abonnement om de verbonden korting te activeren."
+      email_label: Hun e-mailadres
+      button: Verbinden
+      discount_info: "Verbind met een vriend die dit abonnement al heeft voor :discount% korting"
+      apply_discount: Korting toepassen
+      discount_applied: ":discount% verbindingskorting toegepast!"
+    actions:
+      cancel: Abonnement opzeggen
+      pay: ":price betalen"
+    status:
+      bought: ":name abonnement geactiveerd."
+      cancelled: Abonnement opgezegd.
+      connected: Abonnementen verbonden. De verbonden korting is nu actief voor beide gebruikers.
+    errors:
+      email_required: E-mailadres is verplicht.
+      user_not_found: Geen gebruiker gevonden met dat e-mailadres.
+      cannot_connect_self: U kunt een abonnement niet met uzelf verbinden.
+      no_active_subscription: U heeft geen actief abonnement.
+      connecting_not_allowed: Dit abonnement ondersteunt geen verbinding.
+      other_user_no_subscription: De andere gebruiker heeft niet hetzelfde abonnement.
+      already_has_subscription: U heeft al een actief abonnement.
+      subscription_not_found: Abonnement niet gevonden of niet meer beschikbaar.
+      friend_no_subscription: Deze vriend heeft dit abonnement nog niet. Voer hun e-mail in nadat zij zich hebben geabonneerd om te verbinden.

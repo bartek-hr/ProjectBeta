@@ -49,6 +49,29 @@ public abstract class RootComponent : StaticTerminalInterface
         return AddRange(children.AsEnumerable());
     }
 
+    protected bool RemoveChild(Component child)
+    {
+        var removed = _children.Remove(child);
+        if (!removed)
+            return false;
+
+        if (ReferenceEquals(_focusedChild, child))
+        {
+            _focusedChild.IsFocused = false;
+            _focusedChild = null;
+            EnsureFocusValid();
+        }
+
+        child.IsFocused = false;
+        return true;
+    }
+
+    public void ClearChildren()
+    {
+        _children.Clear();
+        _focusedChild = null;
+    }
+
     public void Close()
     {
         if (_closed)
@@ -160,6 +183,18 @@ public abstract class RootComponent : StaticTerminalInterface
             : false;
     }
 
+    public void FocusChild(Component child)
+    {
+        if (!_children.Contains(child) || !child.IsFocusable || child.IsHidden)
+            return;
+
+        if (_focusedChild != null)
+            _focusedChild.IsFocused = false;
+
+        _focusedChild = child;
+        child.IsFocused = true;
+    }
+
     private void EnsureFocusValid()
     {
         // If current focused child is gone or hidden, find next visible focusable
@@ -217,6 +252,13 @@ public abstract class RootComponent : StaticTerminalInterface
         var (start, end) = _componentRowRanges[childIndex];
         if (start == end)
             return;
+
+        var focusedRange = _focusedChild.GetFocusedRowRange();
+        if (focusedRange.HasValue)
+        {
+            start += focusedRange.Value.Start;
+            end = start + Math.Max(1, focusedRange.Value.End - focusedRange.Value.Start);
+        }
 
         if (end > _scrollOffset + viewportHeight)
             _scrollOffset = end - viewportHeight;

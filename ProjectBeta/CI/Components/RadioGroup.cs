@@ -13,15 +13,23 @@ public sealed class RadioGroup : Component, IValidatable, IValueComponent
     public RadioGroup(string label)
     {
         Label = label;
+        FieldKey = label;
     }
 
     public override bool IsFocusable => true;
 
     public string Label { get; }
+    public string FieldKey { get; private set; }
     public string? Value => _selectedIndex >= 0 && _selectedIndex < _options.Length ? _options[_selectedIndex] : null;
     [Obsolete("Use Value instead.")]
     public string? SelectedValue => Value;
     object? IValueComponent.Value => Value;
+
+    public RadioGroup Key(string fieldKey)
+    {
+        FieldKey = string.IsNullOrWhiteSpace(fieldKey) ? Label : fieldKey;
+        return this;
+    }
 
     public RadioGroup AddOption(string option)
     {
@@ -35,11 +43,23 @@ public sealed class RadioGroup : Component, IValidatable, IValueComponent
         return this;
     }
 
+    public RadioGroup Default(string option)
+    {
+        var index = Array.FindIndex(_options, current => string.Equals(current, option, StringComparison.Ordinal));
+        if (index >= 0)
+        {
+            _selectedIndex = index;
+            _highlightedIndex = index;
+        }
+
+        return this;
+    }
+
     public List<string> Validate()
     {
         var errors = new List<string>();
         if (_isRequired && _selectedIndex < 0)
-            errors.Add($"{Label} is required");
+            errors.Add(l10n("validation.common.required", new Dictionary<string, string> { ["field"] = Label }));
         return errors;
     }
 
@@ -79,7 +99,7 @@ public sealed class RadioGroup : Component, IValidatable, IValueComponent
 
         if (_options.Length == 0)
         {
-            InputBox.WriteFixedContentRow(buf, boxWidth, borderStyle, "(no options)", Style.Muted);
+            InputBox.WriteFixedContentRow(buf, boxWidth, borderStyle, l10n("components.radiogroup.no_options"), Style.Muted);
             lines++;
         }
 

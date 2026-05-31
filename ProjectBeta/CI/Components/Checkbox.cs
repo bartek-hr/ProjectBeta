@@ -9,15 +9,23 @@ public sealed class Checkbox : Component, IValueComponent
     public Checkbox(string label)
     {
         Label = label;
+        FieldKey = label;
     }
 
     public override bool IsFocusable => true;
 
     public string Label { get; }
+    public string FieldKey { get; private set; }
     public bool Value => _checked;
     [Obsolete("Use Value instead.")]
     public bool Checked => _checked;
     object? IValueComponent.Value => Value;
+
+    public Checkbox Key(string fieldKey)
+    {
+        FieldKey = string.IsNullOrWhiteSpace(fieldKey) ? Label : fieldKey;
+        return this;
+    }
 
     public Checkbox Default(bool value)
     {

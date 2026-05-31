@@ -13,15 +13,23 @@ public sealed class Select : Component, IValidatable, IValueComponent
     public Select(string label)
     {
         Label = label;
+        FieldKey = label;
     }
 
     public override bool IsFocusable => true;
 
     public string Label { get; }
+    public string FieldKey { get; private set; }
     public string? Value => _hasSelection && _selectedIndex < _options.Length ? _options[_selectedIndex] : null;
     [Obsolete("Use Value instead.")]
     public string? SelectedValue => Value;
     object? IValueComponent.Value => Value;
+
+    public Select Key(string fieldKey)
+    {
+        FieldKey = string.IsNullOrWhiteSpace(fieldKey) ? Label : fieldKey;
+        return this;
+    }
 
     public Select AddOption(string option)
     {
@@ -39,7 +47,7 @@ public sealed class Select : Component, IValidatable, IValueComponent
     {
         var errors = new List<string>();
         if (_isRequired && !_hasSelection)
-            errors.Add($"{Label} is required");
+            errors.Add(l10n("validation.common.required", new Dictionary<string, string> { ["field"] = Label }));
         return errors;
     }
 
@@ -75,14 +83,14 @@ public sealed class Select : Component, IValidatable, IValueComponent
 
             if (_options.Length == 0)
             {
-                InputBox.WriteFixedContentRow(buf, boxWidth, borderStyle, "(no options)", Style.Muted);
+                InputBox.WriteFixedContentRow(buf, boxWidth, borderStyle, l10n("components.select.no_options"), Style.Muted);
                 lines++;
             }
         }
         else
         {
             // Collapsed: show selected value
-            var displayText = _hasSelection ? Value ?? "(none)" : "(none)";
+            var displayText = _hasSelection ? Value ?? l10n("components.form.none") : l10n("components.form.none");
             var textStyle = _hasSelection ? Style.Default : Style.Muted;
             InputBox.WriteFixedContentRow(buf, boxWidth, borderStyle, displayText, textStyle);
             lines++;

@@ -18,6 +18,7 @@ public sealed class DateInput : Component, IValidatable, IValueComponent
     public DateInput(string label)
     {
         Label = label;
+        FieldKey = label;
         var today = DateOnly.FromDateTime(DateTime.Today);
         _year = today.Year;
         _month = today.Month;
@@ -27,6 +28,7 @@ public sealed class DateInput : Component, IValidatable, IValueComponent
     public override bool IsFocusable => true;
 
     public string Label { get; }
+    public string FieldKey { get; private set; }
 
     public DateOnly? Value
     {
@@ -47,6 +49,12 @@ public sealed class DateInput : Component, IValidatable, IValueComponent
     }
 
     object? IValueComponent.Value => Value;
+
+    public DateInput Key(string fieldKey)
+    {
+        FieldKey = string.IsNullOrWhiteSpace(fieldKey) ? Label : fieldKey;
+        return this;
+    }
 
     public DateInput Required()
     {
@@ -81,7 +89,7 @@ public sealed class DateInput : Component, IValidatable, IValueComponent
 
         if (_isRequired && !_hasValue)
         {
-            errors.Add($"{Label} is required");
+            errors.Add(l10n("validation.common.required", new Dictionary<string, string> { ["field"] = Label }));
             return errors;
         }
 
@@ -91,15 +99,23 @@ public sealed class DateInput : Component, IValidatable, IValueComponent
         var date = Value;
         if (date == null)
         {
-            errors.Add($"{Label} is not a valid date");
+            errors.Add(l10n("validation.common.invalid_date", new Dictionary<string, string> { ["field"] = Label }));
             return errors;
         }
 
         if (_min.HasValue && date < _min.Value)
-            errors.Add($"{Label} must be on or after {_min.Value:yyyy-MM-dd}");
+            errors.Add(l10n("validation.common.date_on_or_after", new Dictionary<string, string>
+            {
+                ["field"] = Label,
+                ["date"] = _min.Value.ToString("yyyy-MM-dd")
+            }));
 
         if (_max.HasValue && date > _max.Value)
-            errors.Add($"{Label} must be on or before {_max.Value:yyyy-MM-dd}");
+            errors.Add(l10n("validation.common.date_on_or_before", new Dictionary<string, string>
+            {
+                ["field"] = Label,
+                ["date"] = _max.Value.ToString("yyyy-MM-dd")
+            }));
 
         return errors;
     }
@@ -124,7 +140,7 @@ public sealed class DateInput : Component, IValidatable, IValueComponent
 
         if (!_hasValue && !IsFocused)
         {
-            var placeholder = "YYYY-MM-DD";
+            var placeholder = l10n("components.form.date_placeholder");
             buf.Write(placeholder, Style.Muted);
             var pad = innerWidth - placeholder.Length;
             if (pad > 0)

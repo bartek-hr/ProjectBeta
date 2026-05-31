@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using ProjectBeta.Data;
 using ProjectBeta.Model;
 
@@ -14,12 +15,18 @@ public class BookingAccess
 
         public List<Booking> GetAll()
         {
-            return _context.Bookings.ToList();
+            return _context.Bookings
+                .Include(b => b.Auditorium)
+                .ThenInclude(a => a.Location)
+                .ToList();
         }
 
         public Booking? GetById(int id)
         {
-            return _context.Bookings.FirstOrDefault(b => b.Id == id);
+            return _context.Bookings
+                .Include(b => b.Auditorium)
+                .ThenInclude(a => a.Location)
+                .FirstOrDefault(b => b.Id == id);
         }
 
         public void Add(Booking booking)
@@ -27,7 +34,12 @@ public class BookingAccess
             _context.Bookings.Add(booking);
             _context.SaveChanges();
         }
-
+        public Booking AddAndReturn(Booking booking)
+        {
+            _context.Bookings.Add(booking);
+            _context.SaveChanges();
+            return booking;
+        }
         public void Update(Booking booking)
         {
             _context.Bookings.Update(booking);

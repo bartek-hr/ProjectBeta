@@ -21,7 +21,7 @@ public class LoginView : Form
 }
 ```
 
-`Tab` / `Shift+Tab` navigates. `Escape` exits.
+`Tab` / `Shift+Tab` navigates between focusable components. `Escape` exits.
 
 ---
 
@@ -40,9 +40,11 @@ public class LoginView : Form
   - [Toggle](#toggle)
 - Action
   - [Button](#button)
+  - [Navigation](#navigation)
 - Display
   - [Heading](#heading)
   - [Label](#label)
+  - [Table](#table)
   - [Divider](#divider)
   - [Spacer](#spacer)
   - [Message](#message)
@@ -171,6 +173,29 @@ Button(string label)
 
 Keys: `Enter`/`Space`
 
+### Navigation
+
+Groups multiple buttons into a single tab stop.
+
+```csharp
+var save = new Button("Save").OnClick(() => { });
+Navigation(
+    save,
+    new Button("Cancel").OnClick(() => { }))
+    .SetActive(save);            // optional
+```
+
+Or:
+
+```csharp
+Navigation(
+    Button("Save").OnClick(() => { }),
+    Button("Cancel").OnClick(() => { }));
+```
+
+Keys: `Up`/`Down` to move between visible buttons (wraps around), `Enter`/`Space` to activate.
+`Tab` / `Shift+Tab` enters or leaves the whole group in one step.
+
 ### Heading
 
 ```
@@ -181,6 +206,54 @@ Heading(string text)             // bold title
 
 ```
 Label(string text)               // muted text
+```
+
+### Table
+
+Tabular data with auto-sized columns. Display-only by default.
+
+```
+Table(params string[] headers)
+    .AddColumn(string header, Align align = Align.Left)
+    .AddRow(params object?[] cells)
+    .EmptyMessage(string)
+```
+
+Example:
+
+```csharp
+Table("Movie", "Time", "Seats")
+    .AddRow("Dune: Part Two", "19:30", 42)
+    .AddRow("Arrival", "21:00", 18)
+    .AddRow("Past Lives", "22:15", 6);
+```
+
+### Table\<T\>
+
+Interactive table with row selection. Each row carries a data object of type `T`.
+Focusable only when `OnSelect` is registered and rows exist.
+
+```
+Table<T>(params string[] headers)
+    .AddColumn(string header, Align align = Align.Left)
+    .AddRow(T data, params object?[] cells)
+    .OnSelect(Action<T>)
+    .EmptyMessage(string)
+```
+
+Keys: `Up`/`Down` to navigate rows (wraps around), `Enter`/`Space` to select.
+Focused table highlights borders and the current row.
+
+Example:
+
+```csharp
+Table<Movie>("Title", "Year", "Rating")
+    .AddRow(movie1, movie1.Title, movie1.Year, movie1.Rating)
+    .AddRow(movie2, movie2.Title, movie2.Year, movie2.Rating)
+    .OnSelect(movie =>
+    {
+        // handle selection
+    });
 ```
 
 ### Divider
