@@ -79,11 +79,13 @@ main:
       reservation_history: Reserveringsgeschiedenis
       upcoming_reservations: Aankomende reserveringen
       account_details: Accountgegevens
+      my_subscription: Mijn Abonnement
       reports: Rapporten (NOG TE DOEN)
       users: Gebruikers
       cinemas: Bioscopen
       seat_prices: Stoelprijzen
       discounts: Kortingen
+      locations: Locaties
       subscriptions: Abonnementen
       my_subscription: Mijn Abonnement
       back: Terug
@@ -220,6 +222,11 @@ account:
       message: Weet je zeker dat je je account wilt verwijderen? Dit kan niet ongedaan worden gemaakt.
       confirm: Ja, verwijderen
       cancel: Nee, annuleren
+    subscription:
+      label: "Abonnement"
+      active: "Actief — :type"
+      inactive: Geen actief abonnement
+      unknown_type: Onbekend
     status:
       updated: Account succesvol bijgewerkt.
       deleted: Account verwijderd. Doorsturen naar inloggen.
@@ -525,6 +532,22 @@ snacks:
     quantity_non_negative: Aantal mag niet negatief zijn.
     not_found: Snack niet gevonden.
 booking_snacks:
+  heading: Snacks selecteren
+  search_placeholder: Zoeken op naam
+  quantity_label: "Hoeveel :name?"
+  quantity_input_label: Aantal
+  empty: Geen snacks beschikbaar.
+  table:
+    name: Naam
+    price: Prijs
+    selected: Geselecteerd
+  actions:
+    search: Zoeken
+    clear: Wissen
+    add: Toevoegen
+    cancel_selection: Annuleren
+    done: Klaar
+    back: Terug
   errors:
     add_unauthorized: Alleen beheerders mogen boekingssnacks toevoegen.
     update_unauthorized: Alleen beheerders mogen boekingssnacks bijwerken.
@@ -532,6 +555,45 @@ booking_snacks:
     quantity_positive: Geboekt aantal moet groter zijn dan nul.
     snack_not_found: Snack niet gevonden.
     not_found: Boekingssnack niet gevonden.
+location:
+  detail:
+    city: "Stad: :city"
+    address: "Adres: :address"
+    capacity: "Totale capaciteit: :capacity"
+    actions:
+      movies: Films
+      auditoriums: Zalen
+      snack_manager: Snackbeheer
+      reports: Rapporten
+      back: Terug
+    status:
+      reports_tbd: "Rapporten — binnenkort beschikbaar."
+  list:
+    heading: Locaties
+    search_placeholder: Zoeken op naam
+    empty: Geen locaties gevonden.
+    table:
+      id: ID
+      name: Naam
+      city: Stad
+      address: Adres
+      capacity: Capaciteit
+    actions:
+      search: Zoeken
+      clear: Wissen
+      add: Locatie toevoegen
+      back: Terug
+  picker:
+    heading: Kies een locatie
+    empty: Geen locaties beschikbaar.
+    table:
+      id: ID
+      name: Naam
+      city: Stad
+      address: Adres
+      capacity: Capaciteit
+    actions:
+      back: Terug
 receipts:
   errors:
     not_found: Bon niet gevonden.

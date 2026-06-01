@@ -178,9 +178,21 @@ public abstract class RootComponent : StaticTerminalInterface
             return MoveFocus(direction);
         }
 
-        return _focusedChild is { IsHidden: false }
-            ? _focusedChild.ProcessKey(key)
-            : false;
+        // Let the focused child try to consume the key first
+        if (_focusedChild is { IsHidden: false })
+        {
+            if (_focusedChild.ProcessKey(key))
+                return true;
+        }
+
+        // If UpArrow/DownArrow were not consumed, use them to move focus between components
+        if (key.Key is ConsoleKey.UpArrow or ConsoleKey.DownArrow)
+        {
+            var direction = key.Key == ConsoleKey.DownArrow ? 1 : -1;
+            return MoveFocus(direction);
+        }
+
+        return false;
     }
 
     public void FocusChild(Component child)

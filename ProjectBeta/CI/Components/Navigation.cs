@@ -72,11 +72,21 @@ public sealed class Navigation : Component
         switch (key.Key)
         {
             case ConsoleKey.UpArrow:
+            {
+                var activeBtn = GetActiveButton();
+                var idx = activeBtn != null ? visibleButtons.IndexOf(activeBtn) : 0;
+                if (idx <= 0) return false; // at top — let parent move focus to previous component
                 MoveActive(visibleButtons, -1);
                 return true;
+            }
             case ConsoleKey.DownArrow:
+            {
+                var activeBtn = GetActiveButton();
+                var idx = activeBtn != null ? visibleButtons.IndexOf(activeBtn) : 0;
+                if (idx >= visibleButtons.Count - 1) return false; // at bottom — let parent move focus to next component
                 MoveActive(visibleButtons, 1);
                 return true;
+            }
             case ConsoleKey.Enter:
             case ConsoleKey.Spacebar:
                 GetActiveButton()?.Invoke();
