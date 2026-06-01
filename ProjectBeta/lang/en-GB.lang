@@ -259,7 +259,13 @@ admin:
       actions:
         update: Update Cinema
         view_auditoriums: View Auditoriums
+        opening_times: Opening Times
         back: Back
+    opening_times:
+      heading: "Opening times - :cinema"
+      values:
+        always: Always
+        never: Never
     edit:
       heading: Edit Cinema: :name
       status:

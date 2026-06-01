@@ -45,6 +45,13 @@ public sealed class CinemaDetailView : Form
                 var listView = _serviceProvider.GetRequiredService<AuditoriumListView>();
                 listView.SetContext(_user, _cinema);
                 _appLoop.Display(listView);
+            }),
+            Button(l10n("admin.cinemas.detail.actions.opening_times")).OnClick(() =>
+            {
+                Console.Clear();
+                var openingTimesView = _serviceProvider.GetRequiredService<CinemaOpeningTimesView>();
+                openingTimesView.SetContext(_user, _cinema);
+                _appLoop.Display(openingTimesView);
             }));
 
         Divider();

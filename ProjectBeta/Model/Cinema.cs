@@ -13,4 +13,5 @@ public class Cinema
     public string City { get; set; } = string.Empty;
 
     public ICollection<Auditorium> Auditoriums { get; set; } = [];
+    public ICollection<CinemaOpeningTime> OpeningTimes { get; set; } = [];
 }

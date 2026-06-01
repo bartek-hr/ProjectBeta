@@ -259,7 +259,13 @@ admin:
       actions:
         update: Bioscoop bijwerken
         view_auditoriums: Zalen bekijken
+        opening_times: Openingstijden
         back: Terug
+    opening_times:
+      heading: "Openingstijden - :cinema"
+      values:
+        always: Altijd
+        never: Nooit
     edit:
       heading: Bioscoop bewerken: :name
       status:

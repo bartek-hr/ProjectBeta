@@ -5,22 +5,25 @@ namespace ProjectBeta.Logic;
 
 public class MovieLogic
 {
-    public const string OpeningTime = "09:00";
-    public const string ClosingTime = "20:00";
+    public const string OpeningTime = CinemaOpeningTimeLogic.DefaultOpeningTime;
+    public const string ClosingTime = CinemaOpeningTimeLogic.DefaultClosingTime;
     public const int MinimumBreakMinutes = 30;
-
-    private static readonly TimeOnly OpeningTimeValue = TimeOnly.ParseExact(OpeningTime, "HH:mm");
-    private static readonly TimeOnly ClosingTimeValue = TimeOnly.ParseExact(ClosingTime, "HH:mm");
 
     private readonly MovieAccess _movieAccess;
     private readonly MovieScheduleAccess _movieScheduleAccess;
     private readonly AuditoriumLogic _auditoriumLogic;
+    private readonly CinemaOpeningTimeLogic _cinemaOpeningTimeLogic;
 
-    public MovieLogic(MovieAccess movieAccess, MovieScheduleAccess movieScheduleAccess, AuditoriumLogic auditoriumLogic)
+    public MovieLogic(
+        MovieAccess movieAccess,
+        MovieScheduleAccess movieScheduleAccess,
+        AuditoriumLogic auditoriumLogic,
+        CinemaOpeningTimeLogic cinemaOpeningTimeLogic)
     {
         _movieAccess = movieAccess;
         _movieScheduleAccess = movieScheduleAccess;
         _auditoriumLogic = auditoriumLogic;
+        _cinemaOpeningTimeLogic = cinemaOpeningTimeLogic;
     }
 
     public IReadOnlyList<MovieSchedule> GetScheduleForDate(DateOnly date)
@@ -43,16 +46,10 @@ public class MovieLogic
 
     public IReadOnlyList<MovieSchedule> GetOrGenerateSchedule(DateOnly date)
     {
-        var existingSchedule = GetScheduleForDate(date);
-        if (existingSchedule.Count > 0)
-        {
-            return existingSchedule;
-        }
-
         var today = DateOnly.FromDateTime(DateTime.Today);
         if (date < today)
         {
-            return [];
+            return GetScheduleForDate(date);
         }
 
         return GenerateSchedule(date);
@@ -61,7 +58,31 @@ public class MovieLogic
     public IReadOnlyList<MovieSchedule> GenerateSchedule(DateOnly date)
     {
         var existingSchedule = GetScheduleForDate(date);
-        if (existingSchedule.Count > 0)
+        var scheduledAuditoriumIds = existingSchedule
+            .Select(schedule => schedule.AuditoriumId)
+            .ToHashSet();
+
+        var auditoriums = _auditoriumLogic.GetAll()
+            .Where(auditorium => !scheduledAuditoriumIds.Contains(auditorium.Id))
+            .ToList();
+
+        if (auditoriums.Count == 0)
+        {
+            return existingSchedule;
+        }
+
+        var openAuditoriums = auditoriums
+            .Select(auditorium => new
+            {
+                Auditorium = auditorium,
+                OpeningHours = _cinemaOpeningTimeLogic.GetOpeningHoursForDate(auditorium.CinemaId, date)
+            })
+            .Where(entry => !entry.OpeningHours.IsClosed
+                            && entry.OpeningHours.OpeningTime.HasValue
+                            && entry.OpeningHours.ClosingTime.HasValue)
+            .ToList();
+
+        if (openAuditoriums.Count == 0)
         {
             return existingSchedule;
         }
@@ -77,24 +98,21 @@ public class MovieLogic
             throw new InvalidOperationException("No trending movies are available with a valid runtime.");
         }
 
-        var auditoriums = _auditoriumLogic.GetAll();
-        if (auditoriums.Count == 0)
-        {
-            return [];
-        }
-
         Shuffle(validMovies);
 
         var schedules = new List<MovieSchedule>();
-        foreach (var auditorium in auditoriums)
+        foreach (var entry in openAuditoriums)
         {
+            var auditorium = entry.Auditorium;
+            var openingTime = entry.OpeningHours.OpeningTime!.Value;
+            var closingTime = entry.OpeningHours.ClosingTime!.Value;
             var usedMovieIds = new HashSet<string>(StringComparer.Ordinal);
-            var currentStart = OpeningTimeValue;
+            var currentStart = openingTime;
 
             while (true)
             {
                 var unusedCandidates = validMovies
-                    .Where(movie => !usedMovieIds.Contains(movie.Id) && FitsInRemainingWindow(movie, currentStart))
+                    .Where(movie => !usedMovieIds.Contains(movie.Id) && FitsInRemainingWindow(movie, currentStart, closingTime))
                     .ToList();
 
                 var selectedMovie = PickRandom(unusedCandidates);
@@ -102,7 +120,7 @@ public class MovieLogic
                 if (selectedMovie == null)
                 {
                     var repeatedCandidates = validMovies
-                        .Where(movie => usedMovieIds.Contains(movie.Id) && FitsInRemainingWindow(movie, currentStart))
+                        .Where(movie => usedMovieIds.Contains(movie.Id) && FitsInRemainingWindow(movie, currentStart, closingTime))
                         .ToList();
 
                     selectedMovie = PickRandom(repeatedCandidates);
@@ -132,7 +150,7 @@ public class MovieLogic
 
         if (schedules.Count == 0)
         {
-            return [];
+            return existingSchedule;
         }
 
         var scheduledMovies = schedules.Select(schedule => schedule.Movie).ToList();
@@ -142,10 +160,10 @@ public class MovieLogic
         return GetScheduleForDate(date);
     }
 
-    private static bool FitsInRemainingWindow(Movie movie, TimeOnly currentStart)
+    private static bool FitsInRemainingWindow(Movie movie, TimeOnly currentStart, TimeOnly closingTime)
     {
         return movie.RuntimeSeconds is > 0
-               && currentStart.Add(TimeSpan.FromSeconds(movie.RuntimeSeconds.Value)) <= ClosingTimeValue;
+               && currentStart.Add(TimeSpan.FromSeconds(movie.RuntimeSeconds.Value)) <= closingTime;
     }
 
     private static Movie? PickRandom(IReadOnlyList<Movie> candidates)

@@ -20,6 +20,7 @@ public class AppDbContext : DbContext
     public DbSet<Snack> Snacks { get; set; }
     public DbSet<BookingSnack> BookingSnacks { get; set; }
     public DbSet<Location> Locations { get; set; }
+    public DbSet<CinemaOpeningTime> CinemaOpeningTimes { get; set; }
     public DbSet<Discount> Discounts { get; set; }
     public DbSet<BookingDiscount> BookingDiscounts { get; set; }
     public DbSet<SeatPrice> SeatPrices { get; set; }
@@ -88,6 +89,21 @@ public class AppDbContext : DbContext
             entity.HasOne(schedule => schedule.Auditorium)
                 .WithMany()
                 .HasForeignKey(schedule => schedule.AuditoriumId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<CinemaOpeningTime>(entity =>
+        {
+            entity.HasKey(openingTime => openingTime.Id);
+            entity.Property(openingTime => openingTime.CinemaId).IsRequired();
+            entity.Property(openingTime => openingTime.StartDate).IsRequired();
+            entity.Property(openingTime => openingTime.ExpiresAt).IsRequired();
+            entity.Property(openingTime => openingTime.CreatedAt).IsRequired();
+            entity.HasIndex(openingTime => new { openingTime.CinemaId, openingTime.StartDate, openingTime.ExpiresAt });
+            entity.HasIndex(openingTime => new { openingTime.CinemaId, openingTime.CreatedAt });
+            entity.HasOne(openingTime => openingTime.Cinema)
+                .WithMany(cinema => cinema.OpeningTimes)
+                .HasForeignKey(openingTime => openingTime.CinemaId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
 

@@ -253,6 +253,39 @@ namespace ProjectBeta.Migrations
                     b.ToTable("Locations");
                 });
 
+            modelBuilder.Entity("ProjectBeta.Model.CinemaOpeningTime", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("CinemaId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<TimeOnly?>("ClosingTime")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateOnly>("ExpiresAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<TimeOnly?>("OpeningTime")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateOnly>("StartDate")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CinemaId", "CreatedAt");
+
+                    b.HasIndex("CinemaId", "StartDate", "ExpiresAt");
+
+                    b.ToTable("CinemaOpeningTimes");
+                });
+
             modelBuilder.Entity("ProjectBeta.Model.Movie", b =>
                 {
                     b.Property<string>("Id")
@@ -554,6 +587,17 @@ namespace ProjectBeta.Migrations
                     b.Navigation("Movie");
                 });
 
+            modelBuilder.Entity("ProjectBeta.Model.CinemaOpeningTime", b =>
+                {
+                    b.HasOne("ProjectBeta.Model.Cinema", "Cinema")
+                        .WithMany("OpeningTimes")
+                        .HasForeignKey("CinemaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Cinema");
+                });
+
             modelBuilder.Entity("ProjectBeta.Model.Receipt", b =>
                 {
                     b.HasOne("ProjectBeta.Model.Booking", "Booking")
@@ -573,6 +617,8 @@ namespace ProjectBeta.Migrations
             modelBuilder.Entity("ProjectBeta.Model.Cinema", b =>
                 {
                     b.Navigation("Auditoriums");
+
+                    b.Navigation("OpeningTimes");
                 });
 
             modelBuilder.Entity("ProjectBeta.Model.Location", b =>
