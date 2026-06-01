@@ -70,7 +70,10 @@ public sealed class MoviesView : Form
     }
     private void LoadSchedule()
     {
-        _schedule = _movieLogic.GetOrGenerateSchedule(_selectedDate);
+        var all = _movieLogic.GetOrGenerateSchedule(_selectedDate);
+        _schedule = _locationId > 0
+            ? all.Where(s => s.Auditorium?.LocationId == _locationId).ToList()
+            : all.ToList();
         var today = DateOnly.FromDateTime(DateTime.Today);
         _statusMessage = _schedule.Count == 0 && _selectedDate < today
             ? l10n("movies.list.status.no_schedule_for_date")
@@ -130,8 +133,12 @@ public sealed class MoviesView : Form
     private int DetermineSpaceLeft(MovieSchedule schedule)
     {
         var reservedSeats = GetReservedSeats(schedule, schedule.Auditorium.Id);
-        return schedule.Auditorium.Capacity - reservedSeats.Count;
+        var capacity = EffectiveCapacity(schedule.Auditorium.Capacity);
+        return capacity - reservedSeats.Count;
     }
+
+    private static int EffectiveCapacity(int dbCapacity) =>
+        dbCapacity >= 500 ? 500 : dbCapacity >= 300 ? 300 : 150;
 
     private HashSet<string> GetReservedSeats(MovieSchedule schedule, int auditoriumId)
     {

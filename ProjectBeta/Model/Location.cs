@@ -16,6 +16,7 @@ public class Location
     public string Address { get; set; } = string.Empty;
 
     public ICollection<Auditorium> Auditoriums { get; set; } = [];
+    public ICollection<LocationOpeningTime> OpeningTimes { get; set; } = [];
 
     public int ComputedCapacity => Auditoriums.Sum(a => a.Capacity);
 }

@@ -19,6 +19,7 @@ public class MovieLogicTests
     private MovieAccess? _movieAccess;
     private MovieScheduleAccess? _movieScheduleAccess;
     private AuditoriumLogic? _auditoriumLogic;
+    private LocationOpeningTimeLogic? _locationOpeningTimeLogic;
 
     private static readonly string TrendingResponse = """
         {
@@ -54,7 +55,8 @@ public class MovieLogicTests
         _movieScheduleAccess = new MovieScheduleAccess(_context);
         var auditoriumAccess = new AuditoriumAccess(_context);
         _auditoriumLogic = new AuditoriumLogic(auditoriumAccess);
-        _logic = new MovieLogic(_movieAccess, _movieScheduleAccess, _auditoriumLogic);
+        _locationOpeningTimeLogic = CreateLocationOpeningTimeLogic(_context, _movieScheduleAccess);
+        _logic = new MovieLogic(_movieAccess, _movieScheduleAccess, _auditoriumLogic, _locationOpeningTimeLogic);
     }
 
     [TestCleanup]
@@ -88,7 +90,7 @@ public class MovieLogicTests
     }
 
     [TestMethod]
-    public void GetOrGenerateSchedule_ExistingSchedule_ReturnsCachedResult()
+    public void GetOrGenerateSchedule_ExistingSchedule_PreservesExistingAndGeneratesMissingAuditoriums()
     {
         var date = DateOnly.FromDateTime(DateTime.Today.AddDays(1));
         _context!.Movies.Add(new Movie { Id = "m1", Title = "Movie One", Description = "p1", RuntimeSeconds = 5400 });
@@ -100,7 +102,11 @@ public class MovieLogicTests
         });
 
         var result = _logic!.GetOrGenerateSchedule(date);
-        Assert.AreEqual(1, result.Count);
+        Assert.IsTrue(result.Count > 1);
+        Assert.IsTrue(result.Any(schedule =>
+            schedule.AuditoriumId == 1
+            && schedule.MovieId == "m1"
+            && schedule.StartTime == new TimeOnly(9, 0)));
     }
 
     [TestMethod]
@@ -120,7 +126,7 @@ public class MovieLogicTests
     }
 
     [TestMethod]
-    public void GenerateSchedule_ExistingSchedule_ReturnsExisting()
+    public void GenerateSchedule_ExistingSchedule_PreservesExistingAndGeneratesMissingAuditoriums()
     {
         var date = DateOnly.FromDateTime(DateTime.Today.AddDays(3));
         _context!.Movies.Add(new Movie { Id = "m1", Title = "Movie One", Description = "p1", RuntimeSeconds = 5400 });
@@ -132,7 +138,11 @@ public class MovieLogicTests
         });
 
         var result = _logic!.GenerateSchedule(date);
-        Assert.AreEqual(1, result.Count);
+        Assert.IsTrue(result.Count > 1);
+        Assert.IsTrue(result.Any(schedule =>
+            schedule.AuditoriumId == 1
+            && schedule.MovieId == "m1"
+            && schedule.StartTime == new TimeOnly(9, 0)));
     }
 
     [TestMethod]
@@ -155,7 +165,7 @@ public class MovieLogicTests
             BaseAddress = new Uri("https://fake.imdb.local/")
         };
         var emptyAccess = new MovieAccess(_context!, emptyClient);
-        var logic = new MovieLogic(emptyAccess, _movieScheduleAccess!, _auditoriumLogic!);
+        var logic = new MovieLogic(emptyAccess, _movieScheduleAccess!, _auditoriumLogic!, _locationOpeningTimeLogic!);
 
         var date = DateOnly.FromDateTime(DateTime.Today.AddDays(5));
         Assert.ThrowsException<InvalidOperationException>(() => logic.GenerateSchedule(date));
@@ -178,7 +188,7 @@ public class MovieLogicTests
             BaseAddress = new Uri("https://fake.imdb.local/")
         };
         var access = new MovieAccess(_context!, client);
-        var logic = new MovieLogic(access, _movieScheduleAccess!, _auditoriumLogic!);
+        var logic = new MovieLogic(access, _movieScheduleAccess!, _auditoriumLogic!, _locationOpeningTimeLogic!);
 
         var date = DateOnly.FromDateTime(DateTime.Today.AddDays(6));
         var result = logic.GenerateSchedule(date);
@@ -202,7 +212,7 @@ public class MovieLogicTests
             BaseAddress = new Uri("https://fake.imdb.local/")
         };
         var access = new MovieAccess(_context!, client);
-        var logic = new MovieLogic(access, _movieScheduleAccess!, _auditoriumLogic!);
+        var logic = new MovieLogic(access, _movieScheduleAccess!, _auditoriumLogic!, _locationOpeningTimeLogic!);
 
         var date = DateOnly.FromDateTime(DateTime.Today.AddDays(7));
         var result = logic.GenerateSchedule(date);
@@ -242,6 +252,73 @@ public class MovieLogicTests
                     $"Expected at least {MovieLogic.MinimumBreakMinutes} minutes between screenings, but got {breakMinutes}.");
             }
         }
+    }
+
+    [TestMethod]
+    public void GenerateSchedule_UsesLocationOpeningHours()
+    {
+        var date = DateOnly.FromDateTime(DateTime.Today.AddDays(10));
+        _context!.LocationOpeningTimes.Add(new LocationOpeningTime
+        {
+            LocationId = 1,
+            StartDate = date,
+            ExpiresAt = date,
+            OpeningTime = new TimeOnly(13, 0),
+            ClosingTime = new TimeOnly(16, 0),
+            CreatedAt = DateTime.UtcNow
+        });
+        _context.SaveChanges();
+
+        var result = _logic!.GenerateSchedule(date);
+
+        Assert.IsTrue(result.Count > 0);
+        Assert.IsTrue(result.All(schedule => schedule.StartTime >= new TimeOnly(13, 0)));
+        Assert.IsTrue(result.All(schedule => schedule.EndTime <= new TimeOnly(16, 0)));
+    }
+
+    [TestMethod]
+    public void GenerateSchedule_ClosedLocationSkipsAuditoriums()
+    {
+        var date = DateOnly.FromDateTime(DateTime.Today.AddDays(11));
+        _context!.LocationOpeningTimes.Add(new LocationOpeningTime
+        {
+            LocationId = 1,
+            StartDate = date,
+            ExpiresAt = date,
+            OpeningTime = null,
+            ClosingTime = null,
+            CreatedAt = DateTime.UtcNow
+        });
+        _context.SaveChanges();
+
+        var result = _logic!.GenerateSchedule(date);
+
+        Assert.AreEqual(0, result.Count);
+    }
+
+    [TestMethod]
+    public void GetOrGenerateSchedule_PartialExistingSchedule_GeneratesMissingAuditoriums()
+    {
+        var date = DateOnly.FromDateTime(DateTime.Today.AddDays(12));
+        _context!.Movies.Add(new Movie { Id = "existing", Title = "Existing", Description = "d", RuntimeSeconds = 5400 });
+        _context.SaveChanges();
+        _movieScheduleAccess!.AddSchedules(new[]
+        {
+            new MovieSchedule
+            {
+                ScheduleDate = date,
+                AuditoriumId = 1,
+                MovieId = "existing",
+                StartTime = new TimeOnly(9, 0),
+                EndTime = new TimeOnly(10, 30)
+            }
+        });
+
+        var result = _logic!.GetOrGenerateSchedule(date);
+        var auditoriumIds = result.Select(schedule => schedule.AuditoriumId).Distinct().ToList();
+
+        Assert.IsTrue(result.Count > 1);
+        CollectionAssert.AreEquivalent(new[] { 1, 2, 3 }, auditoriumIds);
     }
 
     [TestMethod]
@@ -286,5 +363,13 @@ public class MovieLogicTests
         var result = _logic!.SearchSchedule(schedules, "Incep");
         Assert.AreEqual(1, result.Count);
         Assert.AreEqual("Inception", result[0].Movie.Title);
+    }
+
+    private static LocationOpeningTimeLogic CreateLocationOpeningTimeLogic(AppDbContext context, MovieScheduleAccess movieScheduleAccess)
+    {
+        return new LocationOpeningTimeLogic(
+            new LocationOpeningTimeAccess(context),
+            new LocationAccess(context),
+            movieScheduleAccess);
     }
 }

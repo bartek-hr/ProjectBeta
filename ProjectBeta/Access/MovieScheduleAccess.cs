@@ -45,4 +45,22 @@ public class MovieScheduleAccess
     {
         return _context.MovieSchedules.Any(schedule => schedule.ScheduleDate == date);
     }
+
+    public void DeleteForLocationDateRange(int locationId, DateOnly startDate, DateOnly expiresAt)
+    {
+        var schedules = _context.MovieSchedules
+            .Where(schedule =>
+                schedule.ScheduleDate >= startDate
+                && schedule.ScheduleDate <= expiresAt
+                && schedule.Auditorium.LocationId == locationId)
+            .ToList();
+
+        if (schedules.Count == 0)
+        {
+            return;
+        }
+
+        _context.MovieSchedules.RemoveRange(schedules);
+        _context.SaveChanges();
+    }
 }

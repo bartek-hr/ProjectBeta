@@ -52,7 +52,7 @@ public class UserLogicTests
         Assert.IsTrue(result.Success);
         Assert.IsNull(result.FieldErrors);
         // 3 users in total with seeded users
-        Assert.AreEqual(3, context.Users.Count());
+        Assert.AreEqual(4, context.Users.Count());
     }
 
     [TestMethod]

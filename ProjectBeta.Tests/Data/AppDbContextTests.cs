@@ -89,7 +89,7 @@ public class AppDbContextTests
     [TestMethod]
     public void EnsureCreated_SeedsDefaultUsers()
     {
-        Assert.AreEqual(2, _context!.Users.Count());
+        Assert.AreEqual(3, _context!.Users.Count());
     }
 
     [TestMethod]

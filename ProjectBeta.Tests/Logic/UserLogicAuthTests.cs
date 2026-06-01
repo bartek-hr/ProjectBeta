@@ -237,6 +237,6 @@ public class UserLogicAuthTests
         var result = _logic!.GetAllUsers();
         Assert.IsTrue(result.Success);
         Assert.IsNotNull(result.Users);
-        Assert.AreEqual(2, result.Users!.Count);
+        Assert.AreEqual(3, result.Users!.Count);
     }
 }

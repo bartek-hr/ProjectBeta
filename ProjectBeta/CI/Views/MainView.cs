@@ -82,10 +82,7 @@ public sealed class MainView : Form
 
         if (_user.IsAdmin())
         {
-            actionButtons.Add(Button(l10n("main.dashboard.actions.reports")).OnClick(form =>
-            {
-                _statusMessage = l10n("main.dashboard.status.reports_tbd");
-            }));
+
             actionButtons.Add(Button(l10n("main.dashboard.actions.users")).OnClick(() =>
             {
                 Console.Clear();
@@ -108,6 +105,22 @@ public sealed class MainView : Form
                 var discountView = _serviceProvider.GetRequiredService<DiscountView>();
                 discountView.SetUser(_user);
                 _appLoop.Display(discountView);
+            }));
+
+            actionButtons.Add(Button("Locations").OnClick(() =>
+            {
+                Console.Clear();
+                var locationView = _serviceProvider.GetRequiredService<LocationView>();
+                locationView.SetUser(_user);
+                _appLoop.Display(locationView);
+            }));
+
+            actionButtons.Add(Button(l10n("main.dashboard.actions.subscriptions")).OnClick(() =>
+            {
+                Console.Clear();
+                var subscriptionView = _serviceProvider.GetRequiredService<SubscriptionView>();
+                subscriptionView.SetUser(_user);
+                _appLoop.Display(subscriptionView);
             }));
         }
 

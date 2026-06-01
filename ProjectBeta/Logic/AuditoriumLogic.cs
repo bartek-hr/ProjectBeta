@@ -12,6 +12,14 @@ public class AuditoriumLogic
         _auditoriumAccess = auditoriumAccess;
     }
 
+    public void Add(Auditorium auditorium, User currentUser)
+    {
+        if (!currentUser.IsAdmin())
+            throw new UnauthorizedAccessException("Only admins can add auditoriums.");
+
+        _auditoriumAccess.Add(auditorium);
+    }
+
     public List<Auditorium> GetAll()
     {
         return _auditoriumAccess.GetAll();

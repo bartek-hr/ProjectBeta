@@ -86,11 +86,14 @@ main:
       seat_prices: Seat Prices
       discounts: Discounts
       locations: Locations
+      subscriptions: Subscriptions
+      my_subscription: My Subscription
+      back: Back
     status:
       reports_tbd: TBD
 movies:
   list:
-    heading: Movies for date: :date
+    heading: "Movies for date: :date"
     empty: No movies scheduled.
     status:
       no_schedule_for_date: No schedule for this date.
@@ -100,16 +103,16 @@ movies:
       start: Start
       end: End
       auditorium: Auditorium
-      space_left: Space Left
+      space_left: Spaces Left
     values:
       default_auditorium: 1
-      unknown_space_left: ?
+      unknown_space_left: "?"
     actions:
       back: Back
   seat_booking:
     heading: The Grand Cinema
-    tagline: A premium seat picker for the movie reservation flow.
-    instructions: Tab moves between the seat map and the action group. Use arrows in the seat map and Up/Down in the action group. Escape exits the app.
+    tagline: A premium seat selector for the movie reservation process.
+    instructions: Tab moves between the seat map and action group. Use arrow keys in the seat map and Up/Down in the action group. Escape exits.
     auditorium: Hall 1 · Dolby Atmos
     actions:
       snacks: Snacks (TBD)
@@ -168,9 +171,9 @@ reservations:
     actions:
       back: Back
   upcoming:
-    heading: Reservation Details
+    heading: Upcoming Reservations
     instructions: Tab to navigate, Shift+Tab to go back.
-    empty: No movies scheduled.
+    empty: No upcoming reservations.
     table:
       movie: Movie
       auditorium: Auditorium
@@ -266,7 +269,13 @@ admin:
       actions:
         update: Update Cinema
         view_auditoriums: View Auditoriums
+        opening_times: Opening Times
         back: Back
+    opening_times:
+      heading: "Opening times - :cinema"
+      values:
+        always: Always
+        never: Never
     edit:
       heading: Edit Cinema: :name
       status:
@@ -282,6 +291,12 @@ admin:
       errors:
         update_name_unauthorized: Only admins can update cinema names.
         update_city_unauthorized: Only admins can update cinema city.
+  locations:
+    opening_times:
+      heading: "Opening times - :location"
+      values:
+        always: Always
+        never: Never
   auditoriums:
     list:
       heading: :cinema — Auditoriums
@@ -354,6 +369,57 @@ admin:
       invalid_age_range: Min age must be less than or equal to max age.
       invalid_date: Invalid date format. Use YYYY-MM-DD.
       name_required: Name is required.
+  subscriptions:
+    heading: Subscription Management
+    instructions: View and manage subscription types.
+    active_badge: ACTIVE
+    inactive_badge: INACTIVE
+    fields:
+      name:
+        label: Name
+      price:
+        label: Price
+      seat_type_id:
+        label: Seat Type Id
+      seat_type:
+        label: Seat Type
+      applicable_day:
+        label: Applicable Day
+      is_connect_allowed:
+        label: Connect Allowed
+      connect_discount:
+        label: Connect Discount
+      effective_from:
+        label: Effective from (YYYY-MM-DD)
+      effective_until:
+        label: Effective until (YYYY-MM-DD, leave blank for no end)
+    actions:
+      add: Add Subscription
+      edit: Edit :name
+      save: Save :name
+      delete: Delete :name
+      remove: Remove Subscription
+      back: Back
+      create: Create Subscription
+    create:
+      heading: Create New Subscription
+    status:
+      added: Subscription added.
+      saved: ":name updated."
+      deleted: ":name deleted."
+      created: ":name created."
+      removed: Subscription removed.
+      invalid_price: Please enter a valid price (0 or higher).
+      name_required: Name is required.
+      invalid_date: Invalid date format. Use YYYY-MM-DD.
+    menu:
+      no_subscriptions: No subscriptions available.
+      active_subscription: Active Subscription
+subscriptions:
+  status:
+    invalid_date: Invalid date format. Use YYYY-MM-DD.
+    invalid_effective_from: Invalid effective from date. Use YYYY-MM-DD.
+    invalid_effective_until: Invalid effective until date. Use YYYY-MM-DD.
 components:
   form:
     date_placeholder: YYYY-MM-DD
@@ -563,3 +629,42 @@ validation:
       required: Last Name is required.
     date_of_birth:
       required: Date of Birth is required.
+
+user:
+  subscriptions:
+    heading: My Subscription
+    current_label: Your active subscription
+    no_active: You have no active subscription.
+    available_label: Available subscriptions
+    no_available: No subscriptions are currently available.
+    price_label: Price
+    seat_label: Seat Type
+    day_label: Day
+    any_day: Any day
+    connected_with: Connected with
+    connected_discount: Connected discount
+    connect:
+      heading: Connect with a friend
+      instructions: "Enter the email of another user with the same subscription to activate the connected discount."
+      email_label: Their email address
+      button: Connect
+      discount_info: "Connect with a friend who already has this subscription to get :discount% off"
+      apply_discount: Apply Discount
+      discount_applied: ":discount% connect discount applied!"
+    actions:
+      cancel: Cancel Subscription
+      pay: "Pay :price"
+    status:
+      bought: ":name subscription activated."
+      cancelled: Subscription cancelled.
+      connected: Subscriptions connected. The connected discount is now active for both users.
+    errors:
+      email_required: Email address is required.
+      user_not_found: No user found with that email address.
+      cannot_connect_self: You cannot connect a subscription with yourself.
+      no_active_subscription: You do not have an active subscription.
+      connecting_not_allowed: This subscription does not support connecting.
+      other_user_no_subscription: The other user does not have the same subscription.
+      already_has_subscription: You already have an active subscription.
+      subscription_not_found: Subscription not found or no longer available.
+      friend_no_subscription: This friend does not have this subscription yet. Enter their email after they subscribe to connect.

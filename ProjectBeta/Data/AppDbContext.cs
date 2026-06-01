@@ -13,15 +13,18 @@ public class AppDbContext : DbContext
     public DbSet<User> Users { get; set; }
     public DbSet<Booking> Bookings { get; set; }
     public DbSet<Receipt> Receipts { get; set; }
-    public DbSet<Auditorium> Auditoriums {get; set; }
+    public DbSet<Auditorium> Auditoriums { get; set; }
     public DbSet<Movie> Movies { get; set; }
     public DbSet<MovieSchedule> MovieSchedules { get; set; }
     public DbSet<Snack> Snacks { get; set; }
     public DbSet<BookingSnack> BookingSnacks { get; set; }
     public DbSet<Location> Locations { get; set; }
+    public DbSet<LocationOpeningTime> LocationOpeningTimes { get; set; }
     public DbSet<Discount> Discounts { get; set; }
     public DbSet<BookingDiscount> BookingDiscounts { get; set; }
     public DbSet<SeatPrice> SeatPrices { get; set; }
+    public DbSet<Subscription> Subscriptions { get; set; }
+    public DbSet<UserSubscription> UserSubscriptions { get; set; }
 
     public AppDbContext()
     {
@@ -30,7 +33,7 @@ public class AppDbContext : DbContext
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
     }
-    
+
     protected override void OnConfiguring(DbContextOptionsBuilder options)
     {
         if (!options.IsConfigured)
@@ -90,6 +93,21 @@ public class AppDbContext : DbContext
                 .OnDelete(DeleteBehavior.Cascade);
         });
 
+        modelBuilder.Entity<LocationOpeningTime>(entity =>
+        {
+            entity.HasKey(openingTime => openingTime.Id);
+            entity.Property(openingTime => openingTime.LocationId).IsRequired();
+            entity.Property(openingTime => openingTime.StartDate).IsRequired();
+            entity.Property(openingTime => openingTime.ExpiresAt).IsRequired();
+            entity.Property(openingTime => openingTime.CreatedAt).IsRequired();
+            entity.HasIndex(openingTime => new { openingTime.LocationId, openingTime.StartDate, openingTime.ExpiresAt });
+            entity.HasIndex(openingTime => new { openingTime.LocationId, openingTime.CreatedAt });
+            entity.HasOne(openingTime => openingTime.Location)
+                .WithMany(location => location.OpeningTimes)
+                .HasForeignKey(openingTime => openingTime.LocationId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
         modelBuilder.Entity<User>().HasData(
             new User
             {
@@ -120,6 +138,21 @@ public class AppDbContext : DbContext
                 IsActive = true,
                 HasSubscription = false,
                 SubscriptionSeatType = null
+            },
+            new User
+            {
+                Id = 3,
+                Username = "user2",
+                PasswordHash = "password",
+                Role = "User",
+                Email = "user2@example.com",
+                FirstName = "User",
+                LastName = "Two",
+                DateOfBirth = new DateOnly(1998, 8, 20),
+                CreatedAt = DateTime.UtcNow,
+                IsActive = true,
+                HasSubscription = false,
+                SubscriptionSeatType = null
             }
         );
 
@@ -138,8 +171,6 @@ public class AppDbContext : DbContext
             new Auditorium { Id = 2, Name = "Auditorium 2", LocationId = 1, Capacity = 300 },
             new Auditorium { Id = 3, Name = "Auditorium 3", LocationId = 1, Capacity = 500 }
         );
-
-
 
         modelBuilder.Entity<BookingSnack>(entity =>
         {
@@ -202,9 +233,59 @@ public class AppDbContext : DbContext
         {
             SeatPrices.AddRange(
                 new SeatPrice { Id = 1, Name = "Standard", Price = 15.00m },
-                new SeatPrice { Id = 2, Name = "VIP",      Price = 17.50m },
-                new SeatPrice { Id = 3, Name = "King",     Price = 20.00m }
+                new SeatPrice { Id = 2, Name = "VIP", Price = 17.50m },
+                new SeatPrice { Id = 3, Name = "King", Price = 20.00m }
             );
+            SaveChanges();
+        }
+
+        if (!Subscriptions.Any())
+        {
+            Subscriptions.Add(new Subscription
+            {
+                Name = "Free Monday",
+                Price = 25m,
+                ApplicableDayOfWeek = (int)DayOfWeek.Monday,
+                SeatPriceId = 1,
+                IsConnectAllowed = true,
+                ConnectDiscount = 0.10m,
+                IsActive = true,
+                EffectiveFrom = DateTime.UtcNow
+            });
+            SaveChanges();
+        }
+
+        if (!UserSubscriptions.Any(us => us.UserId == 3))
+        {
+            var freeMonday = Subscriptions.FirstOrDefault(s => s.Name == "Free Monday" && s.IsActive);
+            if (freeMonday != null)
+            {
+                UserSubscriptions.Add(new UserSubscription
+                {
+                    UserId = 3,
+                    SubscriptionId = freeMonday.Id,
+                    IsActive = true,
+                    IsConnected = false,
+                    StartDate = DateTime.UtcNow
+                });
+                SaveChanges();
+            }
+        }
+
+        var staleAuditoriums = Auditoriums.Where(a =>
+            (a.Name.StartsWith("Small") && a.Capacity != 150) ||
+            (a.Name.StartsWith("Medium") && a.Capacity != 300) ||
+            (a.Name.StartsWith("Large") && a.Capacity != 500)
+        ).ToList();
+
+        if (staleAuditoriums.Count > 0)
+        {
+            foreach (var a in staleAuditoriums)
+            {
+                if (a.Name.StartsWith("Small")) a.Capacity = 150;
+                else if (a.Name.StartsWith("Medium")) a.Capacity = 300;
+                else if (a.Name.StartsWith("Large")) a.Capacity = 500;
+            }
             SaveChanges();
         }
     }

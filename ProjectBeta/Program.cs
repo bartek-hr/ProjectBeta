@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ProjectBeta.Access;
 using ProjectBeta.CI;
@@ -38,17 +38,22 @@ namespace ProjectBeta
             services.AddScoped<BookingSnackLogic>();
             services.AddScoped<DiscountAccess>();
             services.AddScoped<SeatPriceAccess>();
+            services.AddScoped<SubscriptionAccess>();
             services.AddScoped<ReceiptAccess>();
             services.AddScoped<ReceiptLogic>();
             services.AddScoped<BookingLogic>();
             services.AddScoped<PricingLogic>();
             services.AddScoped<LocationAccess>();
             services.AddScoped<LocationLogic>();
+            services.AddScoped<LocationOpeningTimeAccess>();
+            services.AddScoped<LocationOpeningTimeLogic>();
+            services.AddScoped<SubscriptionLogic>();
             services.AddTransient<UserView>();
             services.AddTransient<UsersView>();
             services.AddTransient<MovieSeatBookingView>();
             services.AddTransient<ReservationView>();
             services.AddTransient<ReceiptView>();
+            services.AddTransient<ReportsView>();
             services.AddTransient<SnacksView>();
             services.AddTransient<LoginView>();
             services.AddTransient<AccountView>();
@@ -62,11 +67,15 @@ namespace ProjectBeta
             services.AddTransient<SeatPriceView>();
             services.AddTransient<DiscountView>();
             services.AddTransient<LocationView>();
+            services.AddTransient<LocationOpeningTimesView>();
             services.AddTransient<LocationPickerView>();
             services.AddTransient<LocationDetailView>();
             services.AddTransient<LocationEditView>();
             services.AddTransient<AuditoriumsView>();
             services.AddTransient<AuditoriumEditView>();
+            services.AddTransient<AddAuditoriumsView>();
+            services.AddTransient<SubscriptionView>();
+            services.AddTransient<UserSubscriptionView>();
             services.AddScoped<MainView>();
             var provider = services.BuildServiceProvider();
 

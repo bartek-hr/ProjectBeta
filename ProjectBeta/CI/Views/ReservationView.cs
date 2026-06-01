@@ -13,6 +13,7 @@ public sealed class ReservationView : Form
     private readonly BookingLogic _bookingLogic;
     private readonly PricingLogic _pricingLogic;
     private readonly LocationLogic _locationLogic;
+    private readonly SubscriptionLogic _subscriptionLogic;
     private readonly AppLoop _appLoop;
     private readonly IServiceProvider _serviceProvider;
     private User _user;
@@ -27,12 +28,13 @@ public sealed class ReservationView : Form
     private Dictionary<string, string[]>? _fieldErrors;
     private List<NumberInput> _ageInputs = new();
     private Select? _userSeatSelect;
+    private SubscriptionPricingContext? _subscriptionInfo;
 
-    public ReservationView(BookingLogic bookingLogic, PricingLogic pricingLogic, LocationLogic locationLogic, AppLoop appLoop, IServiceProvider serviceProvider)
+    public ReservationView(BookingLogic bookingLogic, PricingLogic pricingLogic, SubscriptionLogic subscriptionLogic, AppLoop appLoop, IServiceProvider serviceProvider)
     {
         _bookingLogic = bookingLogic;
         _pricingLogic = pricingLogic;
-        _locationLogic = locationLogic;
+        _subscriptionLogic = subscriptionLogic;
         _appLoop = appLoop;
         _serviceProvider = serviceProvider;
     }
@@ -50,6 +52,7 @@ public sealed class ReservationView : Form
 
     private void InitializeForm()
     {
+        _subscriptionInfo = _subscriptionLogic.GetActiveSubscriptionPricingInfo(_user.Id);
         Heading(l10n("reservations.create.heading"));
         Label(l10n("reservations.create.instructions"));
         Divider();
@@ -108,7 +111,15 @@ public sealed class ReservationView : Form
 
         Navigation(
             Button(l10n("reservations.create.actions.save")).OnClick(form => OnSave(form, _ageInputs, _userSeatSelect!)),
+            Button("Snacks").OnClick(form => OnSnacks(form)),
             backButton);
+    }
+
+    private (int? Index, SubscriptionPricingContext? Ctx) ResolveUserSeat(string? seatLabel)
+    {
+        if (string.IsNullOrEmpty(seatLabel)) return (null, null);
+        int idx = _reservedSeats.IndexOf(seatLabel);
+        return idx >= 0 ? (idx, _subscriptionInfo) : (null, null);
     }
 
     private static List<int?> BuildSeatAges(List<NumberInput> inputs)
@@ -120,18 +131,26 @@ public sealed class ReservationView : Form
     private string BuildPricingSummary(List<NumberInput> ageInputs)
     {
         var seatAges = BuildSeatAges(ageInputs);
-        var pricing = _pricingLogic.CalculatePricing(_seatTypes, seatAges, _movie.ScheduleDate.ToDateTime(_movie.StartTime));
+
+        string? selectedSeat = _userSeatSelect?.Value == l10n("reservations.create.user_seat_none")
+            ? null : _userSeatSelect?.Value;
+        var (userSeatIdx, subCtx) = ResolveUserSeat(selectedSeat);
+
+        var pricing = _pricingLogic.CalculatePricing(
+            _seatTypes, seatAges, _movie.ScheduleDate.ToDateTime(_movie.StartTime), userSeatIdx, subCtx);
 
         var sb = new System.Text.StringBuilder();
         for (int i = 0; i < _reservedSeats.Count && i < pricing.SeatLines.Count; i++)
         {
             string seat = _reservedSeats[i];
             var line = pricing.SeatLines[i];
-            if (line.Discount != null)
+            if (line.SubscriptionNote != null)
             {
-                string discountResult = $"{seat,-6} €{line.BasePrice:F2} → ";
-                discountResult += $"€{line.FinalPrice:F2}  ({line.Discount.Name} {line.Discount.Percentage}%)";
-                sb.AppendLine(discountResult);
+                sb.AppendLine($"{seat,-6} €{line.BasePrice:F2} → €{line.FinalPrice:F2}  ({line.SubscriptionNote})");
+            }
+            else if (line.Discount != null)
+            {
+                sb.AppendLine($"{seat,-6} €{line.BasePrice:F2} → €{line.FinalPrice:F2}  ({line.Discount.Name} {line.Discount.Percentage}%)");
             }
             else
             {
@@ -154,7 +173,8 @@ public sealed class ReservationView : Form
             ? null
             : userSeatSelect.Value;
 
-        var pricing = _pricingLogic.CalculatePricing(_seatTypes, seatAges, startDateTime);
+        var (userSeatIdx, subCtx) = ResolveUserSeat(userSeat);
+        var pricing = _pricingLogic.CalculatePricing(_seatTypes, seatAges, startDateTime, userSeatIdx, subCtx);
 
         _bookingLogic.CreateBooking(
             _user.Id,
@@ -182,7 +202,8 @@ public sealed class ReservationView : Form
             ? null
             : _userSeatSelect?.Value;
 
-        var pricing = _pricingLogic.CalculatePricing(_seatTypes, seatAges, startDateTime);
+        var (userSeatIdx, subCtx) = ResolveUserSeat(userSeat);
+        var pricing = _pricingLogic.CalculatePricing(_seatTypes, seatAges, startDateTime, userSeatIdx, subCtx);
 
         Booking createdBooking = _bookingLogic.CreateBooking(
             _user.Id,

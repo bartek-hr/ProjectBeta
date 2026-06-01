@@ -46,6 +46,7 @@ public sealed class ReservationHistoryView : Form
         var table = new Table<Booking>(
             l10n("reservations.history.table.movie"),
             l10n("reservations.history.table.auditorium"),
+            "Location",
             l10n("reservations.history.table.seats"),
             l10n("reservations.history.table.date"),
             l10n("reservations.history.table.paid"),
@@ -66,6 +67,7 @@ public sealed class ReservationHistoryView : Form
                     reservation,
                     reservation.Movie,
                     reservation.AuditoriumId,
+                    reservation.Auditorium?.Location?.Name ?? "-",
                     reservation.Seats,
                     reservation.CreatedAt,
                     reservation.Paid,
