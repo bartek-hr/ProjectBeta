@@ -43,6 +43,25 @@ public sealed class AccountView : Form
         Label(l10n("account.profile.instructions"));
         Divider();
 
+        // Subscription status (only for regular users)
+        if (!_user.IsAdmin())
+        {
+            Label(l10n("account.profile.subscription.label"));
+            if (_user.HasSubscription)
+            {
+                var seatTypeName = _user.SubscriptionSeatType.HasValue
+                    ? _user.SubscriptionSeatType.Value.ToString()
+                    : l10n("account.profile.subscription.unknown_type");
+                Label(l10n("account.profile.subscription.active", new Dictionary<string, string> { ["type"] = seatTypeName }));
+            }
+            else
+            {
+                Label(l10n("account.profile.subscription.inactive"));
+            }
+            Divider();
+        }
+
+
         Message(() => GetError("general"));
 
         Label(l10n("account.profile.sections.account"));

@@ -39,12 +39,12 @@ public sealed class MainView : Form
 
         var actionButtons = new List<Button>
         {
-            Button(l10n("main.dashboard.actions.movies")).OnClick(() =>
+            Button(l10n("main.dashboard.actions.locations")).OnClick(() =>
             {
                 Console.Clear();
-                var locationPickerView = _serviceProvider.GetRequiredService<LocationPickerView>();
-                locationPickerView.SetUser(_user);
-                _appLoop.Display(locationPickerView);
+                var locationView = _serviceProvider.GetRequiredService<LocationView>();
+                locationView.SetUser(_user);
+                _appLoop.Display(locationView);
             }),
             Button(l10n("main.dashboard.actions.reservation_history")).OnClick(() =>
             {
@@ -68,6 +68,18 @@ public sealed class MainView : Form
                 _appLoop.Display(accountView);
             })
         };
+
+        if (!_user.IsAdmin())
+        {
+            actionButtons.Add(Button(l10n("main.dashboard.actions.my_subscription")).OnClick(() =>
+            {
+                Console.Clear();
+                var accountView = _serviceProvider.GetRequiredService<AccountView>();
+                accountView.SetUser(_user);
+                _appLoop.Display(accountView);
+            }));
+        }
+
         if (_user.IsAdmin())
         {
             actionButtons.Add(Button(l10n("main.dashboard.actions.reports")).OnClick(form =>
@@ -96,14 +108,6 @@ public sealed class MainView : Form
                 var discountView = _serviceProvider.GetRequiredService<DiscountView>();
                 discountView.SetUser(_user);
                 _appLoop.Display(discountView);
-            }));
-
-            actionButtons.Add(Button("Locations").OnClick(() =>
-            {
-                Console.Clear();
-                var locationView = _serviceProvider.GetRequiredService<LocationView>();
-                locationView.SetUser(_user);
-                _appLoop.Display(locationView);
             }));
         }
 
