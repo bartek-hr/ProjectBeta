@@ -87,7 +87,12 @@ public class BookingLogic
             .Where(b => b.AuditoriumId == auditoriumId && b.CreatedAt == createdAt)
             .ToList();
     }
-
+    public List<Booking> GetBookingsByAuditoriumID(int auditoriumId)
+    {
+        return _bookingAccess.GetAll()
+            .Where(b => b.AuditoriumId == auditoriumId)
+            .ToList();
+    }
     public List<Booking> GetBookingsByUserId(int userId)
     {
         return _bookingAccess.GetAll()

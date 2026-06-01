@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using ProjectBeta.Access;
 using ProjectBeta.CI;
@@ -52,6 +52,7 @@ namespace ProjectBeta
             services.AddTransient<MovieSeatBookingView>();
             services.AddTransient<ReservationView>();
             services.AddTransient<ReceiptView>();
+            services.AddTransient<ReportsView>();
             services.AddTransient<SnacksView>();
             services.AddTransient<LoginView>();
             services.AddTransient<AccountView>();
