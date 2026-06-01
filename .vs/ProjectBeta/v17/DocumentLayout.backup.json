@@ -1,0 +1,267 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\FlorisLandman\\source\\repos\\ProjectBeta\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{86EC881C-CBD7-4573-A653-B448A52DFC00}|ProjectBeta\\ProjectBeta.csproj|c:\\users\\florislandman\\source\\repos\\projectbeta\\projectbeta\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{86EC881C-CBD7-4573-A653-B448A52DFC00}|ProjectBeta\\ProjectBeta.csproj|solutionrelative:projectbeta\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9D80F38E-D00A-4C7F-AE3E-DF90EEB139FC}|ProjectBeta.Tests\\ProjectBeta.Tests.csproj|c:\\users\\florislandman\\source\\repos\\projectbeta\\projectbeta.tests\\bookingsnacklogictests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9D80F38E-D00A-4C7F-AE3E-DF90EEB139FC}|ProjectBeta.Tests\\ProjectBeta.Tests.csproj|solutionrelative:projectbeta.tests\\bookingsnacklogictests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9D80F38E-D00A-4C7F-AE3E-DF90EEB139FC}|ProjectBeta.Tests\\ProjectBeta.Tests.csproj|c:\\users\\florislandman\\source\\repos\\projectbeta\\projectbeta.tests\\globalusings.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9D80F38E-D00A-4C7F-AE3E-DF90EEB139FC}|ProjectBeta.Tests\\ProjectBeta.Tests.csproj|solutionrelative:projectbeta.tests\\globalusings.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9D80F38E-D00A-4C7F-AE3E-DF90EEB139FC}|ProjectBeta.Tests\\ProjectBeta.Tests.csproj|c:\\users\\florislandman\\source\\repos\\projectbeta\\projectbeta.tests\\localizationtests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9D80F38E-D00A-4C7F-AE3E-DF90EEB139FC}|ProjectBeta.Tests\\ProjectBeta.Tests.csproj|solutionrelative:projectbeta.tests\\localizationtests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9D80F38E-D00A-4C7F-AE3E-DF90EEB139FC}|ProjectBeta.Tests\\ProjectBeta.Tests.csproj|c:\\users\\florislandman\\source\\repos\\projectbeta\\projectbeta.tests\\snacklogictests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9D80F38E-D00A-4C7F-AE3E-DF90EEB139FC}|ProjectBeta.Tests\\ProjectBeta.Tests.csproj|solutionrelative:projectbeta.tests\\snacklogictests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{86EC881C-CBD7-4573-A653-B448A52DFC00}|ProjectBeta\\ProjectBeta.csproj|c:\\users\\florislandman\\source\\repos\\projectbeta\\projectbeta\\data\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{86EC881C-CBD7-4573-A653-B448A52DFC00}|ProjectBeta\\ProjectBeta.csproj|solutionrelative:projectbeta\\data\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{86EC881C-CBD7-4573-A653-B448A52DFC00}|ProjectBeta\\ProjectBeta.csproj|c:\\users\\florislandman\\source\\repos\\projectbeta\\projectbeta\\model\\movie.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{86EC881C-CBD7-4573-A653-B448A52DFC00}|ProjectBeta\\ProjectBeta.csproj|solutionrelative:projectbeta\\model\\movie.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{86EC881C-CBD7-4573-A653-B448A52DFC00}|ProjectBeta\\ProjectBeta.csproj|c:\\users\\florislandman\\source\\repos\\projectbeta\\projectbeta\\model\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{86EC881C-CBD7-4573-A653-B448A52DFC00}|ProjectBeta\\ProjectBeta.csproj|solutionrelative:projectbeta\\model\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{86EC881C-CBD7-4573-A653-B448A52DFC00}|ProjectBeta\\ProjectBeta.csproj|c:\\users\\florislandman\\source\\repos\\projectbeta\\projectbeta\\model\\movieschedule.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{86EC881C-CBD7-4573-A653-B448A52DFC00}|ProjectBeta\\ProjectBeta.csproj|solutionrelative:projectbeta\\model\\movieschedule.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{86EC881C-CBD7-4573-A653-B448A52DFC00}|ProjectBeta\\ProjectBeta.csproj|c:\\users\\florislandman\\source\\repos\\projectbeta\\projectbeta\\model\\receipt.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{86EC881C-CBD7-4573-A653-B448A52DFC00}|ProjectBeta\\ProjectBeta.csproj|solutionrelative:projectbeta\\model\\receipt.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{86EC881C-CBD7-4573-A653-B448A52DFC00}|ProjectBeta\\ProjectBeta.csproj|c:\\users\\florislandman\\source\\repos\\projectbeta\\projectbeta\\model\\snack.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{86EC881C-CBD7-4573-A653-B448A52DFC00}|ProjectBeta\\ProjectBeta.csproj|solutionrelative:projectbeta\\model\\snack.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{86EC881C-CBD7-4573-A653-B448A52DFC00}|ProjectBeta\\ProjectBeta.csproj|c:\\users\\florislandman\\source\\repos\\projectbeta\\projectbeta\\ci\\views\\demoview.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{86EC881C-CBD7-4573-A653-B448A52DFC00}|ProjectBeta\\ProjectBeta.csproj|solutionrelative:projectbeta\\ci\\views\\demoview.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\FlorisLandman\\source\\repos\\ProjectBeta\\ProjectBeta\\Access\\Snack.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:ProjectBeta\\Access\\Snack.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 19,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:129:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:131:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:132:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:130:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:133:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "GlobalUsings.cs",
+              "DocumentMoniker": "C:\\Users\\FlorisLandman\\source\\repos\\ProjectBeta\\ProjectBeta.Tests\\GlobalUsings.cs",
+              "RelativeDocumentMoniker": "ProjectBeta.Tests\\GlobalUsings.cs",
+              "ToolTip": "C:\\Users\\FlorisLandman\\source\\repos\\ProjectBeta\\ProjectBeta.Tests\\GlobalUsings.cs",
+              "RelativeToolTip": "ProjectBeta.Tests\\GlobalUsings.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-18T07:42:06.703Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "LocalizationTests.cs",
+              "DocumentMoniker": "C:\\Users\\FlorisLandman\\source\\repos\\ProjectBeta\\ProjectBeta.Tests\\LocalizationTests.cs",
+              "RelativeDocumentMoniker": "ProjectBeta.Tests\\LocalizationTests.cs",
+              "ToolTip": "C:\\Users\\FlorisLandman\\source\\repos\\ProjectBeta\\ProjectBeta.Tests\\LocalizationTests.cs",
+              "RelativeToolTip": "ProjectBeta.Tests\\LocalizationTests.cs",
+              "ViewState": "AgIAAFAAAAAAAAAAAAA0wAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-18T07:42:00.47Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "SnackLogicTests.cs",
+              "DocumentMoniker": "C:\\Users\\FlorisLandman\\source\\repos\\ProjectBeta\\ProjectBeta.Tests\\SnackLogicTests.cs",
+              "RelativeDocumentMoniker": "ProjectBeta.Tests\\SnackLogicTests.cs",
+              "ToolTip": "C:\\Users\\FlorisLandman\\source\\repos\\ProjectBeta\\ProjectBeta.Tests\\SnackLogicTests.cs",
+              "RelativeToolTip": "ProjectBeta.Tests\\SnackLogicTests.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-18T07:41:58.485Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "BookingSnackLogicTests.cs",
+              "DocumentMoniker": "C:\\Users\\FlorisLandman\\source\\repos\\ProjectBeta\\ProjectBeta.Tests\\BookingSnackLogicTests.cs",
+              "RelativeDocumentMoniker": "ProjectBeta.Tests\\BookingSnackLogicTests.cs",
+              "ToolTip": "C:\\Users\\FlorisLandman\\source\\repos\\ProjectBeta\\ProjectBeta.Tests\\BookingSnackLogicTests.cs",
+              "RelativeToolTip": "ProjectBeta.Tests\\BookingSnackLogicTests.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAHwAAAAtAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-17T18:44:35.884Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Movie.cs",
+              "DocumentMoniker": "C:\\Users\\FlorisLandman\\source\\repos\\ProjectBeta\\ProjectBeta\\Model\\Movie.cs",
+              "RelativeDocumentMoniker": "ProjectBeta\\Model\\Movie.cs",
+              "ToolTip": "C:\\Users\\FlorisLandman\\source\\repos\\ProjectBeta\\ProjectBeta\\Model\\Movie.cs",
+              "RelativeToolTip": "ProjectBeta\\Model\\Movie.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAyAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-04T11:36:45.129Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "MovieSchedule.cs",
+              "DocumentMoniker": "C:\\Users\\FlorisLandman\\source\\repos\\ProjectBeta\\ProjectBeta\\Model\\MovieSchedule.cs",
+              "RelativeDocumentMoniker": "ProjectBeta\\Model\\MovieSchedule.cs",
+              "ToolTip": "C:\\Users\\FlorisLandman\\source\\repos\\ProjectBeta\\ProjectBeta\\Model\\MovieSchedule.cs",
+              "RelativeToolTip": "ProjectBeta\\Model\\MovieSchedule.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-04T11:36:44.068Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "Receipt.cs",
+              "DocumentMoniker": "C:\\Users\\FlorisLandman\\source\\repos\\ProjectBeta\\ProjectBeta\\Model\\Receipt.cs",
+              "RelativeDocumentMoniker": "ProjectBeta\\Model\\Receipt.cs",
+              "ToolTip": "C:\\Users\\FlorisLandman\\source\\repos\\ProjectBeta\\ProjectBeta\\Model\\Receipt.cs",
+              "RelativeToolTip": "ProjectBeta\\Model\\Receipt.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-04T11:36:42.717Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "Snack.cs",
+              "DocumentMoniker": "C:\\Users\\FlorisLandman\\source\\repos\\ProjectBeta\\ProjectBeta\\Model\\Snack.cs",
+              "RelativeDocumentMoniker": "ProjectBeta\\Model\\Snack.cs",
+              "ToolTip": "C:\\Users\\FlorisLandman\\source\\repos\\ProjectBeta\\ProjectBeta\\Model\\Snack.cs",
+              "RelativeToolTip": "ProjectBeta\\Model\\Snack.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-04T11:36:40.846Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "User.cs",
+              "DocumentMoniker": "C:\\Users\\FlorisLandman\\source\\repos\\ProjectBeta\\ProjectBeta\\Model\\User.cs",
+              "RelativeDocumentMoniker": "ProjectBeta\\Model\\User.cs",
+              "ToolTip": "C:\\Users\\FlorisLandman\\source\\repos\\ProjectBeta\\ProjectBeta\\Model\\User.cs",
+              "RelativeToolTip": "ProjectBeta\\Model\\User.cs",
+              "ViewState": "AgIAAA8AAAAAAAAAAAAQwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-04T11:36:27.861Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "AppDbContext.cs",
+              "DocumentMoniker": "C:\\Users\\FlorisLandman\\source\\repos\\ProjectBeta\\ProjectBeta\\Data\\AppDbContext.cs",
+              "RelativeDocumentMoniker": "ProjectBeta\\Data\\AppDbContext.cs",
+              "ToolTip": "C:\\Users\\FlorisLandman\\source\\repos\\ProjectBeta\\ProjectBeta\\Data\\AppDbContext.cs",
+              "RelativeToolTip": "ProjectBeta\\Data\\AppDbContext.cs",
+              "ViewState": "AgIAAA4AAAAAAAAAAAA3wAwAAAAqAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-03T18:03:11.523Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "DemoView.cs",
+              "DocumentMoniker": "C:\\Users\\FlorisLandman\\source\\repos\\ProjectBeta\\ProjectBeta\\CI\\Views\\DemoView.cs",
+              "RelativeDocumentMoniker": "ProjectBeta\\CI\\Views\\DemoView.cs",
+              "ToolTip": "C:\\Users\\FlorisLandman\\source\\repos\\ProjectBeta\\ProjectBeta\\CI\\Views\\DemoView.cs",
+              "RelativeToolTip": "ProjectBeta\\CI\\Views\\DemoView.cs",
+              "ViewState": "AgIAAA8AAAAAAAAAAAAAAAoAAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-06T15:23:18.857Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\FlorisLandman\\source\\repos\\ProjectBeta\\ProjectBeta\\Program.cs",
+              "RelativeDocumentMoniker": "ProjectBeta\\Program.cs",
+              "ToolTip": "C:\\Users\\FlorisLandman\\source\\repos\\ProjectBeta\\ProjectBeta\\Program.cs",
+              "RelativeToolTip": "ProjectBeta\\Program.cs",
+              "ViewState": "AgIAADMAAAAAAAAAAAAowE0AAAAWAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-06T15:23:06.21Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "Snack.cs",
+              "DocumentMoniker": "C:\\Users\\FlorisLandman\\source\\repos\\ProjectBeta\\ProjectBeta\\Access\\Snack.cs",
+              "RelativeDocumentMoniker": "ProjectBeta\\Access\\Snack.cs",
+              "ToolTip": "C:\\Users\\FlorisLandman\\source\\repos\\ProjectBeta\\ProjectBeta\\Access\\Snack.cs",
+              "RelativeToolTip": "ProjectBeta\\Access\\Snack.cs",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-06T14:01:19.489Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
