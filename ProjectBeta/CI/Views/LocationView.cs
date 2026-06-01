@@ -12,6 +12,7 @@ public sealed class LocationView : Form
     private readonly IServiceProvider _serviceProvider;
     private User _user = null!;
     private string _searchQuery = string.Empty;
+    private string? _statusMessage;
 
     public LocationView(LocationLogic locationLogic, AppLoop appLoop, IServiceProvider serviceProvider)
     {
@@ -24,6 +25,7 @@ public sealed class LocationView : Form
     {
         _user = user;
         _searchQuery = string.Empty;
+        _statusMessage = null;
         ClearChildren();
         InitializeForm();
     }
@@ -55,8 +57,9 @@ public sealed class LocationView : Form
 
         var locations = _locationLogic.Search(_searchQuery);
 
-        var table = new Table<Location>("ID", "Name", "Capacity", "Auditoriums")
-            .EmptyMessage("No locations found.");
+        var table = new Table<Location>("ID", "Name", "City", "Address", "Capacity")
+            .EmptyMessage("No locations found.")
+            .OnSelect(OnLocationSelected);
 
         foreach (var location in locations)
         {
@@ -65,14 +68,28 @@ public sealed class LocationView : Form
                 l,
                 l.Id.ToString(),
                 l.Name,
-                l.Capacity.ToString(),
-                l.Auditoriums.Count.ToString()
+                l.City,
+                l.Address,
+                l.ComputedCapacity.ToString()
             );
         }
 
         Add(table);
 
         Divider();
+        Message(() => _statusMessage);
+
+        if (_user.IsSuperAdmin())
+        {
+            Button("Add Location").OnClick(() =>
+            {
+                Console.Clear();
+                var editView = _serviceProvider.GetRequiredService<LocationEditView>();
+                editView.SetView(_user);
+                _appLoop.Display(editView);
+            });
+        }
+
         Button("Back").OnClick(() =>
         {
             Console.Clear();
@@ -80,5 +97,16 @@ public sealed class LocationView : Form
             mainView.SetUser(_user);
             _appLoop.Display(mainView);
         });
+    }
+
+    private void OnLocationSelected(Location location)
+    {
+        if (_user.IsAdmin())
+        {
+            Console.Clear();
+            var detailView = _serviceProvider.GetRequiredService<LocationDetailView>();
+            detailView.SetView(_user, location);
+            _appLoop.Display(detailView);
+        }
     }
 }

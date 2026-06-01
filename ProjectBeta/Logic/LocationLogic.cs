@@ -24,26 +24,42 @@ public class LocationLogic
 
     public void Add(Location location, User currentUser)
     {
-        if (!currentUser.IsAdmin())
-            throw new UnauthorizedAccessException("Only admins can add locations.");
+        if (!currentUser.IsSuperAdmin())
+            throw new UnauthorizedAccessException("Only super admins can add locations.");
 
         _locationAccess.Add(location);
     }
 
     public void Delete(int id, User currentUser)
     {
-        if (!currentUser.IsAdmin())
-            throw new UnauthorizedAccessException("Only admins can delete locations.");
+        if (!currentUser.IsSuperAdmin())
+            throw new UnauthorizedAccessException("Only super admins can delete locations.");
 
         _locationAccess.Delete(id);
     }
 
-    public void UpdateCapacity(int id, int newCapacity, User currentUser)
+    public void UpdateName(int id, string newName, User currentUser)
     {
-        if (!currentUser.IsAdmin())
-            throw new UnauthorizedAccessException("Only admins can update location capacity.");
+        if (!currentUser.IsSuperAdmin())
+            throw new UnauthorizedAccessException("Only super admins can update locations.");
 
-        _locationAccess.UpdateCapacity(id, newCapacity);
+        _locationAccess.UpdateName(id, newName);
+    }
+
+    public void UpdateCity(int id, string newCity, User currentUser)
+    {
+        if (!currentUser.IsSuperAdmin())
+            throw new UnauthorizedAccessException("Only super admins can update locations.");
+
+        _locationAccess.UpdateCity(id, newCity);
+    }
+
+    public void UpdateAddress(int id, string newAddress, User currentUser)
+    {
+        if (!currentUser.IsSuperAdmin())
+            throw new UnauthorizedAccessException("Only super admins can update locations.");
+
+        _locationAccess.UpdateAddress(id, newAddress);
     }
 
     public List<Location> Search(string query)

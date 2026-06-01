@@ -19,7 +19,7 @@ public class MovieLogicTests
     private MovieAccess? _movieAccess;
     private MovieScheduleAccess? _movieScheduleAccess;
     private AuditoriumLogic? _auditoriumLogic;
-    private CinemaOpeningTimeLogic? _cinemaOpeningTimeLogic;
+    private LocationOpeningTimeLogic? _locationOpeningTimeLogic;
 
     private static readonly string TrendingResponse = """
         {
@@ -55,8 +55,8 @@ public class MovieLogicTests
         _movieScheduleAccess = new MovieScheduleAccess(_context);
         var auditoriumAccess = new AuditoriumAccess(_context);
         _auditoriumLogic = new AuditoriumLogic(auditoriumAccess);
-        _cinemaOpeningTimeLogic = CreateCinemaOpeningTimeLogic(_context, _movieScheduleAccess);
-        _logic = new MovieLogic(_movieAccess, _movieScheduleAccess, _auditoriumLogic, _cinemaOpeningTimeLogic);
+        _locationOpeningTimeLogic = CreateLocationOpeningTimeLogic(_context, _movieScheduleAccess);
+        _logic = new MovieLogic(_movieAccess, _movieScheduleAccess, _auditoriumLogic, _locationOpeningTimeLogic);
     }
 
     [TestCleanup]
@@ -165,7 +165,7 @@ public class MovieLogicTests
             BaseAddress = new Uri("https://fake.imdb.local/")
         };
         var emptyAccess = new MovieAccess(_context!, emptyClient);
-        var logic = new MovieLogic(emptyAccess, _movieScheduleAccess!, _auditoriumLogic!, _cinemaOpeningTimeLogic!);
+        var logic = new MovieLogic(emptyAccess, _movieScheduleAccess!, _auditoriumLogic!, _locationOpeningTimeLogic!);
 
         var date = DateOnly.FromDateTime(DateTime.Today.AddDays(5));
         Assert.ThrowsException<InvalidOperationException>(() => logic.GenerateSchedule(date));
@@ -188,7 +188,7 @@ public class MovieLogicTests
             BaseAddress = new Uri("https://fake.imdb.local/")
         };
         var access = new MovieAccess(_context!, client);
-        var logic = new MovieLogic(access, _movieScheduleAccess!, _auditoriumLogic!, _cinemaOpeningTimeLogic!);
+        var logic = new MovieLogic(access, _movieScheduleAccess!, _auditoriumLogic!, _locationOpeningTimeLogic!);
 
         var date = DateOnly.FromDateTime(DateTime.Today.AddDays(6));
         var result = logic.GenerateSchedule(date);
@@ -212,7 +212,7 @@ public class MovieLogicTests
             BaseAddress = new Uri("https://fake.imdb.local/")
         };
         var access = new MovieAccess(_context!, client);
-        var logic = new MovieLogic(access, _movieScheduleAccess!, _auditoriumLogic!, _cinemaOpeningTimeLogic!);
+        var logic = new MovieLogic(access, _movieScheduleAccess!, _auditoriumLogic!, _locationOpeningTimeLogic!);
 
         var date = DateOnly.FromDateTime(DateTime.Today.AddDays(7));
         var result = logic.GenerateSchedule(date);
@@ -255,12 +255,12 @@ public class MovieLogicTests
     }
 
     [TestMethod]
-    public void GenerateSchedule_UsesCinemaOpeningHours()
+    public void GenerateSchedule_UsesLocationOpeningHours()
     {
         var date = DateOnly.FromDateTime(DateTime.Today.AddDays(10));
-        _context!.CinemaOpeningTimes.Add(new CinemaOpeningTime
+        _context!.LocationOpeningTimes.Add(new LocationOpeningTime
         {
-            CinemaId = 1,
+            LocationId = 1,
             StartDate = date,
             ExpiresAt = date,
             OpeningTime = new TimeOnly(13, 0),
@@ -277,12 +277,12 @@ public class MovieLogicTests
     }
 
     [TestMethod]
-    public void GenerateSchedule_ClosedCinemaSkipsAuditoriums()
+    public void GenerateSchedule_ClosedLocationSkipsAuditoriums()
     {
         var date = DateOnly.FromDateTime(DateTime.Today.AddDays(11));
-        _context!.CinemaOpeningTimes.Add(new CinemaOpeningTime
+        _context!.LocationOpeningTimes.Add(new LocationOpeningTime
         {
-            CinemaId = 1,
+            LocationId = 1,
             StartDate = date,
             ExpiresAt = date,
             OpeningTime = null,
@@ -365,11 +365,11 @@ public class MovieLogicTests
         Assert.AreEqual("Inception", result[0].Movie.Title);
     }
 
-    private static CinemaOpeningTimeLogic CreateCinemaOpeningTimeLogic(AppDbContext context, MovieScheduleAccess movieScheduleAccess)
+    private static LocationOpeningTimeLogic CreateLocationOpeningTimeLogic(AppDbContext context, MovieScheduleAccess movieScheduleAccess)
     {
-        return new CinemaOpeningTimeLogic(
-            new CinemaOpeningTimeAccess(context),
-            new CinemaAccess(context),
+        return new LocationOpeningTimeLogic(
+            new LocationOpeningTimeAccess(context),
+            new LocationAccess(context),
             movieScheduleAccess);
     }
 }

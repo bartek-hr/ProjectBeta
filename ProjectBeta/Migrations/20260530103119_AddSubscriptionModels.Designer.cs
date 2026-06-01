@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProjectBeta.Data;
 
@@ -10,9 +11,11 @@ using ProjectBeta.Data;
 namespace ProjectBeta.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260530103119_AddSubscriptionModels")]
+    partial class AddSubscriptionModels
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.0");
@@ -233,39 +236,6 @@ namespace ProjectBeta.Migrations
                             City = "Rotterdam",
                             Name = "Main Location"
                         });
-                });
-
-            modelBuilder.Entity("ProjectBeta.Model.LocationOpeningTime", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("LocationId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<TimeOnly?>("ClosingTime")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateOnly>("ExpiresAt")
-                        .HasColumnType("TEXT");
-
-                    b.Property<TimeOnly?>("OpeningTime")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateOnly>("StartDate")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("LocationId", "CreatedAt");
-
-                    b.HasIndex("LocationId", "StartDate", "ExpiresAt");
-
-                    b.ToTable("LocationOpeningTimes");
                 });
 
             modelBuilder.Entity("ProjectBeta.Model.Movie", b =>
@@ -653,17 +623,6 @@ namespace ProjectBeta.Migrations
                     b.Navigation("Movie");
                 });
 
-            modelBuilder.Entity("ProjectBeta.Model.LocationOpeningTime", b =>
-                {
-                    b.HasOne("ProjectBeta.Model.Location", "Location")
-                        .WithMany("OpeningTimes")
-                        .HasForeignKey("LocationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Location");
-                });
-
             modelBuilder.Entity("ProjectBeta.Model.Receipt", b =>
                 {
                     b.HasOne("ProjectBeta.Model.Booking", "Booking")
@@ -713,8 +672,6 @@ namespace ProjectBeta.Migrations
             modelBuilder.Entity("ProjectBeta.Model.Location", b =>
                 {
                     b.Navigation("Auditoriums");
-
-                    b.Navigation("OpeningTimes");
                 });
 
             modelBuilder.Entity("ProjectBeta.Model.Subscription", b =>

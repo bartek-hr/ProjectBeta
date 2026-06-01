@@ -3,21 +3,21 @@ using ProjectBeta.Model;
 
 namespace ProjectBeta.Access;
 
-public class CinemaOpeningTimeAccess
+public class LocationOpeningTimeAccess
 {
     private readonly AppDbContext _context;
 
-    public CinemaOpeningTimeAccess(AppDbContext context)
+    public LocationOpeningTimeAccess(AppDbContext context)
     {
         _context = context;
     }
 
-    public List<CinemaOpeningTime> GetByCinemaId(int cinemaId)
+    public List<LocationOpeningTime> GetByLocationId(int locationId)
     {
         var today = DateOnly.FromDateTime(DateTime.Today);
 
-        return _context.CinemaOpeningTimes
-            .Where(openingTime => openingTime.CinemaId == cinemaId)
+        return _context.LocationOpeningTimes
+            .Where(openingTime => openingTime.LocationId == locationId)
             .Where(openingTime => openingTime.ExpiresAt >= today)
             .OrderByDescending(openingTime => openingTime.StartDate)
             .ThenByDescending(openingTime => openingTime.CreatedAt)
@@ -25,11 +25,11 @@ public class CinemaOpeningTimeAccess
             .ToList();
     }
 
-    public CinemaOpeningTime? GetActiveForDate(int cinemaId, DateOnly date)
+    public LocationOpeningTime? GetActiveForDate(int locationId, DateOnly date)
     {
-        return _context.CinemaOpeningTimes
+        return _context.LocationOpeningTimes
             .Where(openingTime =>
-                openingTime.CinemaId == cinemaId
+                openingTime.LocationId == locationId
                 && openingTime.StartDate <= date
                 && openingTime.ExpiresAt >= date)
             .OrderByDescending(openingTime => openingTime.CreatedAt)
@@ -37,17 +37,17 @@ public class CinemaOpeningTimeAccess
             .FirstOrDefault();
     }
 
-    public bool HasDefaultForCinema(int cinemaId)
+    public bool HasDefaultForLocation(int locationId)
     {
-        return _context.CinemaOpeningTimes.Any(openingTime =>
-            openingTime.CinemaId == cinemaId
+        return _context.LocationOpeningTimes.Any(openingTime =>
+            openingTime.LocationId == locationId
             && openingTime.StartDate == DateOnly.MinValue
             && openingTime.ExpiresAt == DateOnly.MaxValue);
     }
 
-    public void Add(CinemaOpeningTime openingTime)
+    public void Add(LocationOpeningTime openingTime)
     {
-        _context.CinemaOpeningTimes.Add(openingTime);
+        _context.LocationOpeningTimes.Add(openingTime);
         _context.SaveChanges();
     }
 }

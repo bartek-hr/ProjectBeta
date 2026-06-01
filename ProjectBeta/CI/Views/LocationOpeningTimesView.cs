@@ -5,19 +5,19 @@ using ProjectBeta.Model;
 
 namespace ProjectBeta.CI.Views;
 
-public sealed class CinemaOpeningTimesView : Form
+public sealed class LocationOpeningTimesView : Form
 {
     private const string TimePattern = "^([01]\\d|2[0-3]):[0-5]\\d$";
 
-    private readonly CinemaOpeningTimeLogic _openingTimeLogic;
+    private readonly LocationOpeningTimeLogic _openingTimeLogic;
     private readonly AppLoop _appLoop;
     private readonly IServiceProvider _serviceProvider;
     private User _user = null!;
-    private Cinema _cinema = null!;
+    private Location _location = null!;
     private string? _statusMessage;
 
-    public CinemaOpeningTimesView(
-        CinemaOpeningTimeLogic openingTimeLogic,
+    public LocationOpeningTimesView(
+        LocationOpeningTimeLogic openingTimeLogic,
         AppLoop appLoop,
         IServiceProvider serviceProvider)
     {
@@ -26,10 +26,10 @@ public sealed class CinemaOpeningTimesView : Form
         _serviceProvider = serviceProvider;
     }
 
-    public void SetContext(User user, Cinema cinema)
+    public void SetContext(User user, Location location)
     {
         _user = user;
-        _cinema = cinema;
+        _location = location;
         ClearChildren();
         InitializeForm();
     }
@@ -42,11 +42,11 @@ public sealed class CinemaOpeningTimesView : Form
 
     private void InitializeForm()
     {
-        Heading(l10n("admin.cinemas.opening_times.heading", new Dictionary<string, string> { ["cinema"] = _cinema.Name }));
+        Heading(l10n("admin.locations.opening_times.heading", new Dictionary<string, string> { ["location"] = _location.Name }));
         Message(() => _statusMessage);
 
-        var rules = _openingTimeLogic.GetByCinemaId(_cinema.Id);
-        var table = new Table<CinemaOpeningTime>(
+        var rules = _openingTimeLogic.GetByLocationId(_location.Id);
+        var table = new Table<LocationOpeningTime>(
             "Start date",
             "Expires at",
             "Opening",
@@ -82,13 +82,13 @@ public sealed class CinemaOpeningTimesView : Form
             .Key("openingTime")
             .Required()
             .Pattern(TimePattern, "Use HH:mm, for example 09:00.")
-            .Default(CinemaOpeningTimeLogic.DefaultOpeningTime)
+            .Default(LocationOpeningTimeLogic.DefaultOpeningTime)
             .Hidden(() => closedInput.Value);
         TextInput("Closing time")
             .Key("closingTime")
             .Required()
             .Pattern(TimePattern, "Use HH:mm, for example 20:00.")
-            .Default(CinemaOpeningTimeLogic.DefaultClosingTime)
+            .Default(LocationOpeningTimeLogic.DefaultClosingTime)
             .Hidden(() => closedInput.Value);
 
         Divider();
@@ -106,9 +106,9 @@ public sealed class CinemaOpeningTimesView : Form
 
                 try
                 {
-                    _openingTimeLogic.Add(new CinemaOpeningTime
+                    _openingTimeLogic.Add(new LocationOpeningTime
                     {
-                        CinemaId = _cinema.Id,
+                        LocationId = _location.Id,
                         StartDate = startDate,
                         ExpiresAt = expiresAt,
                         OpeningTime = openingTime,
@@ -126,8 +126,8 @@ public sealed class CinemaOpeningTimesView : Form
             Button("Back").OnClick(() =>
             {
                 Console.Clear();
-                var detailView = _serviceProvider.GetRequiredService<CinemaDetailView>();
-                detailView.SetContext(_user, _cinema);
+                var detailView = _serviceProvider.GetRequiredService<LocationDetailView>();
+                detailView.SetView(_user, _location);
                 _appLoop.Display(detailView);
             }));
     }
@@ -140,14 +140,14 @@ public sealed class CinemaOpeningTimesView : Form
     private static string FormatStartDate(DateOnly date)
     {
         return date == DateOnly.MinValue
-            ? l10n("admin.cinemas.opening_times.values.always")
+            ? l10n("admin.locations.opening_times.values.always")
             : date.ToString("yyyy-MM-dd");
     }
 
     private static string FormatExpiresAt(DateOnly date)
     {
         return date == DateOnly.MaxValue
-            ? l10n("admin.cinemas.opening_times.values.never")
+            ? l10n("admin.locations.opening_times.values.never")
             : date.ToString("yyyy-MM-dd");
     }
 

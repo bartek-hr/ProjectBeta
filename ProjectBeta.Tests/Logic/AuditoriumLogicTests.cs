@@ -82,10 +82,18 @@ public class AuditoriumLogicTests
     }
 
     [TestMethod]
-    public void GetByCinemaId_NonExistingCinema_ReturnsEmptyList()
+    public void GetByLocationId_NonExistingLocation_ReturnsEmptyList()
     {
-        var result = _logic!.GetByCinemaId(999);
+        var result = _logic!.GetByLocationId(999);
         Assert.AreEqual(0, result.Count);
+    }
+
+    [TestMethod]
+    public void GetByLocationId_ExistingLocation_ReturnsAuditoriums()
+    {
+        var result = _logic!.GetByLocationId(1);
+        Assert.IsTrue(result.Count > 0);
+        Assert.IsTrue(result.All(a => a.LocationId == 1));
     }
 
     [TestMethod]
@@ -104,14 +112,6 @@ public class AuditoriumLogicTests
     }
 
     [TestMethod]
-    public void GetByCinemaId_ExistingCinema_ReturnsAuditoriums()
-    {
-        var result = _logic!.GetByCinemaId(1);
-        Assert.IsTrue(result.Count > 0);
-        Assert.IsTrue(result.All(a => a.CinemaId == 1));
-    }
-
-    [TestMethod]
     public void UpdateCapacity_AsAdmin_UpdatesCapacity()
     {
         _logic!.UpdateCapacity(1, 999, AdminUser);
@@ -127,20 +127,20 @@ public class AuditoriumLogicTests
     }
 
     [TestMethod]
-    public void UpdateCinema_AsAdmin_UpdatesCinemaId()
+    public void UpdateLocation_AsAdmin_UpdatesLocationId()
     {
-        _context!.Cinemas.Add(new Cinema { Id = 2, Name = "Second", City = "Utrecht" });
+        _context!.Locations.Add(new Location { Id = 2, Name = "Second", City = "Utrecht", Address = "Addr" });
         _context.SaveChanges();
 
-        _logic!.UpdateCinema(1, 2, AdminUser);
+        _logic!.UpdateLocation(1, 2, AdminUser);
         var updated = _context.Auditoriums.Find(1);
-        Assert.AreEqual(2, updated!.CinemaId);
+        Assert.AreEqual(2, updated!.LocationId);
     }
 
     [TestMethod]
-    public void UpdateCinema_AsNonAdmin_ThrowsUnauthorized()
+    public void UpdateLocation_AsNonAdmin_ThrowsUnauthorized()
     {
         Assert.ThrowsException<UnauthorizedAccessException>(() =>
-            _logic!.UpdateCinema(1, 1, RegularUser));
+            _logic!.UpdateLocation(1, 1, RegularUser));
     }
 }

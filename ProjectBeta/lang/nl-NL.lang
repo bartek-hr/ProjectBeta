@@ -84,6 +84,9 @@ main:
       cinemas: Bioscopen
       seat_prices: Stoelprijzen
       discounts: Kortingen
+      subscriptions: Abonnementen
+      my_subscription: Mijn Abonnement
+      back: Terug
     status:
       reports_tbd: NOG TE DOEN
 movies:
@@ -281,6 +284,12 @@ admin:
       errors:
         update_name_unauthorized: Alleen beheerders mogen bioscoopnamen aanpassen.
         update_city_unauthorized: Alleen beheerders mogen bioscoopsteden aanpassen.
+  locations:
+    opening_times:
+      heading: "Openingstijden - :location"
+      values:
+        always: Altijd
+        never: Nooit
   auditoriums:
     list:
       heading: :cinema — Zalen
@@ -353,6 +362,57 @@ admin:
       invalid_age_range: Minimumleeftijd moet kleiner zijn dan of gelijk aan de maximumleeftijd.
       invalid_date: Ongeldig datumformaat. Gebruik JJJJ-MM-DD.
       name_required: Naam is verplicht.
+  subscriptions:
+    heading: Abonnementenbeheer
+    instructions: Beheer en bekijk abonnementstypes.
+    active_badge: ACTIEF
+    inactive_badge: NIET ACTIEF
+    fields:
+      name:
+        label: Naam
+      price:
+        label: Prijs
+      seat_type_id:
+        label: Stoeltype-id
+      seat_type:
+        label: Stoeltype
+      applicable_day:
+        label: Geldige dag
+      is_connect_allowed:
+        label: Verbinden toegestaan
+      connect_discount:
+        label: Verbindingskorting
+      effective_from:
+        label: Geldig vanaf (JJJJ-MM-DD)
+      effective_until:
+        label: "Geldig tot (JJJJ-MM-DD, leeg = geen einddatum)"
+    actions:
+      add: Abonnement toevoegen
+      edit: Bewerk :name
+      save: Sla :name op
+      delete: Verwijder :name
+      remove: Abonnement verwijderen
+      back: Terug
+      create: Abonnement aanmaken
+    create:
+      heading: Nieuw abonnement aanmaken
+    status:
+      added: Abonnement toegevoegd.
+      saved: ":name bijgewerkt."
+      deleted: ":name verwijderd."
+      created: ":name aangemaakt."
+      removed: Abonnement verwijderd.
+      invalid_price: Voer een geldige prijs in (0 of hoger).
+      name_required: Naam is verplicht.
+      invalid_date: Ongeldig datumformaat. Gebruik JJJJ-MM-DD.
+    menu:
+      no_subscriptions: Geen abonnementen beschikbaar.
+      active_subscription: Actief abonnement
+subscriptions:
+  status:
+    invalid_date: Ongeldig datumformaat. Gebruik JJJJ-MM-DD.
+    invalid_effective_from: Ongeldige begindatum. Gebruik JJJJ-MM-DD.
+    invalid_effective_until: Ongeldige einddatum. Gebruik JJJJ-MM-DD.
 components:
   form:
     date_placeholder: JJJJ-MM-DD
@@ -507,3 +567,42 @@ validation:
       required: Achternaam is verplicht.
     date_of_birth:
       required: Geboortedatum is verplicht.
+
+user:
+  subscriptions:
+    heading: Mijn Abonnement
+    current_label: Uw actieve abonnement
+    no_active: U heeft geen actief abonnement.
+    available_label: Beschikbare abonnementen
+    no_available: Er zijn momenteel geen abonnementen beschikbaar.
+    price_label: Prijs
+    seat_label: Stoeltype
+    day_label: Dag
+    any_day: Elke dag
+    connected_with: Verbonden met
+    connected_discount: Verbonden korting
+    connect:
+      heading: Verbinden met een vriend
+      instructions: "Voer het e-mailadres in van een andere gebruiker met hetzelfde abonnement om de verbonden korting te activeren."
+      email_label: Hun e-mailadres
+      button: Verbinden
+      discount_info: "Verbind met een vriend die dit abonnement al heeft voor :discount% korting"
+      apply_discount: Korting toepassen
+      discount_applied: ":discount% verbindingskorting toegepast!"
+    actions:
+      cancel: Abonnement opzeggen
+      pay: ":price betalen"
+    status:
+      bought: ":name abonnement geactiveerd."
+      cancelled: Abonnement opgezegd.
+      connected: Abonnementen verbonden. De verbonden korting is nu actief voor beide gebruikers.
+    errors:
+      email_required: E-mailadres is verplicht.
+      user_not_found: Geen gebruiker gevonden met dat e-mailadres.
+      cannot_connect_self: U kunt een abonnement niet met uzelf verbinden.
+      no_active_subscription: U heeft geen actief abonnement.
+      connecting_not_allowed: Dit abonnement ondersteunt geen verbinding.
+      other_user_no_subscription: De andere gebruiker heeft niet hetzelfde abonnement.
+      already_has_subscription: U heeft al een actief abonnement.
+      subscription_not_found: Abonnement niet gevonden of niet meer beschikbaar.
+      friend_no_subscription: Deze vriend heeft dit abonnement nog niet. Voer hun e-mail in nadat zij zich hebben geabonneerd om te verbinden.

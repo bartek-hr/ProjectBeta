@@ -89,14 +89,15 @@ public class AppDbContextTests
     [TestMethod]
     public void EnsureCreated_SeedsDefaultUsers()
     {
-        Assert.AreEqual(2, _context!.Users.Count());
+        Assert.AreEqual(3, _context!.Users.Count());
     }
 
     [TestMethod]
-    public void EnsureCreated_SeedsDefaultCinema()
+    public void EnsureCreated_SeedsDefaultLocation()
     {
-        Assert.AreEqual(1, _context!.Cinemas.Count());
-        Assert.AreEqual("Darcy", _context.Cinemas.First().Name);
+        Assert.AreEqual(1, _context!.Locations.Count());
+        Assert.AreEqual("Main Location", _context.Locations.First().Name);
+        Assert.AreEqual("Rotterdam", _context.Locations.First().City);
     }
 
     [TestMethod]
@@ -165,20 +166,19 @@ public class AppDbContextTests
     }
 
     [TestMethod]
-    public void DeletingLocation_SetsAuditoriumLocationIdToNull()
+    public void DeletingLocation_CascadesToAuditoriums()
     {
-        var location = new Location { Name = "Downtown", Capacity = 150 };
+        var location = new Location { Name = "Downtown", City = "Rotterdam", Address = "St 1" };
         _context!.Locations.Add(location);
         _context.SaveChanges();
 
-        var auditorium = _context.Auditoriums.Find(1)!;
-        auditorium.LocationId = location.Id;
+        _context.Auditoriums.Add(new Auditorium { Name = "Aud", Capacity = 100, LocationId = location.Id });
         _context.SaveChanges();
+        int beforeCount = _context.Auditoriums.Count();
 
         _context.Locations.Remove(location);
         _context.SaveChanges();
 
-        var updated = _context.Auditoriums.Find(1)!;
-        Assert.IsNull(updated.LocationId);
+        Assert.AreEqual(beforeCount - 1, _context.Auditoriums.Count());
     }
 }

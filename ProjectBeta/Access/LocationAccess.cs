@@ -45,11 +45,27 @@ public class LocationAccess
         _context.SaveChanges();
     }
 
-    public void UpdateCapacity(int id, int newCapacity)
+    public void UpdateName(int id, string newName)
     {
         var location = _context.Locations.Find(id);
         if (location == null) return;
-        location.Capacity = newCapacity;
+        location.Name = newName;
+        _context.SaveChanges();
+    }
+
+    public void UpdateCity(int id, string newCity)
+    {
+        var location = _context.Locations.Find(id);
+        if (location == null) return;
+        location.City = newCity;
+        _context.SaveChanges();
+    }
+
+    public void UpdateAddress(int id, string newAddress)
+    {
+        var location = _context.Locations.Find(id);
+        if (location == null) return;
+        location.Address = newAddress;
         _context.SaveChanges();
     }
 

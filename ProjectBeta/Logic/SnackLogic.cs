@@ -16,17 +16,17 @@ public class SnackLogic
     {
         return _snackAccess.GetAll();
     }
-    public List<Snack> GetAllByCinemaId(int cinemaId)
+    public List<Snack> GetAllByLocationId(int locationId)
     {
-        return _snackAccess.GetAllByCinemaId(cinemaId);
+        return _snackAccess.GetAllByLocationId(locationId);
     }
 
-    public List<Snack> Search(int cinemaId, string query)
+    public List<Snack> Search(int locationId, string query)
     {
         if (string.IsNullOrWhiteSpace(query))
-            return _snackAccess.GetAllByCinemaId(cinemaId);
+            return _snackAccess.GetAllByLocationId(locationId);
 
-        return _snackAccess.Search(cinemaId, query);
+        return _snackAccess.Search(locationId, query);
     }
     public Snack? GetById(int id)
     {

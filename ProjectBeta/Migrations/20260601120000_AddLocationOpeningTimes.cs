@@ -9,19 +9,19 @@ namespace ProjectBeta.Migrations
 {
     /// <inheritdoc />
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260601120000_AddCinemaOpeningTimes")]
-    public partial class AddCinemaOpeningTimes : Migration
+    [Migration("20260601120000_AddLocationOpeningTimes")]
+    public partial class AddLocationOpeningTimes : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "CinemaOpeningTimes",
+                name: "LocationOpeningTimes",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    CinemaId = table.Column<int>(type: "INTEGER", nullable: false),
+                    LocationId = table.Column<int>(type: "INTEGER", nullable: false),
                     StartDate = table.Column<DateOnly>(type: "TEXT", nullable: false),
                     ExpiresAt = table.Column<DateOnly>(type: "TEXT", nullable: false),
                     OpeningTime = table.Column<TimeOnly>(type: "TEXT", nullable: true),
@@ -30,29 +30,29 @@ namespace ProjectBeta.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CinemaOpeningTimes", x => x.Id);
+                    table.PrimaryKey("PK_LocationOpeningTimes", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_CinemaOpeningTimes_Cinemas_CinemaId",
-                        column: x => x.CinemaId,
-                        principalTable: "Cinemas",
+                        name: "FK_LocationOpeningTimes_Locations_LocationId",
+                        column: x => x.LocationId,
+                        principalTable: "Locations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_CinemaOpeningTimes_CinemaId_CreatedAt",
-                table: "CinemaOpeningTimes",
-                columns: new[] { "CinemaId", "CreatedAt" });
+                name: "IX_LocationOpeningTimes_LocationId_CreatedAt",
+                table: "LocationOpeningTimes",
+                columns: new[] { "LocationId", "CreatedAt" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_CinemaOpeningTimes_CinemaId_StartDate_ExpiresAt",
-                table: "CinemaOpeningTimes",
-                columns: new[] { "CinemaId", "StartDate", "ExpiresAt" });
+                name: "IX_LocationOpeningTimes_LocationId_StartDate_ExpiresAt",
+                table: "LocationOpeningTimes",
+                columns: new[] { "LocationId", "StartDate", "ExpiresAt" });
 
             migrationBuilder.Sql("""
-                INSERT INTO CinemaOpeningTimes (CinemaId, StartDate, ExpiresAt, OpeningTime, ClosingTime, CreatedAt)
+                INSERT INTO LocationOpeningTimes (LocationId, StartDate, ExpiresAt, OpeningTime, ClosingTime, CreatedAt)
                 SELECT Id, '0001-01-01', '9999-12-31', '09:00:00', '20:00:00', '0001-01-01 00:00:00'
-                FROM Cinemas
+                FROM Locations
                 """);
         }
 
@@ -60,7 +60,7 @@ namespace ProjectBeta.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "CinemaOpeningTimes");
+                name: "LocationOpeningTimes");
         }
     }
 }

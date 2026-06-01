@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProjectBeta.Data;
 
@@ -10,9 +11,11 @@ using ProjectBeta.Data;
 namespace ProjectBeta.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260518171058_AddMultiLocation")]
+    partial class AddMultiLocation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.0");
@@ -235,39 +238,6 @@ namespace ProjectBeta.Migrations
                         });
                 });
 
-            modelBuilder.Entity("ProjectBeta.Model.LocationOpeningTime", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("LocationId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<TimeOnly?>("ClosingTime")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateOnly>("ExpiresAt")
-                        .HasColumnType("TEXT");
-
-                    b.Property<TimeOnly?>("OpeningTime")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateOnly>("StartDate")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("LocationId", "CreatedAt");
-
-                    b.HasIndex("LocationId", "StartDate", "ExpiresAt");
-
-                    b.ToTable("LocationOpeningTimes");
-                });
-
             modelBuilder.Entity("ProjectBeta.Model.Movie", b =>
                 {
                     b.Property<string>("Id")
@@ -396,47 +366,6 @@ namespace ProjectBeta.Migrations
                     b.ToTable("Snacks");
                 });
 
-            modelBuilder.Entity("ProjectBeta.Model.Subscription", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("ApplicableDayOfWeek")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<decimal>("ConnectDiscount")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("EffectiveFrom")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime?>("EffectiveUntil")
-                        .HasColumnType("TEXT");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("IsConnectAllowed")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("SeatPriceId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SeatPriceId");
-
-                    b.ToTable("Subscriptions");
-                });
-
             modelBuilder.Entity("ProjectBeta.Model.User", b =>
                 {
                     b.Property<int>("Id")
@@ -491,7 +420,7 @@ namespace ProjectBeta.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2026, 5, 30, 10, 31, 19, 668, DateTimeKind.Utc).AddTicks(3040),
+                            CreatedAt = new DateTime(2026, 5, 18, 17, 10, 57, 677, DateTimeKind.Utc).AddTicks(7516),
                             DateOfBirth = new DateOnly(1990, 1, 1),
                             Email = "admin@example.com",
                             FirstName = "Admin",
@@ -505,7 +434,7 @@ namespace ProjectBeta.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2026, 5, 30, 10, 31, 19, 668, DateTimeKind.Utc).AddTicks(3040),
+                            CreatedAt = new DateTime(2026, 5, 18, 17, 10, 57, 677, DateTimeKind.Utc).AddTicks(7520),
                             DateOfBirth = new DateOnly(1995, 5, 15),
                             Email = "user1@example.com",
                             FirstName = "User",
@@ -515,57 +444,7 @@ namespace ProjectBeta.Migrations
                             PasswordHash = "password",
                             Role = "User",
                             Username = "user1"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CreatedAt = new DateTime(2026, 5, 30, 10, 31, 19, 668, DateTimeKind.Utc).AddTicks(3050),
-                            DateOfBirth = new DateOnly(1998, 8, 20),
-                            Email = "user2@example.com",
-                            FirstName = "User",
-                            HasSubscription = false,
-                            IsActive = true,
-                            LastName = "Two",
-                            PasswordHash = "password",
-                            Role = "User",
-                            Username = "user2"
                         });
-                });
-
-            modelBuilder.Entity("ProjectBeta.Model.UserSubscription", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("ConnectedWithUserId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime?>("EndDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("IsConnected")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("SubscriptionId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SubscriptionId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserSubscriptions");
                 });
 
             modelBuilder.Entity("ProjectBeta.Model.Auditorium", b =>
@@ -653,17 +532,6 @@ namespace ProjectBeta.Migrations
                     b.Navigation("Movie");
                 });
 
-            modelBuilder.Entity("ProjectBeta.Model.LocationOpeningTime", b =>
-                {
-                    b.HasOne("ProjectBeta.Model.Location", "Location")
-                        .WithMany("OpeningTimes")
-                        .HasForeignKey("LocationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Location");
-                });
-
             modelBuilder.Entity("ProjectBeta.Model.Receipt", b =>
                 {
                     b.HasOne("ProjectBeta.Model.Booking", "Booking")
@@ -675,36 +543,6 @@ namespace ProjectBeta.Migrations
                     b.Navigation("Booking");
                 });
 
-            modelBuilder.Entity("ProjectBeta.Model.Subscription", b =>
-                {
-                    b.HasOne("ProjectBeta.Model.SeatPrice", "SeatPrice")
-                        .WithMany()
-                        .HasForeignKey("SeatPriceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("SeatPrice");
-                });
-
-            modelBuilder.Entity("ProjectBeta.Model.UserSubscription", b =>
-                {
-                    b.HasOne("ProjectBeta.Model.Subscription", "Subscription")
-                        .WithMany("UserSubscriptions")
-                        .HasForeignKey("SubscriptionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ProjectBeta.Model.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Subscription");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("ProjectBeta.Model.Booking", b =>
                 {
                     b.Navigation("BookingDiscounts");
@@ -713,13 +551,6 @@ namespace ProjectBeta.Migrations
             modelBuilder.Entity("ProjectBeta.Model.Location", b =>
                 {
                     b.Navigation("Auditoriums");
-
-                    b.Navigation("OpeningTimes");
-                });
-
-            modelBuilder.Entity("ProjectBeta.Model.Subscription", b =>
-                {
-                    b.Navigation("UserSubscriptions");
                 });
 #pragma warning restore 612, 618
         }

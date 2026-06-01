@@ -46,13 +46,13 @@ public class MovieScheduleAccess
         return _context.MovieSchedules.Any(schedule => schedule.ScheduleDate == date);
     }
 
-    public void DeleteForCinemaDateRange(int cinemaId, DateOnly startDate, DateOnly expiresAt)
+    public void DeleteForLocationDateRange(int locationId, DateOnly startDate, DateOnly expiresAt)
     {
         var schedules = _context.MovieSchedules
             .Where(schedule =>
                 schedule.ScheduleDate >= startDate
                 && schedule.ScheduleDate <= expiresAt
-                && schedule.Auditorium.CinemaId == cinemaId)
+                && schedule.Auditorium.LocationId == locationId)
             .ToList();
 
         if (schedules.Count == 0)

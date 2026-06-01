@@ -21,17 +21,17 @@ public class SnackAccess
     {
         return _context.Snacks.FirstOrDefault(s => s.Id == id);
     }
-    public List<Snack> GetAllByCinemaId(int id)
+    public List<Snack> GetAllByLocationId(int id)
     {
         return _context.Snacks
-            .Where(s => s.CinemaId == id)
+            .Where(s => s.LocationId == id)
             .ToList();
     }
 
-    public List<Snack> Search(int cinemaId, string query)
+    public List<Snack> Search(int locationId, string query)
     {
         return _context.Snacks
-            .Where(s => s.CinemaId == cinemaId && s.Name.Contains(query))
+            .Where(s => s.LocationId == locationId && s.Name.Contains(query))
             .ToList();
     }
 

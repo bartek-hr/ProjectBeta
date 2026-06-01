@@ -8,11 +8,11 @@ using ProjectBeta.Model;
 namespace ProjectBeta.Tests.Logic;
 
 [TestClass]
-public class CinemaOpeningTimeLogicTests
+public class LocationOpeningTimeLogicTests
 {
     private AppDbContext? _context;
     private SqliteConnection? _connection;
-    private CinemaOpeningTimeLogic? _logic;
+    private LocationOpeningTimeLogic? _logic;
     private MovieScheduleAccess? _movieScheduleAccess;
 
     private User AdminUser => new User
@@ -51,9 +51,9 @@ public class CinemaOpeningTimeLogicTests
         _context.Database.EnsureCreated();
 
         _movieScheduleAccess = new MovieScheduleAccess(_context);
-        _logic = new CinemaOpeningTimeLogic(
-            new CinemaOpeningTimeAccess(_context),
-            new CinemaAccess(_context),
+        _logic = new LocationOpeningTimeLogic(
+            new LocationOpeningTimeAccess(_context),
+            new LocationAccess(_context),
             _movieScheduleAccess);
     }
 
@@ -65,9 +65,9 @@ public class CinemaOpeningTimeLogicTests
     }
 
     [TestMethod]
-    public void GetByCinemaId_EnsuresPermanentDefaultOpeningTime()
+    public void GetByLocationId_EnsuresPermanentDefaultOpeningTime()
     {
-        var rules = _logic!.GetByCinemaId(1);
+        var rules = _logic!.GetByLocationId(1);
 
         var defaultRule = rules.Single(rule =>
             rule.StartDate == DateOnly.MinValue
@@ -94,19 +94,19 @@ public class CinemaOpeningTimeLogicTests
     public void GetOpeningHoursForDate_LatestCreatedMatchingRuleWins()
     {
         var date = DateOnly.FromDateTime(DateTime.Today.AddDays(2));
-        _context!.CinemaOpeningTimes.AddRange(
-            new CinemaOpeningTime
+        _context!.LocationOpeningTimes.AddRange(
+            new LocationOpeningTime
             {
-                CinemaId = 1,
+                LocationId = 1,
                 StartDate = date,
                 ExpiresAt = date,
                 OpeningTime = new TimeOnly(10, 0),
                 ClosingTime = new TimeOnly(18, 0),
                 CreatedAt = DateTime.UtcNow.AddHours(-1)
             },
-            new CinemaOpeningTime
+            new LocationOpeningTime
             {
-                CinemaId = 1,
+                LocationId = 1,
                 StartDate = date,
                 ExpiresAt = date,
                 OpeningTime = new TimeOnly(13, 0),
@@ -125,9 +125,9 @@ public class CinemaOpeningTimeLogicTests
     public void GetOpeningHoursForDate_NullTimesMeanClosed()
     {
         var date = DateOnly.FromDateTime(DateTime.Today.AddDays(3));
-        _context!.CinemaOpeningTimes.Add(new CinemaOpeningTime
+        _context!.LocationOpeningTimes.Add(new LocationOpeningTime
         {
-            CinemaId = 1,
+            LocationId = 1,
             StartDate = date,
             ExpiresAt = date,
             OpeningTime = null,
@@ -142,12 +142,12 @@ public class CinemaOpeningTimeLogicTests
     }
 
     [TestMethod]
-    public void GetByCinemaId_HidesExpiredOpeningTimes()
+    public void GetByLocationId_HidesExpiredOpeningTimes()
     {
         var expiredDate = DateOnly.FromDateTime(DateTime.Today.AddDays(-1));
-        _context!.CinemaOpeningTimes.Add(new CinemaOpeningTime
+        _context!.LocationOpeningTimes.Add(new LocationOpeningTime
         {
-            CinemaId = 1,
+            LocationId = 1,
             StartDate = expiredDate,
             ExpiresAt = expiredDate,
             OpeningTime = new TimeOnly(11, 0),
@@ -156,7 +156,7 @@ public class CinemaOpeningTimeLogicTests
         });
         _context.SaveChanges();
 
-        var rules = _logic!.GetByCinemaId(1);
+        var rules = _logic!.GetByLocationId(1);
 
         Assert.IsFalse(rules.Any(rule => rule.ExpiresAt == expiredDate));
     }
@@ -167,9 +167,9 @@ public class CinemaOpeningTimeLogicTests
         var date = DateOnly.FromDateTime(DateTime.Today.AddDays(4));
 
         Assert.ThrowsException<UnauthorizedAccessException>(() =>
-            _logic!.Add(new CinemaOpeningTime
+            _logic!.Add(new LocationOpeningTime
             {
-                CinemaId = 1,
+                LocationId = 1,
                 StartDate = date,
                 ExpiresAt = date,
                 OpeningTime = new TimeOnly(9, 0),
@@ -183,9 +183,9 @@ public class CinemaOpeningTimeLogicTests
         var date = DateOnly.FromDateTime(DateTime.Today.AddDays(5));
 
         Assert.ThrowsException<InvalidOperationException>(() =>
-            _logic!.Add(new CinemaOpeningTime
+            _logic!.Add(new LocationOpeningTime
             {
-                CinemaId = 1,
+                LocationId = 1,
                 StartDate = date.AddDays(1),
                 ExpiresAt = date,
                 OpeningTime = new TimeOnly(9, 0),
@@ -199,9 +199,9 @@ public class CinemaOpeningTimeLogicTests
         var date = DateOnly.FromDateTime(DateTime.Today.AddDays(6));
 
         Assert.ThrowsException<InvalidOperationException>(() =>
-            _logic!.Add(new CinemaOpeningTime
+            _logic!.Add(new LocationOpeningTime
             {
-                CinemaId = 1,
+                LocationId = 1,
                 StartDate = date,
                 ExpiresAt = date,
                 OpeningTime = new TimeOnly(9, 0),
@@ -215,9 +215,9 @@ public class CinemaOpeningTimeLogicTests
         var date = DateOnly.FromDateTime(DateTime.Today.AddDays(7));
 
         Assert.ThrowsException<InvalidOperationException>(() =>
-            _logic!.Add(new CinemaOpeningTime
+            _logic!.Add(new LocationOpeningTime
             {
-                CinemaId = 1,
+                LocationId = 1,
                 StartDate = date,
                 ExpiresAt = date,
                 OpeningTime = new TimeOnly(17, 0),
@@ -226,11 +226,11 @@ public class CinemaOpeningTimeLogicTests
     }
 
     [TestMethod]
-    public void Add_InvalidatesOnlyMatchingCinemaSchedulesInDateRange()
+    public void Add_InvalidatesOnlyMatchingLocationSchedulesInDateRange()
     {
         var date = DateOnly.FromDateTime(DateTime.Today.AddDays(8));
-        _context!.Cinemas.Add(new Cinema { Id = 2, Name = "Other", City = "Utrecht" });
-        _context.Auditoriums.Add(new Auditorium { Id = 4, Name = "Other Hall", CinemaId = 2, Capacity = 100 });
+        _context!.Locations.Add(new Location { Id = 2, Name = "Other", City = "Utrecht", Address = "Other St 1" });
+        _context.Auditoriums.Add(new Auditorium { Id = 4, Name = "Other Hall", LocationId = 2, Capacity = 100 });
         _context.Movies.Add(new Movie { Id = "m1", Title = "Movie", Description = "d", RuntimeSeconds = 5400 });
         _context.SaveChanges();
 
@@ -241,9 +241,9 @@ public class CinemaOpeningTimeLogicTests
             new MovieSchedule { ScheduleDate = date.AddDays(1), AuditoriumId = 1, MovieId = "m1", StartTime = new TimeOnly(9, 0), EndTime = new TimeOnly(10, 30) }
         });
 
-        _logic!.Add(new CinemaOpeningTime
+        _logic!.Add(new LocationOpeningTime
         {
-            CinemaId = 1,
+            LocationId = 1,
             StartDate = date,
             ExpiresAt = date,
             OpeningTime = new TimeOnly(10, 0),

@@ -5,25 +5,25 @@ namespace ProjectBeta.Logic;
 
 public class MovieLogic
 {
-    public const string OpeningTime = CinemaOpeningTimeLogic.DefaultOpeningTime;
-    public const string ClosingTime = CinemaOpeningTimeLogic.DefaultClosingTime;
+    public const string OpeningTime = LocationOpeningTimeLogic.DefaultOpeningTime;
+    public const string ClosingTime = LocationOpeningTimeLogic.DefaultClosingTime;
     public const int MinimumBreakMinutes = 30;
 
     private readonly MovieAccess _movieAccess;
     private readonly MovieScheduleAccess _movieScheduleAccess;
     private readonly AuditoriumLogic _auditoriumLogic;
-    private readonly CinemaOpeningTimeLogic _cinemaOpeningTimeLogic;
+    private readonly LocationOpeningTimeLogic _locationOpeningTimeLogic;
 
     public MovieLogic(
         MovieAccess movieAccess,
         MovieScheduleAccess movieScheduleAccess,
         AuditoriumLogic auditoriumLogic,
-        CinemaOpeningTimeLogic cinemaOpeningTimeLogic)
+        LocationOpeningTimeLogic locationOpeningTimeLogic)
     {
         _movieAccess = movieAccess;
         _movieScheduleAccess = movieScheduleAccess;
         _auditoriumLogic = auditoriumLogic;
-        _cinemaOpeningTimeLogic = cinemaOpeningTimeLogic;
+        _locationOpeningTimeLogic = locationOpeningTimeLogic;
     }
 
     public IReadOnlyList<MovieSchedule> GetScheduleForDate(DateOnly date)
@@ -75,7 +75,7 @@ public class MovieLogic
             .Select(auditorium => new
             {
                 Auditorium = auditorium,
-                OpeningHours = _cinemaOpeningTimeLogic.GetOpeningHoursForDate(auditorium.CinemaId, date)
+                OpeningHours = _locationOpeningTimeLogic.GetOpeningHoursForDate(auditorium.LocationId, date)
             })
             .Where(entry => !entry.OpeningHours.IsClosed
                             && entry.OpeningHours.OpeningTime.HasValue
