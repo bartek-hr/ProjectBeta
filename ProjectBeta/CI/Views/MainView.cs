@@ -39,7 +39,7 @@ public sealed class MainView : Form
 
         var actionButtons = new List<Button>
         {
-            Button(l10n("main.dashboard.actions.locations")).OnClick(() =>
+            Button("Locations").OnClick(() =>
             {
                 Console.Clear();
                 var locationView = _serviceProvider.GetRequiredService<LocationView>();
