@@ -13,12 +13,6 @@ public class AuditoriumAccess
         _context = context;
     }
 
-    public void Add(Auditorium auditorium)
-    {
-        _context.Auditoriums.Add(auditorium);
-        _context.SaveChanges();
-    }
-
     public List<Auditorium> GetAll()
     {
         return _context.Auditoriums.ToList();
