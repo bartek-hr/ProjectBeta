@@ -31,14 +31,12 @@ public sealed class SnackCreatorView : Form
     {
         ClearChildren();
 
-        Heading(l10n("Snack Creator"));
-        LanguageToggle(SwitchLanguage);
-        Label(l10n("auth.register.instructions"));
+        Heading("Snack Creator");
         Divider();
 
         Message(() => GetError("general"));
 
-        var nameInput = TextInput(l10n("Name"))
+        var nameInput = TextInput("Name")
             .Key("name")
             .Required()
             .Min(3)
@@ -47,14 +45,14 @@ public sealed class SnackCreatorView : Form
             nameInput.Default(state.Name);
         Message(() => GetError("name"));
 
-        var priceInput = TextInput(l10n("Price"))
+        var priceInput = TextInput("Price")
             .Key("price")
             .Required();
         if (state?.Price > 0)
             priceInput.Default(state.Price.ToString());
         Message(() => GetError("price"));
 
-        var quantityInput = TextInput(l10n("Quantity"))
+        var quantityInput = TextInput("Quantity")
             .Key("quantity")
             .Required();
         if (state?.Quantity > 0)
@@ -65,8 +63,8 @@ public sealed class SnackCreatorView : Form
 
         Message(() => _statusMessage);
         Navigation(
-            Button(l10n("auth.register.actions.submit")).OnClick(OnSubmit),
-            Button(l10n("auth.register.actions.cancel")).OnClick(() =>
+            Button("Save").OnClick(OnSubmit),
+            Button("Cancel").OnClick(() =>
             {
                 Console.Clear();
                 var snacksView = _serviceProvider.GetRequiredService<SnacksView>();

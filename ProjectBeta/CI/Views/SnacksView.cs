@@ -43,7 +43,7 @@ public sealed class SnacksView : Form
     private void InitializeForm()
     {
         List<Snack> snacks = _snackLogic.Search(_locationId, _searchQuery);
-        Heading(l10n("Current Snacks"));
+        Heading("Snack Manager");
 
         var searchInput = TextInput("Search by name");
         Navigation(
@@ -60,13 +60,13 @@ public sealed class SnacksView : Form
 
         Divider();
         var table = new Table<Snack>(
-            l10n("Id"),
-            l10n("Name"),
-            l10n("Price"),
-            l10n("Quantity"),
-            l10n("LocationId")
+            "ID",
+            "Name",
+            "Price",
+            "Quantity",
+            "Location ID"
         )
-        .EmptyMessage(l10n("empty"))
+        .EmptyMessage("No snacks found.")
         .OnSelect(OnSnackSelected);
 
         foreach (var snack in snacks)
@@ -84,9 +84,9 @@ public sealed class SnacksView : Form
         Add(table);
         Divider();
         Message(() => _statusMessage);
-        var addButton = Button(l10n("Add")).OnClick(NavigateToNewSnack);
+        var addButton = Button("Add Snack").OnClick(NavigateToNewSnack);
         addButton.Hidden(() => _confirmingDelete);
-        var backButton = Button(l10n("reservations.history.actions.back")).OnClick(NavigateToMain);
+        var backButton = Button("Back").OnClick(NavigateToMain);
         backButton.Hidden(() => _confirmingDelete);
         Navigation(addButton, backButton);
     }

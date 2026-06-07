@@ -58,7 +58,7 @@ public sealed class LocationView : Form
         var locations = _locationLogic.Search(_searchQuery);
 
         var table = new Table<Location>("ID", "Name", "City", "Address", "Capacity")
-            .EmptyMessage(l10n("location.list.empty"))
+            .EmptyMessage("No locations found.")
             .OnSelect(OnLocationSelected);
 
         foreach (var location in locations)
@@ -83,7 +83,7 @@ public sealed class LocationView : Form
 
         if (_user.IsSuperAdmin())
         {
-            bottomButtons.Add(Button(l10n("location.list.actions.add")).OnClick(() =>
+            bottomButtons.Add(Button("Add Location").OnClick(() =>
             {
                 Console.Clear();
                 var editView = _serviceProvider.GetRequiredService<LocationEditView>();
@@ -92,7 +92,7 @@ public sealed class LocationView : Form
             }));
         }
 
-        bottomButtons.Add(Button(l10n("location.list.actions.back")).OnClick(() =>
+        bottomButtons.Add(Button("Back").OnClick(() =>
         {
             Console.Clear();
             var mainView = _serviceProvider.GetRequiredService<MainView>();

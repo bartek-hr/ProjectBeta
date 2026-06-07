@@ -45,7 +45,7 @@ public sealed class BookingSnacksView : Form
     {
         ClearChildren();
         List<Snack> Snacks = _snackLogic.Search(_locationId, _searchQuery);
-        Heading(l10n("Current Snacks"));
+        Heading("Select Snacks");
 
         var searchInput = TextInput("Search by name");
         Navigation(
@@ -64,11 +64,11 @@ public sealed class BookingSnacksView : Form
 
         Divider();
         var table = new Table<Snack>(
-            l10n("Name"),
-            l10n("Price"),
-            l10n("Selected")
+            "Name",
+            "Price",
+            "Selected"
         )
-        .EmptyMessage(l10n("empty"))
+        .EmptyMessage("No snacks available.")
         .OnSelect(OnSelectedSnack);
 
         foreach (var snack in Snacks)
@@ -86,10 +86,8 @@ public sealed class BookingSnacksView : Form
         Add(table);
         Divider();
         Message(() => _statusMessage);
-        var doneButton = Button(l10n("Done")).OnClick(SaveBookingSnacks);
-        doneButton.Hidden(() => _confirmingDelete);
-        var backButton = Button(l10n("Back")).OnClick(NavigateToMain);
-        backButton.Hidden(() => _confirmingDelete);
+        var doneButton = Button("Done").OnClick(SaveBookingSnacks);
+        var backButton = Button("Back").OnClick(NavigateToMain);
         Navigation(doneButton, backButton);
     }
 
