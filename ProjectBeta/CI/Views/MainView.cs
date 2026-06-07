@@ -68,17 +68,19 @@ public sealed class MainView : Form
                 _appLoop.Display(accountView);
             })
         };
-        actionButtons.Add(Button(l10n("main.dashboard.actions.my_subscription")).OnClick(() =>
+        if (!_user.IsAdmin())
         {
-            Console.Clear();
-            var userSubscriptionView = _serviceProvider.GetRequiredService<UserSubscriptionView>();
-            userSubscriptionView.SetUser(_user);
-            _appLoop.Display(userSubscriptionView);
-        }));
+            actionButtons.Add(Button(l10n("main.dashboard.actions.my_subscription")).OnClick(() =>
+            {
+                Console.Clear();
+                var userSubscriptionView = _serviceProvider.GetRequiredService<UserSubscriptionView>();
+                userSubscriptionView.SetUser(_user);
+                _appLoop.Display(userSubscriptionView);
+            }));
+        }
 
         if (_user.IsAdmin())
         {
-
             actionButtons.Add(Button(l10n("main.dashboard.actions.users")).OnClick(() =>
             {
                 Console.Clear();
@@ -101,14 +103,6 @@ public sealed class MainView : Form
                 var discountView = _serviceProvider.GetRequiredService<DiscountView>();
                 discountView.SetUser(_user);
                 _appLoop.Display(discountView);
-            }));
-
-            actionButtons.Add(Button("Locations").OnClick(() =>
-            {
-                Console.Clear();
-                var locationView = _serviceProvider.GetRequiredService<LocationView>();
-                locationView.SetUser(_user);
-                _appLoop.Display(locationView);
             }));
 
             actionButtons.Add(Button(l10n("main.dashboard.actions.subscriptions")).OnClick(() =>

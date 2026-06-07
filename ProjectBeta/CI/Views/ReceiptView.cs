@@ -36,54 +36,50 @@ public sealed class ReceiptView : Form
     }
 
     private void InitializeForm()
-{
-    List<BookingSnack> bookedSnacks = _bookingSnackLogic.GetAllByBookingId(_booking.Id);
-
-    List<string> seats = _booking.Seats
-        .Split(',', StringSplitOptions.RemoveEmptyEntries)
-        .Select(s => s.Trim())
-        .ToList();
-
-    decimal totalPrice = _booking.TotalPrice;
-
-    Divider();
-    Label(l10n("Receipt"));
-    Label(l10n("Cinema 1"));
-    Divider();
-
-    // Snacks
-    foreach (BookingSnack bookedSnack in bookedSnacks)
     {
-        string line = string.Format(
-            "{0,-25} {1,5:0.00} x {2,-3} {3,8:0.00}", 
-            bookedSnack.Snack.Name, 
-            bookedSnack.Snack.Price, 
-            bookedSnack.BookedQuantity, 
-            bookedSnack.Snack.Price * bookedSnack.BookedQuantity
+        List<BookingSnack> bookedSnacks = _bookingSnackLogic.GetAllByBookingId(_booking.Id);
+
+        List<string> seats = _booking.Seats
+            .Split(',', StringSplitOptions.RemoveEmptyEntries)
+            .Select(s => s.Trim())
+            .ToList();
+
+        decimal totalPrice = _booking.TotalPrice;
+
+        Divider();
+        Heading(l10n("receipts.heading"));
+        Label(l10n("receipts.cinema"));
+        Divider();
+
+        foreach (BookingSnack bookedSnack in bookedSnacks)
+        {
+            string line = string.Format(
+                "{0,-25} {1,5:0.00} x {2,-3} {3,8:0.00}",
+                bookedSnack.Snack.Name,
+                bookedSnack.Snack.Price,
+                bookedSnack.BookedQuantity,
+                bookedSnack.Snack.Price * bookedSnack.BookedQuantity
+            );
+            Label(line);
+            totalPrice += bookedSnack.Snack.Price * bookedSnack.BookedQuantity;
+        }
+
+        foreach (string seat in seats)
+        {
+            Label($"  {seat}");
+        }
+        Label(string.Format("{0,-38} {1,8:0.00}", l10n("receipts.seats_total"), _booking.TotalPrice));
+
+        Divider();
+        Label(string.Format("{0,-38} {1,8:0.00}", l10n("receipts.total"), totalPrice));
+        Divider();
+        Label(l10n("receipts.thank_you"));
+
+        Message(() => _statusMessage);
+        Navigation(
+            Button(l10n("receipts.actions.back")).OnClick(NavigateToMain)
         );
-        Label(l10n(line));
-        totalPrice += bookedSnack.Snack.Price * bookedSnack.BookedQuantity;
     }
-
-    // Seats
-    foreach (string seat in seats)
-    {
-        Label(l10n($"Seat {seat}"));
-    }
-    Label(l10n(string.Format("{0,-38} {1,8:0.00}", "Seats Total", _booking.TotalPrice)));
-
-    Divider();
-
-    // Total
-    Label(l10n(string.Format("{0,-38} {1,8:0.00}", "Total", totalPrice)));
-
-    Divider();
-    Label(l10n("Thank You!"));
-
-    Message(() => _statusMessage);
-
-    Button(l10n("Back")).OnClick(NavigateToMain).Hidden(() => _confirmingDelete);
-}
 
 
 

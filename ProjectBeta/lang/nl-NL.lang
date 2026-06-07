@@ -138,6 +138,7 @@ reservations:
       no_snacks: Geen
     actions:
       save: Opslaan
+      snacks: Snacks
       back: Terug
   edit:
     heading: Reserveringsdetails
@@ -149,6 +150,7 @@ reservations:
       seats: Stoelen
       date: Datum
       paid: Betaald
+      snacks: Snacks
       total_price: Totale prijs
     actions:
       delete: Verwijderen
@@ -533,6 +535,13 @@ booking_snacks:
     snack_not_found: Snack niet gevonden.
     not_found: Boekingssnack niet gevonden.
 receipts:
+  heading: Bon
+  cinema: Cinema 1
+  seats_total: Stoelen totaal
+  total: Totaal
+  thank_you: "Dank u!"
+  actions:
+    back: Terug
   errors:
     not_found: Bon niet gevonden.
     total_positive: Totale prijs moet groter zijn dan 0.

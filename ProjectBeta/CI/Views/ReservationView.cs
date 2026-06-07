@@ -110,7 +110,7 @@ public sealed class ReservationView : Form
 
         Navigation(
             Button(l10n("reservations.create.actions.save")).OnClick(form => OnSave(form, _ageInputs, _userSeatSelect!)),
-            Button("Snacks").OnClick(form => OnSnacks(form)),
+            Button(l10n("reservations.create.actions.snacks")).OnClick(form => OnSnacks(form)),
             backButton);
     }
 
