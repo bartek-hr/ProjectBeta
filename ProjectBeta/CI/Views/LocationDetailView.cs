@@ -57,14 +57,6 @@ public sealed class LocationDetailView : Form
 
         if (_user.IsAdmin())
         {
-            Button("Add Auditoriums").OnClick(() =>
-            {
-                Console.Clear();
-                var addAuditoriumsView = _serviceProvider.GetRequiredService<AddAuditoriumsView>();
-                addAuditoriumsView.SetView(_user, _location);
-                _appLoop.Display(addAuditoriumsView);
-            });
-
             Button("Opening Times").OnClick(() =>
             {
                 Console.Clear();
