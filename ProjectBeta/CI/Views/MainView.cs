@@ -39,6 +39,13 @@ public sealed class MainView : Form
 
         var actionButtons = new List<Button>
         {
+            Button(l10n("main.dashboard.actions.locations")).OnClick(() =>
+            {
+                Console.Clear();
+                var locationView = _serviceProvider.GetRequiredService<LocationView>();
+                locationView.SetUser(_user);
+                _appLoop.Display(locationView);
+            }),
             Button(l10n("main.dashboard.actions.movies")).OnClick(() =>
             {
                 Console.Clear();
