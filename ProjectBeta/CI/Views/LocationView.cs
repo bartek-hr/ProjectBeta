@@ -38,16 +38,16 @@ public sealed class LocationView : Form
 
     private void InitializeForm()
     {
-        Heading("Locations");
+        Heading(l10n("location.list.heading"));
 
-        var searchInput = TextInput("Search by name");
+        var searchInput = TextInput(l10n("location.list.search_placeholder"));
         Navigation(
-            Button("Search").OnClick(() =>
+            Button(l10n("location.list.actions.search")).OnClick(() =>
             {
                 _searchQuery = searchInput.Value ?? string.Empty;
                 RefreshView();
             }),
-            Button("Clear").OnClick(() =>
+            Button(l10n("location.list.actions.clear")).OnClick(() =>
             {
                 _searchQuery = string.Empty;
                 RefreshView();
@@ -57,8 +57,13 @@ public sealed class LocationView : Form
 
         var locations = _locationLogic.Search(_searchQuery);
 
-        var table = new Table<Location>("ID", "Name", "City", "Address", "Capacity")
-            .EmptyMessage("No locations found.")
+        var table = new Table<Location>(
+            l10n("location.list.table.id"),
+            l10n("location.list.table.name"),
+            l10n("location.list.table.city"),
+            l10n("location.list.table.address"),
+            l10n("location.list.table.capacity"))
+            .EmptyMessage(l10n("location.list.empty"))
             .OnSelect(OnLocationSelected);
 
         foreach (var location in locations)
@@ -79,24 +84,28 @@ public sealed class LocationView : Form
         Divider();
         Message(() => _statusMessage);
 
+        var bottomButtons = new List<Button>();
+
         if (_user.IsSuperAdmin())
         {
-            Button("Add Location").OnClick(() =>
+            bottomButtons.Add(Button(l10n("location.list.actions.add")).OnClick(() =>
             {
                 Console.Clear();
                 var editView = _serviceProvider.GetRequiredService<LocationEditView>();
                 editView.SetView(_user);
                 _appLoop.Display(editView);
-            });
+            }));
         }
 
-        Button("Back").OnClick(() =>
+        bottomButtons.Add(Button(l10n("location.list.actions.back")).OnClick(() =>
         {
             Console.Clear();
             var mainView = _serviceProvider.GetRequiredService<MainView>();
             mainView.SetUser(_user);
             _appLoop.Display(mainView);
-        });
+        }));
+
+        Navigation(bottomButtons.ToArray());
     }
 
     private void OnLocationSelected(Location location)
