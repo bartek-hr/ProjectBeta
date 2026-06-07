@@ -30,57 +30,66 @@ public sealed class LocationDetailView : Form
     private void InitializeForm()
     {
         Heading(_location.Name);
-        Label(l10n("location.detail.city", new Dictionary<string, string> { ["city"] = _location.City }));
-        Label(l10n("location.detail.address", new Dictionary<string, string> { ["address"] = _location.Address }));
-        Label(l10n("location.detail.capacity", new Dictionary<string, string> { ["capacity"] = _location.ComputedCapacity.ToString() }));
+        Label($"City: {_location.City}");
+        Label($"Address: {_location.Address}");
+        Label($"Total capacity: {_location.ComputedCapacity}");
 
         Divider();
 
-        var actionButtons = new List<Button>
+        Button("Movies").OnClick(() =>
         {
-            Button(l10n("location.detail.actions.movies")).OnClick(() =>
+            Console.Clear();
+            var moviesView = _serviceProvider.GetRequiredService<MoviesView>();
+            moviesView.SetUser(_user, _location.Id);
+            _appLoop.Display(moviesView);
+        });
+
+        if (_user.IsSuperAdmin())
+        {
+            Button("Edit Location").OnClick(() =>
             {
                 Console.Clear();
-                var moviesView = _serviceProvider.GetRequiredService<MoviesView>();
-                moviesView.SetUser(_user, _location.Id);
-                _appLoop.Display(moviesView);
-            })
-        };
+                var editView = _serviceProvider.GetRequiredService<LocationEditView>();
+                editView.SetView(_user, _location);
+                _appLoop.Display(editView);
+            });
+        }
 
         if (_user.IsAdmin())
         {
-            actionButtons.Add(Button(l10n("location.detail.actions.auditoriums")).OnClick(() =>
+            Button("Opening Times").OnClick(() =>
             {
                 Console.Clear();
-                var auditoriumsView = _serviceProvider.GetRequiredService<AuditoriumsView>();
-                auditoriumsView.SetView(_user, _location);
-                _appLoop.Display(auditoriumsView);
-            }));
-
-            actionButtons.Add(Button(l10n("location.detail.actions.snack_manager")).OnClick(() =>
-            {
-                Console.Clear();
-                var snacksView = _serviceProvider.GetRequiredService<SnacksView>();
-                snacksView.SetView(_user, _location.Id);
-                _appLoop.Display(snacksView);
-            }));
-
-            actionButtons.Add(Button(l10n("location.detail.actions.reports")).OnClick(_ =>
-            {
-                _statusMessage = l10n("location.detail.status.reports_tbd");
-            }));
+                var openingTimesView = _serviceProvider.GetRequiredService<LocationOpeningTimesView>();
+                openingTimesView.SetContext(_user, _location);
+                _appLoop.Display(openingTimesView);
+            });
         }
 
-        actionButtons.Add(Button(l10n("location.detail.actions.back")).OnClick(() =>
+        Button("Snack Manager").OnClick(() =>
+        {
+            Console.Clear();
+            var snacksView = _serviceProvider.GetRequiredService<SnacksView>();
+            snacksView.SetView(_user, _location.Id);
+            _appLoop.Display(snacksView);
+        });
+
+        Button("Reports").OnClick(() =>
+        {
+            Console.Clear();
+            var reportsView = _serviceProvider.GetRequiredService<ReportsView>();
+            reportsView.SetView(_user, _location);
+            _appLoop.Display(reportsView);
+        });
+
+        Divider();
+        Message(() => _statusMessage);
+        Button("Back").OnClick(() =>
         {
             Console.Clear();
             var locationView = _serviceProvider.GetRequiredService<LocationView>();
             locationView.SetUser(_user);
             _appLoop.Display(locationView);
-        }));
-
-        Navigation(actionButtons.ToArray());
-        Divider();
-        Message(() => _statusMessage);
+        });
     }
 }

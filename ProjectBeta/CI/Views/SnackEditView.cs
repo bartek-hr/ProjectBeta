@@ -37,13 +37,13 @@ public sealed class SnackEditView : Form
     {
 
         var table = new Table(
-            l10n("Id"),
-            l10n("LocationId"),
-            l10n("Name"),
-            l10n("Quantity"),
-            l10n("Price")
+            "ID",
+            "Location ID",
+            "Name",
+            "Quantity",
+            "Price"
         )
-        .EmptyMessage(l10n("snacks.edit.empty"));
+        .EmptyMessage("No snack found.");
 
         table.AddRow(
             _snack.Id,
@@ -57,11 +57,11 @@ public sealed class SnackEditView : Form
         Add(table);
         Divider();
         Message(() => _statusMessage);
-        var backButton = Button(l10n("Back")).OnClick(NavigateToMain);
+        var backButton = Button("Back").OnClick(NavigateToMain);
         backButton.Hidden(() => _confirmingDelete);
         Navigation(
-            Button(l10n("Delete")).OnClick(OnDelete),
-            Button(l10n("Restock")).OnClick(OnRestock),
+            Button("Delete").OnClick(OnDelete),
+            Button("Restock").OnClick(OnRestock),
             backButton);
     }
 

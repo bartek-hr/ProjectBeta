@@ -40,19 +40,19 @@ public sealed class ReportsView : Form
     private void InitializeForm()
     {
         var table = new Table(
-            l10n("Auditorium"),
-            l10n("TotalPrice"),
-            l10n("Total from Seats"),
-            l10n("Total from Snacks"),
-            l10n("Snacks Sold"),
-            l10n("Seats Reserved")
+            "Auditorium",
+            "Total Price",
+            "Total from Seats",
+            "Total from Snacks",
+            "Snacks Sold",
+            "Seats Reserved"
         );
         int ReservedSeatsQuantityCinema = 0;
         int SnacksSoldCinema = 0;
         decimal totalPriceCinema = 0m;
         decimal totalPriceSeatsCinema = 0m;
         decimal totalPriceSnacksCinema = 0m;
-        Label(l10n($"Cinema - {_location.Name}"));
+        Heading($"Cinema - {_location.Name}");
         Divider();
         foreach (Auditorium auditorium in _location.Auditoriums) {
 
@@ -100,10 +100,10 @@ public sealed class ReportsView : Form
         }
 
         Divider();
-        Label(l10n($"Total from Snacks - {totalPriceSnacksCinema}"));
-        Label(l10n($"Snacks sold - {SnacksSoldCinema}"));
-        Label(l10n($"Total Price seats - {totalPriceSeatsCinema}"));
-        Label(l10n($"Total Price Cinema - {totalPriceCinema}"));
+        Label($"Total from Snacks: €{totalPriceSnacksCinema:F2}");
+        Label($"Snacks sold: {SnacksSoldCinema}");
+        Label($"Total Price Seats: €{totalPriceSeatsCinema:F2}");
+        Label($"Total Price Cinema: €{totalPriceCinema:F2}");
 
 
 
@@ -112,8 +112,7 @@ public sealed class ReportsView : Form
         Add(table);
         Divider();
         Message(() => _statusMessage);
-        var backButton = Button(l10n("Back")).OnClick(NavigateToMain);
-        backButton.Hidden(() => _confirmingDelete);
+        Navigation(Button("Back").OnClick(NavigateToMain));
 }
 
 

@@ -140,6 +140,7 @@ reservations:
       no_snacks: None
     actions:
       save: Save
+      snacks: Snacks
       back: Back
   edit:
     heading: Reservation Details
@@ -151,6 +152,7 @@ reservations:
       seats: Seats
       date: Date
       paid: Paid
+      snacks: Snacks
       total_price: Total Price
     actions:
       delete: Delete
@@ -595,6 +597,13 @@ location:
     actions:
       back: Back
 receipts:
+  heading: Receipt
+  cinema: Cinema 1
+  seats_total: Seats Total
+  total: Total
+  thank_you: "Thank You!"
+  actions:
+    back: Back
   errors:
     not_found: Receipt not found.
     total_positive: Total price must be greater than 0.
