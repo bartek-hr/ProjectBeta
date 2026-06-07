@@ -106,8 +106,17 @@ public sealed class LocationView : Form
     private void OnLocationSelected(Location location)
     {
         Console.Clear();
-        var detailView = _serviceProvider.GetRequiredService<LocationDetailView>();
-        detailView.SetView(_user, location);
-        _appLoop.Display(detailView);
+        if (_user.IsAdmin())
+        {
+            var detailView = _serviceProvider.GetRequiredService<LocationDetailView>();
+            detailView.SetView(_user, location);
+            _appLoop.Display(detailView);
+        }
+        else
+        {
+            var moviesView = _serviceProvider.GetRequiredService<MoviesView>();
+            moviesView.SetUser(_user, location.Id);
+            _appLoop.Display(moviesView);
+        }
     }
 }
