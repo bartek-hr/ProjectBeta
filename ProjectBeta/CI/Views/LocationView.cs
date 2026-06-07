@@ -38,16 +38,16 @@ public sealed class LocationView : Form
 
     private void InitializeForm()
     {
-        Heading(l10n("location.list.heading"));
+        Heading("Locations");
 
-        var searchInput = TextInput(l10n("location.list.search_placeholder"));
+        var searchInput = TextInput("Search by name");
         Navigation(
-            Button(l10n("location.list.actions.search")).OnClick(() =>
+            Button("Search").OnClick(() =>
             {
                 _searchQuery = searchInput.Value ?? string.Empty;
                 RefreshView();
             }),
-            Button(l10n("location.list.actions.clear")).OnClick(() =>
+            Button("Clear").OnClick(() =>
             {
                 _searchQuery = string.Empty;
                 RefreshView();
