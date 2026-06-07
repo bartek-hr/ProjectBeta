@@ -57,12 +57,7 @@ public sealed class LocationView : Form
 
         var locations = _locationLogic.Search(_searchQuery);
 
-        var table = new Table<Location>(
-            l10n("location.list.table.id"),
-            l10n("location.list.table.name"),
-            l10n("location.list.table.city"),
-            l10n("location.list.table.address"),
-            l10n("location.list.table.capacity"))
+        var table = new Table<Location>("ID", "Name", "City", "Address", "Capacity")
             .EmptyMessage(l10n("location.list.empty"))
             .OnSelect(OnLocationSelected);
 

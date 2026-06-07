@@ -54,23 +54,35 @@ public sealed class LocationEditView : Form
         Message(() => GetError("address"));
 
         Divider();
-        Heading("Auditoriums to add");
+
+        int currentSmall = 0, currentMedium = 0, currentLarge = 0;
+        if (_existing != null)
+        {
+            var existingAuditoriums = _auditoriumLogic.GetByLocationId(_existing.Id);
+            currentSmall  = existingAuditoriums.Count(a => a.Name.StartsWith("Small "));
+            currentMedium = existingAuditoriums.Count(a => a.Name.StartsWith("Medium "));
+            currentLarge  = existingAuditoriums.Count(a => a.Name.StartsWith("Large "));
+        }
+
+        Heading(_existing == null ? "Auditoriums to add" : "Number of auditoriums");
         Label("Small  (150 seats)");
-        var smallInput = TextInput("Number of small auditoriums").Key("small").Default("0");
+        var smallInput = TextInput("Number of small auditoriums").Key("small").Default(currentSmall.ToString());
         Message(() => GetError("small"));
 
         Label("Medium (300 seats)");
-        var mediumInput = TextInput("Number of medium auditoriums").Key("medium").Default("0");
+        var mediumInput = TextInput("Number of medium auditoriums").Key("medium").Default(currentMedium.ToString());
         Message(() => GetError("medium"));
 
         Label("Large  (500 seats)");
-        var largeInput = TextInput("Number of large auditoriums").Key("large").Default("0");
+        var largeInput = TextInput("Number of large auditoriums").Key("large").Default(currentLarge.ToString());
         Message(() => GetError("large"));
 
         Divider();
         Message(() => _statusMessage);
-        Button("Save").OnClick(OnSave);
-        Button("Cancel").OnClick(NavigateBack);
+        Navigation(
+            Button("Save").OnClick(OnSave),
+            Button("Cancel").OnClick(NavigateBack)
+        );
     }
 
     private string? GetError(string key)
@@ -126,9 +138,14 @@ public sealed class LocationEditView : Form
                 _locationLogic.UpdateAddress(locationId, address, _user);
             }
 
-            AddAuditoriums(locationId, "Small", 150, smallCount);
-            AddAuditoriums(locationId, "Medium", 300, mediumCount);
-            AddAuditoriums(locationId, "Large", 500, largeCount);
+            var existingAuditoriums = _auditoriumLogic.GetByLocationId(locationId);
+            int existingSmall  = existingAuditoriums.Count(a => a.Name.StartsWith("Small "));
+            int existingMedium = existingAuditoriums.Count(a => a.Name.StartsWith("Medium "));
+            int existingLarge  = existingAuditoriums.Count(a => a.Name.StartsWith("Large "));
+
+            AddAuditoriums(locationId, "Small",  150, Math.Max(0, smallCount  - existingSmall));
+            AddAuditoriums(locationId, "Medium", 300, Math.Max(0, mediumCount - existingMedium));
+            AddAuditoriums(locationId, "Large",  500, Math.Max(0, largeCount  - existingLarge));
 
             NavigateBack();
         }
