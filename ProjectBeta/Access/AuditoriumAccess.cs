@@ -61,4 +61,18 @@ public class AuditoriumAccess
         auditorium.LocationId = newLocationId;
         _context.SaveChanges();
     }
+
+    public void Add(Auditorium auditorium)
+    {
+        _context.Auditoriums.Add(auditorium);
+        _context.SaveChanges();
+    }
+
+    public void Delete(int id)
+    {
+        var auditorium = _context.Auditoriums.Find(id);
+        if (auditorium == null) return;
+        _context.Auditoriums.Remove(auditorium);
+        _context.SaveChanges();
+    }
 }

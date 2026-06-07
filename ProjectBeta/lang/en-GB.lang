@@ -79,11 +79,13 @@ main:
       reservation_history: Reservation History
       upcoming_reservations: Upcoming Reservations
       account_details: Account Details
+      my_subscription: My Subscription
       reports: Reports (TBD)
       users: Users
       cinemas: Cinemas
       seat_prices: Seat Prices
       discounts: Discounts
+      locations: Locations
       subscriptions: Subscriptions
       my_subscription: My Subscription
       back: Back
@@ -222,6 +224,11 @@ account:
       message: Are you sure you want to delete your account? This cannot be undone.
       confirm: Yes, Delete
       cancel: No, Cancel
+    subscription:
+      label: "Subscription"
+      active: "Active — :type"
+      inactive: No active subscription
+      unknown_type: Unknown
     status:
       updated: Account updated successfully.
       deleted: Account deleted. Redirecting to Login.
@@ -527,6 +534,22 @@ snacks:
     quantity_non_negative: Quantity cannot be negative.
     not_found: Snack not found.
 booking_snacks:
+  heading: Select Snacks
+  search_placeholder: Search by name
+  quantity_label: "How many :name?"
+  quantity_input_label: Quantity
+  empty: No snacks available.
+  table:
+    name: Name
+    price: Price
+    selected: Selected
+  actions:
+    search: Search
+    clear: Clear
+    add: Add
+    cancel_selection: Cancel
+    done: Done
+    back: Back
   errors:
     add_unauthorized: Only admins can add booking snacks.
     update_unauthorized: Only admins can update booking snacks.
@@ -534,6 +557,45 @@ booking_snacks:
     quantity_positive: Booked quantity must be greater than zero.
     snack_not_found: Snack not found.
     not_found: Booking snack not found.
+location:
+  detail:
+    city: "City: :city"
+    address: "Address: :address"
+    capacity: "Total capacity: :capacity"
+    actions:
+      movies: Movies
+      auditoriums: Auditoriums
+      snack_manager: Snack Manager
+      reports: Reports
+      back: Back
+    status:
+      reports_tbd: "Reports — coming soon."
+  list:
+    heading: Locations
+    search_placeholder: Search by name
+    empty: No locations found.
+    table:
+      id: ID
+      name: Name
+      city: City
+      address: Address
+      capacity: Capacity
+    actions:
+      search: Search
+      clear: Clear
+      add: Add Location
+      back: Back
+  picker:
+    heading: Select a Location
+    empty: No locations available.
+    table:
+      id: ID
+      name: Name
+      city: City
+      address: Address
+      capacity: Capacity
+    actions:
+      back: Back
 receipts:
   heading: Receipt
   cinema: Cinema 1

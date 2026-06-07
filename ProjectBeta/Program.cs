@@ -71,6 +71,8 @@ namespace ProjectBeta
             services.AddTransient<LocationPickerView>();
             services.AddTransient<LocationDetailView>();
             services.AddTransient<LocationEditView>();
+            services.AddTransient<AuditoriumsView>();
+            services.AddTransient<AuditoriumEditView>();
             services.AddTransient<AddAuditoriumsView>();
             services.AddTransient<SubscriptionView>();
             services.AddTransient<UserSubscriptionView>();

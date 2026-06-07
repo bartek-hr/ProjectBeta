@@ -12,6 +12,7 @@ public sealed class ReservationView : Form
 {
     private readonly BookingLogic _bookingLogic;
     private readonly PricingLogic _pricingLogic;
+    private readonly LocationLogic _locationLogic;
     private readonly SubscriptionLogic _subscriptionLogic;
     private readonly AppLoop _appLoop;
     private readonly IServiceProvider _serviceProvider;
@@ -105,7 +106,7 @@ public sealed class ReservationView : Form
         Divider();
         Add(new Message(() => BuildPricingSummary(_ageInputs), Style.Default));
         Message(() => _statusMessage);
-        var backButton = Button(l10n("reservations.create.actions.back")).OnClick(NavigateToMain);
+        var backButton = Button(l10n("reservations.create.actions.back")).OnClick(NavigateToLocation);
         backButton.Hidden(() => _confirmingDelete);
 
         Navigation(
@@ -187,7 +188,7 @@ public sealed class ReservationView : Form
             startDateTime,
             pricing.Discounts.Select(d => d.Id)
         );
-        NavigateToMain();
+        NavigateToLocation();
     }
     private void OnSnacks(Form form)
     {
@@ -226,11 +227,21 @@ public sealed class ReservationView : Form
         _appLoop.Display(mainView);
     }
 
-    private void NavigateToMain()
+    private void NavigateToLocation()
     {
         Console.Clear();
-        var mainView = _serviceProvider.GetRequiredService<MainView>();
-        mainView.SetUser(_user);
-        _appLoop.Display(mainView);
+        var location = _locationLogic.GetById(_locationId);
+        if (location != null)
+        {
+            var detailView = _serviceProvider.GetRequiredService<LocationDetailView>();
+            detailView.SetView(_user, location);
+            _appLoop.Display(detailView);
+        }
+        else
+        {
+            var mainView = _serviceProvider.GetRequiredService<MainView>();
+            mainView.SetUser(_user);
+            _appLoop.Display(mainView);
+        }
     }
 }
