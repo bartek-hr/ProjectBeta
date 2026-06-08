@@ -1,13 +1,16 @@
 using Microsoft.Extensions.DependencyInjection;
+using ProjectBeta.Access;
 using ProjectBeta.Logic;
 using ProjectBeta.Model;
 using ProjectBeta.CI.Components;
+using ProjectBeta.CI.Rendering;
 
 namespace ProjectBeta.CI.Views;
 
 public sealed class SubscriptionView : Form
 {
     private readonly SubscriptionLogic _subscriptionLogic;
+    private readonly SeatPriceAccess _seatPriceAccess;
     private readonly IServiceProvider _serviceProvider;
     private readonly AppLoop _appLoop;
     private User _user = null!;
@@ -24,9 +27,10 @@ public sealed class SubscriptionView : Form
     private static int? OptionToDayOfWeek(string? option) =>
         option == null || option == "None" ? null : (int)Enum.Parse<DayOfWeek>(option);
 
-    public SubscriptionView(SubscriptionLogic subscriptionLogic, IServiceProvider serviceProvider, AppLoop appLoop)
+    public SubscriptionView(SubscriptionLogic subscriptionLogic, SeatPriceAccess seatPriceAccess, IServiceProvider serviceProvider, AppLoop appLoop)
     {
         _subscriptionLogic = subscriptionLogic;
+        _seatPriceAccess = seatPriceAccess;
         _serviceProvider = serviceProvider;
         _appLoop = appLoop;
     }
@@ -138,15 +142,26 @@ public sealed class SubscriptionView : Form
 
         var nameInput = TextInput(l10n("admin.subscriptions.fields.name.label")).Key("name");
         var priceInput = NumberInput(l10n("admin.subscriptions.fields.price.label")).Min(0).Step(0.01).Precision(2).Default(0);
-        var seatPriceIdInput = NumberInput(l10n("admin.subscriptions.fields.seat_type_id.label")).Min(1).Default(1);
+        Label(l10n("admin.subscriptions.fields.seat_type.hint"), Style.Warning);
+        var seatTypeGroup = RadioGroup<int>(l10n("admin.subscriptions.fields.seat_type.label")).Required();
+        var seatTypes = _seatPriceAccess.GetAll();
+        foreach (var seatType in seatTypes)
+        {
+            seatTypeGroup.AddOption(seatType.Id, seatType.Name);
+        }
+        if (seatTypes.Count > 0)
+        {
+            seatTypeGroup.Default(seatTypes[0].Id);
+        }
+        Label(l10n("admin.subscriptions.fields.connect_discount.hint"), Style.Warning);
         var sharedAllowedInput = Checkbox(l10n("admin.subscriptions.fields.is_connect_allowed.label"));
-        var sharedDiscountInput = NumberInput(l10n("admin.subscriptions.fields.connect_discount.label")).Min(0).Max(1).Step(0.01).Precision(2).Default(0);
+        var sharedDiscountInput = NumberInput(l10n("admin.subscriptions.fields.connect_discount.label")).Min(0).Max(100).Step(1).Precision(0).Default(0);
         var effectiveFromInput = TextInput(l10n("admin.subscriptions.fields.effective_from.label")).Key("effective_from").Default(DateTime.UtcNow.ToString("yyyy-MM-dd"));
         var effectiveUntilInput = TextInput(l10n("admin.subscriptions.fields.effective_until.label")).Key("effective_until");
 
-        var dowGroup = RadioGroup(l10n("admin.subscriptions.fields.applicable_day.label"));
-        foreach (var opt in DayOptions) dowGroup.AddOption(opt);
-        dowGroup.Default(DayOptions[0]);
+        var dayOfWeekGroup = RadioGroup(l10n("admin.subscriptions.fields.applicable_day.label"));
+        foreach (var opt in DayOptions) dayOfWeekGroup.AddOption(opt);
+        dayOfWeekGroup.Default(DayOptions[0]);
 
         Navigation(
             Button(l10n("admin.subscriptions.actions.add")).OnClick(_ =>
@@ -176,8 +191,8 @@ public sealed class SubscriptionView : Form
                 {
                     Name = nameInput.Value!.Trim(),
                     Price = (decimal)(priceInput.Value ?? 0),
-                    ApplicableDayOfWeek = OptionToDayOfWeek(dowGroup.Value),
-                    SeatPriceId = (int)(seatPriceIdInput.Value ?? 1),
+                    ApplicableDayOfWeek = OptionToDayOfWeek(dayOfWeekGroup.Value),
+                    SeatPriceId = seatTypeGroup.HasValue ? seatTypeGroup.Value : seatTypes.FirstOrDefault()?.Id ?? 1,
                     IsConnectAllowed = sharedAllowedInput.Value,
                     ConnectDiscount = (decimal)(sharedDiscountInput.Value ?? 0),
                     IsActive = true,
@@ -193,19 +208,29 @@ public sealed class SubscriptionView : Form
 
     private void RenderDetailForm(Subscription s)
     {
-        Label(s.Name);
+        Label(s.Name, Style.Warning);
 
         var nameInput = TextInput(l10n("admin.subscriptions.fields.name.label")).Key("name").Default(s.Name);
         var priceInput = NumberInput(l10n("admin.subscriptions.fields.price.label")).Min(0).Step(0.01).Precision(2).Default((double)s.Price);
-        var seatPriceIdInput = NumberInput(l10n("admin.subscriptions.fields.seat_type_id.label")).Min(1).Default(s.SeatPriceId);
+        Label(l10n("admin.subscriptions.fields.seat_type.hint"), Style.Warning);
+        var seatTypeGroup = RadioGroup<int>(l10n("admin.subscriptions.fields.seat_type.label")).Required();
+        var seatTypes = _seatPriceAccess.GetAll();
+        foreach (var seatType in seatTypes)
+        {
+            seatTypeGroup.AddOption(seatType.Id, seatType.Name);
+        }
+        seatTypeGroup.Default(s.SeatPriceId);
+        Label(l10n("admin.subscriptions.fields.connect_discount.hint"), Style.Warning);
         var sharedAllowedInput = Checkbox(l10n("admin.subscriptions.fields.is_connect_allowed.label")).Default(s.IsConnectAllowed);
-        var sharedDiscountInput = NumberInput(l10n("admin.subscriptions.fields.connect_discount.label")).Min(0).Max(1).Step(0.01).Precision(2).Default((double)s.ConnectDiscount);
+        var sharedDiscountInput = NumberInput(l10n("admin.subscriptions.fields.connect_discount.label")).Min(0).Max(100).Step(1).Precision(0).Default((double)s.ConnectDiscount);
         var effectiveFromInput = TextInput(l10n("admin.subscriptions.fields.effective_from.label")).Key("effective_from").Default(s.EffectiveFrom.ToString("yyyy-MM-dd"));
         var effectiveUntilInput = TextInput(l10n("admin.subscriptions.fields.effective_until.label")).Key("effective_until").Default(s.EffectiveUntil?.ToString("yyyy-MM-dd") ?? "");
-
-        var dowGroup = RadioGroup(l10n("admin.subscriptions.fields.applicable_day.label"));
-        foreach (var opt in DayOptions) dowGroup.AddOption(opt);
-        dowGroup.Default(DayOfWeekToOption(s.ApplicableDayOfWeek));
+        var dayOfWeek = RadioGroup(l10n("admin.subscriptions.fields.applicable_day.label"));
+        foreach (var opt in DayOptions)
+        {
+            dayOfWeek.AddOption(opt);
+        }
+        dayOfWeek.Default(DayOfWeekToOption(s.ApplicableDayOfWeek));
 
         Navigation(
             Button(l10n("admin.subscriptions.actions.save", new Dictionary<string, string> { ["name"] = s.Name })).OnClick(_ =>
@@ -233,8 +258,8 @@ public sealed class SubscriptionView : Form
 
                 s.Name = nameInput.Value!.Trim();
                 s.Price = (decimal)(priceInput.Value ?? 0);
-                s.ApplicableDayOfWeek = OptionToDayOfWeek(dowGroup.Value);
-                s.SeatPriceId = (int)(seatPriceIdInput.Value ?? 1);
+                s.ApplicableDayOfWeek = OptionToDayOfWeek(dayOfWeek.Value);
+                s.SeatPriceId = seatTypeGroup.HasValue ? seatTypeGroup.Value : s.SeatPriceId;
                 s.IsConnectAllowed = sharedAllowedInput.Value;
                 s.ConnectDiscount = (decimal)(sharedDiscountInput.Value ?? 0);
                 s.EffectiveFrom = effectiveFrom;

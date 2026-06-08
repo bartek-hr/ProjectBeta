@@ -248,7 +248,7 @@ public class AppDbContext : DbContext
                 ApplicableDayOfWeek = (int)DayOfWeek.Monday,
                 SeatPriceId = 1,
                 IsConnectAllowed = true,
-                ConnectDiscount = 0.10m,
+                ConnectDiscount = 10m,
                 IsActive = true,
                 EffectiveFrom = DateTime.UtcNow
             });
@@ -270,6 +270,18 @@ public class AppDbContext : DbContext
                 });
                 SaveChanges();
             }
+        }
+
+        var legacyDiscountSubscriptions = Subscriptions
+            .Where(s => s.ConnectDiscount > 0m && s.ConnectDiscount < 1m)
+            .ToList();
+        if (legacyDiscountSubscriptions.Count > 0)
+        {
+            foreach (var sub in legacyDiscountSubscriptions)
+            {
+                sub.ConnectDiscount *= 100m;
+            }
+            SaveChanges();
         }
 
         var staleAuditoriums = Auditoriums.Where(a =>

@@ -55,6 +55,9 @@ public static class UI
     public static RadioGroup RadioGroup(string label)
         => new(label);
 
+    public static RadioGroup<TValue> RadioGroup<TValue>(string label) where TValue : notnull
+        => new(label);
+
     public static DateInput DateInput(string label)
         => new(label);
 }

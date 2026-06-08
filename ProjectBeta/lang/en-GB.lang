@@ -338,7 +338,7 @@ admin:
     inactive_badge: INACTIVE
     fields:
       percentage:
-        label: "Percentage (%)"
+        label: Percentage (%)
       effective_from:
         label: Effective from (YYYY-MM-DD)
       effective_until:
@@ -381,16 +381,17 @@ admin:
         label: Name
       price:
         label: Price
-      seat_type_id:
-        label: Seat Type Id
       seat_type:
         label: Seat Type
+        hint: Select the seat type on which this subscription will be applied.
       applicable_day:
         label: Applicable Day
       is_connect_allowed:
         label: Connect Allowed
+        hint: Press Spacebar to select Connect Allowed.
       connect_discount:
-        label: Connect Discount
+        label: Connect Discount Percentage (%)
+        hint: Press Spacebar to select Connect Allowed. This percentage will be deducted from the total amount.
       effective_from:
         label: Effective from (YYYY-MM-DD)
       effective_until:
@@ -651,7 +652,7 @@ user:
     day_label: Day
     any_day: Any day
     connected_with: Connected with
-    connected_discount: Connected discount
+    connected_discount: Connected discount percentage
     connect:
       heading: Connect with a friend
       instructions: "Enter the email of another user with the same subscription to activate the connected discount."

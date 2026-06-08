@@ -338,7 +338,7 @@ admin:
     inactive_badge: INACTIEF
     fields:
       percentage:
-        label: "Percentage (%)"
+        label: Percentage (%)
       effective_from:
         label: Geldig vanaf (JJJJ-MM-DD)
       effective_until:
@@ -381,16 +381,17 @@ admin:
         label: Naam
       price:
         label: Prijs
-      seat_type_id:
-        label: Stoeltype-id
       seat_type:
         label: Stoeltype
+        hint: Selecteer het stoeltype waarop dit abonnement wordt toegepast.
       applicable_day:
         label: Geldige dag
       is_connect_allowed:
         label: Verbinden toegestaan
+        hint: Druk op de spatiebalk om Verbinden toegestaan te selecteren.
       connect_discount:
-        label: Verbindingskorting
+        label: Verbindingskorting (%)
+        hint: Druk op de spatiebalk om Verbinden toegestaan te selecteren. Dit percentage wordt van het totale bedrag afgetrokken.
       effective_from:
         label: Geldig vanaf (JJJJ-MM-DD)
       effective_until:
@@ -651,7 +652,7 @@ user:
     day_label: Dag
     any_day: Elke dag
     connected_with: Verbonden met
-    connected_discount: Verbonden korting
+    connected_discount: Verbonden kortingspercentage
     connect:
       heading: Verbinden met een vriend
       instructions: "Voer het e-mailadres in van een andere gebruiker met hetzelfde abonnement om de verbonden korting te activeren."

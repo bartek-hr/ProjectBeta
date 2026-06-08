@@ -48,15 +48,15 @@ public sealed class UserSubscriptionView : Form
                 ? System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetDayName((DayOfWeek)activeSub.ApplicableDayOfWeek.Value)
                 : l10n("user.subscriptions.any_day");
 
-            Label(l10n("user.subscriptions.current_label"));
-            Label($"  {activeSub.Name} — {l10n("user.subscriptions.price_label")}: {activeSub.Price:C}, {l10n("user.subscriptions.day_label")}: {day}, {l10n("user.subscriptions.seat_label")}: {activeSub.SeatPrice?.Name}");
+            Label(l10n("user.subscriptions.current_label"), Style.Default);
+            Label($"  {activeSub.Name} — {l10n("user.subscriptions.price_label")}: {activeSub.Price:C}, {l10n("user.subscriptions.day_label")}: {day}, {l10n("user.subscriptions.seat_label")}: {activeSub.SeatPrice?.Name}", Style.Default);
 
             if (myUserSub.IsConnected && myUserSub.ConnectedWithUserId.HasValue)
             {
                 var connectedEmail = _subscriptionLogic.GetUserEmail(myUserSub.ConnectedWithUserId.Value);
-                var discountedPrice = activeSub.Price * (1 - activeSub.ConnectDiscount);
-                Label($"  {l10n("user.subscriptions.connected_with")}: {connectedEmail}");
-                Label($"  {l10n("user.subscriptions.connected_discount")}: {activeSub.ConnectDiscount * 100:0}% ({activeSub.Price:C} → {discountedPrice:C})");
+                var discountedPrice = activeSub.Price * (1 - (activeSub.ConnectDiscount / 100m));
+                Label($"  {l10n("user.subscriptions.connected_with")}: {connectedEmail}", Style.Default);
+                Label($"  {l10n("user.subscriptions.connected_discount")}: {activeSub.ConnectDiscount:0}% ({activeSub.Price:C} → {discountedPrice:C})", Style.Default);
             }
             else if (activeSub.IsConnectAllowed)
             {
@@ -144,7 +144,7 @@ public sealed class UserSubscriptionView : Form
 
                         if (selected.IsConnectAllowed && selected.ConnectDiscount > 0)
                         {
-                            var discountPct = (int)(selected.ConnectDiscount * 100);
+                            var discountPct = (int)selected.ConnectDiscount;
                             Label(l10n("user.subscriptions.connect.discount_info",
                                 new Dictionary<string, string> { ["discount"] = discountPct.ToString() }), Style.Primary);
                             var connectEmailInput = TextInput(l10n("user.subscriptions.connect.email_label"))
@@ -160,7 +160,7 @@ public sealed class UserSubscriptionView : Form
                             );
                             if (discountApplied)
                                 Label(l10n("user.subscriptions.connect.discount_applied",
-                                    new Dictionary<string, string> { ["discount"] = discountPct.ToString() }));
+                                    new Dictionary<string, string> { ["discount"] = discountPct.ToString() }), Style.Warning);
                             else if (friendCheck == SubscriptionLogic.FriendCheckResult.NotFound && !string.IsNullOrWhiteSpace(_connectEmail))
                                 Label(l10n("user.subscriptions.errors.user_not_found"), Style.Error);
                             else if (friendCheck == SubscriptionLogic.FriendCheckResult.NoSubscription)
@@ -168,7 +168,7 @@ public sealed class UserSubscriptionView : Form
                         }
 
                         var effectivePrice = discountApplied
-                            ? selected.Price * (1 - selected.ConnectDiscount)
+                            ? selected.Price * (1 - (selected.ConnectDiscount / 100m))
                             : selected.Price;
 
                         Navigation(
