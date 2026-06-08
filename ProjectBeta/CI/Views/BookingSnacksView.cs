@@ -1,4 +1,3 @@
-using System.Reflection.Metadata;
 using Microsoft.Extensions.DependencyInjection;
 using ProjectBeta.CI;
 using ProjectBeta.CI.Components;
@@ -17,7 +16,7 @@ public sealed class BookingSnacksView : Form
     private int _locationId;
     private Booking _booking;
     private Dictionary<string, int> _chosenSnacksCount = new();
-    private List<Snack> _chosenSnacks = new();
+    private List<(Snack snack, NumberInput input)> _snackInputs = new();
     private string _searchQuery = string.Empty;
     private string? _statusMessage;
     private bool _confirmingDelete;
@@ -43,52 +42,65 @@ public sealed class BookingSnacksView : Form
 
     private void InitializeForm()
     {
+        CaptureSnackCounts();
         ClearChildren();
-        List<Snack> Snacks = _snackLogic.Search(_locationId, _searchQuery);
+        List<Snack> snacks = _snackLogic.Search(_locationId, _searchQuery);
         Heading("Select Snacks");
 
         var searchInput = TextInput("Search by name");
         Navigation(
             Button("Search").OnClick(() =>
             {
+                CaptureSnackCounts();
                 _searchQuery = searchInput.Value ?? string.Empty;
                 InitializeForm();
                 _appLoop.Display(this);
             }),
             Button("Clear").OnClick(() =>
             {
+                CaptureSnackCounts();
                 _searchQuery = string.Empty;
                 InitializeForm();
                 _appLoop.Display(this);
             }));
 
         Divider();
-        var table = new Table<Snack>(
-            "Name",
-            "Price",
-            "Selected"
-        )
-        .EmptyMessage("No snacks available.")
-        .OnSelect(OnSelectedSnack);
+        _snackInputs = new List<(Snack, NumberInput)>();
 
-        foreach (var snack in Snacks)
+        if (snacks.Count == 0)
         {
-
-            table.AddRow(
-                snack,
-                snack.Name,
-                snack.Price,
-                _chosenSnacksCount.GetValueOrDefault(snack.Name, 0)
-            );
-
+            Label("No snacks available.");
+        }
+        else
+        {
+            foreach (var snack in snacks)
+            {
+                Label($"{snack.Name}  —  €{snack.Price:0.00}");
+                var currentQty = _chosenSnacksCount.GetValueOrDefault(snack.Name, 0);
+                var input = NumberInput($"Quantity ({snack.Name})")
+                    .Min(0)
+                    .Default(currentQty);
+                _snackInputs.Add((snack, input));
+            }
         }
 
-        Add(table);
         Divider();
         Message(() => _statusMessage);
         var doneButton = Button("Done").OnClick(SaveBookingSnacks);
         var backButton = Button("Back").OnClick(NavigateToMain);
         Navigation(doneButton, backButton);
+    }
+
+    private void CaptureSnackCounts()
+    {
+        foreach (var (snack, input) in _snackInputs)
+        {
+            var qty = (int)(input.Value ?? 0);
+            if (qty > 0)
+                _chosenSnacksCount[snack.Name] = qty;
+            else
+                _chosenSnacksCount.Remove(snack.Name);
+        }
     }
 
     private void NavigateToMain()
@@ -100,35 +112,18 @@ public sealed class BookingSnacksView : Form
     }
     private void SaveBookingSnacks()
     {
-        foreach (var chosenSnack in _chosenSnacks)
+        CaptureSnackCounts();
+        foreach (var (snack, _) in _snackInputs)
         {
-            BookingSnack SnackToAdd = new BookingSnack
+            if (!_chosenSnacksCount.TryGetValue(snack.Name, out var qty) || qty <= 0)
+                continue;
+            _bookingSnackLogic.Add(new BookingSnack
             {
-                SnackId = chosenSnack.Id,
+                SnackId = snack.Id,
                 BookingId = _booking.Id,
-                BookedQuantity = _chosenSnacksCount[chosenSnack.Name]
-            };
-            _bookingSnackLogic.Add(SnackToAdd, _user);
+                BookedQuantity = qty
+            }, _user);
         }
         NavigateToMain();
-    }
-
-    private void OnSelectedSnack(Snack snack)
-    {
-        if (!_chosenSnacksCount.ContainsKey(snack.Name))
-        {
-            _chosenSnacks.Add(snack);
-        }
-        if (_chosenSnacksCount.ContainsKey(snack.Name))
-        {
-            _chosenSnacksCount[snack.Name]++;
-        }
-        else
-        {
-            _chosenSnacksCount[snack.Name] = 1;
-        }
-
-        InitializeForm();
-        _appLoop.Display(this);
     }
 }
