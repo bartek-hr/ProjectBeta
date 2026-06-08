@@ -10,8 +10,6 @@ public class InputText : Component, IValidatable, IValueComponent
     private string _placeholder = string.Empty;
     private bool _isRequired;
     private bool _isMasked;
-    private bool _allSelected;
-    private bool _wasFocused;
     private int? _minLength;
     private int? _maxLength;
     private string? _pattern;
@@ -135,12 +133,6 @@ public class InputText : Component, IValidatable, IValueComponent
 
     public override int Render(ComponentRenderContext context)
     {
-        if (IsFocused && !_wasFocused && !string.IsNullOrEmpty(_value))
-            _allSelected = true;
-        if (!IsFocused)
-            _allSelected = false;
-        _wasFocused = IsFocused;
-
         var buf = context.Buffer;
         var boxWidth = InputBox.GetBoxWidth(context.Width);
         var innerWidth = InputBox.GetInnerWidth(boxWidth);
@@ -161,12 +153,12 @@ public class InputText : Component, IValidatable, IValueComponent
         else if (_isMasked)
         {
             fullText = new string('*', _value.Length);
-            textStyle = _allSelected ? Style.Highlight : Style.Default;
+            textStyle = Style.Default;
         }
         else
         {
             fullText = _value;
-            textStyle = _allSelected ? Style.Highlight : Style.Default;
+            textStyle = Style.Default;
         }
 
         // Viewport: when focused, keep cursor visible by scrolling; when unfocused, show from start
@@ -205,14 +197,6 @@ public class InputText : Component, IValidatable, IValueComponent
 
         if (!char.IsControl(key.KeyChar))
         {
-            if (_allSelected)
-            {
-                Value = key.KeyChar.ToString();
-                _cursorIndex = 1;
-                _allSelected = false;
-                return true;
-            }
-
             if (_maxLength.HasValue && _value.Length >= _maxLength.Value)
                 return false;
 
@@ -223,31 +207,13 @@ public class InputText : Component, IValidatable, IValueComponent
 
         switch (key.Key)
         {
-            case ConsoleKey.Backspace when _allSelected:
-                Value = string.Empty;
-                _cursorIndex = 0;
-                _allSelected = false;
-                return true;
             case ConsoleKey.Backspace when _cursorIndex > 0:
                 var removalIndex = _cursorIndex - 1;
                 Value = Value.Remove(removalIndex, 1);
                 _cursorIndex = removalIndex;
                 return true;
-            case ConsoleKey.Delete when _allSelected:
-                Value = string.Empty;
-                _cursorIndex = 0;
-                _allSelected = false;
-                return true;
             case ConsoleKey.Delete when _cursorIndex < Value.Length:
                 Value = Value.Remove(_cursorIndex, 1);
-                return true;
-            case ConsoleKey.LeftArrow when _allSelected:
-                _allSelected = false;
-                _cursorIndex = 0;
-                return true;
-            case ConsoleKey.RightArrow when _allSelected:
-                _allSelected = false;
-                _cursorIndex = Value.Length;
                 return true;
             case ConsoleKey.LeftArrow when _cursorIndex > 0:
                 _cursorIndex--;
@@ -256,11 +222,9 @@ public class InputText : Component, IValidatable, IValueComponent
                 _cursorIndex++;
                 return true;
             case ConsoleKey.Home when _cursorIndex != 0:
-                _allSelected = false;
                 _cursorIndex = 0;
                 return true;
             case ConsoleKey.End when _cursorIndex != Value.Length:
-                _allSelected = false;
                 _cursorIndex = Value.Length;
                 return true;
             default:
