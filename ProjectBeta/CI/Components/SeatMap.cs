@@ -290,10 +290,7 @@ public sealed class SeatMap : Component
         buf.WriteLine(SelectedSeatCode ?? l10n("components.seat_map.none"), Style.Success.WithBold());
         buf.WriteLine();
 
-        buf.WriteLine("                     ╭────────────────────────────╮", Style.Warning);
-        buf.WriteLine("                     │           SCREEN           │", Style.Warning.WithBold());
-        buf.WriteLine("                     ╰────────────────────────────╯", Style.Warning);
-        buf.WriteLine();
+
 
         RenderSeatNumbers(buf);
 
@@ -302,6 +299,26 @@ public sealed class SeatMap : Component
 
         buf.WriteLine();
 
+        if (Capacity == "150"){
+            buf.WriteLine("   ╭──────────────────────────────────────────────────────────╮", Style.Warning);
+            buf.WriteLine("   │                         SCREEN                           │", Style.Warning.WithBold());
+            buf.WriteLine("   ╰──────────────────────────────────────────────────────────╯", Style.Warning);
+            buf.WriteLine();
+        }
+
+        if (Capacity == "300"){
+            buf.WriteLine("   ╭─────────────────────────────────────────────────────────────────────────────────────────╮", Style.Warning);
+            buf.WriteLine("   │                                           SCREEN                                        │", Style.Warning.WithBold());
+            buf.WriteLine("   ╰─────────────────────────────────────────────────────────────────────────────────────────╯", Style.Warning);
+            buf.WriteLine();
+        }        
+
+        if (Capacity == "500"){
+            buf.WriteLine("   ╭────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮", Style.Warning);
+            buf.WriteLine("   │                                                                          SCREEN                                                                    │", Style.Warning.WithBold());
+            buf.WriteLine("   ╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯", Style.Warning);
+            buf.WriteLine();
+        }
         buf.Write($"{l10n("components.seat_map.labels.legend")} ", Style.Primary);
         WriteSeatChip(buf, "  ", SeatState.Available, false, false, false);
         buf.Write($" {l10n("components.seat_map.legend.available")}   ", Style.Muted);
