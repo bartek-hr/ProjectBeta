@@ -16,6 +16,8 @@ public sealed class SystemConsoleDriver : IConsoleDriver
 
     public void SetCursorPosition(int left, int top)
     {
+        left = Math.Clamp(left, 0, Console.BufferWidth - 1);
+        top = Math.Clamp(top, 0, Console.BufferHeight - 1);
         Console.SetCursorPosition(left, top);
     }
 
