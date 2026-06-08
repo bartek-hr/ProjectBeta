@@ -2,13 +2,15 @@ using ProjectBeta.CI.Rendering;
 
 namespace ProjectBeta.CI.Components;
 
-public sealed class RadioGroup : Component, IValidatable, IValueComponent
+public class RadioGroup<TValue> : Component, IValidatable, IValueComponent
+    where TValue : notnull
 {
-    private string[] _options = [];
+    private readonly List<OptionItem> _options = [];
     private int _highlightedIndex;
     private int _selectedIndex = -1;
     private bool _isRequired;
     private List<string> _errors = [];
+    private sealed record OptionItem(TValue Value, string Label);
 
     public RadioGroup(string label)
     {
@@ -20,39 +22,69 @@ public sealed class RadioGroup : Component, IValidatable, IValueComponent
 
     public string Label { get; }
     public string FieldKey { get; private set; }
-    public string? Value => _selectedIndex >= 0 && _selectedIndex < _options.Length ? _options[_selectedIndex] : null;
+    public bool HasValue => _selectedIndex >= 0 && _selectedIndex < _options.Count;
+    public TValue? Value => _selectedIndex >= 0 && _selectedIndex < _options.Count ? _options[_selectedIndex].Value : default;
     [Obsolete("Use Value instead.")]
-    public string? SelectedValue => Value;
+    public TValue? SelectedValue => Value;
     object? IValueComponent.Value => Value;
 
-    public RadioGroup Key(string fieldKey)
+    public RadioGroup<TValue> Key(string fieldKey)
     {
         FieldKey = string.IsNullOrWhiteSpace(fieldKey) ? Label : fieldKey;
         return this;
     }
 
-    public RadioGroup AddOption(string option)
+    public RadioGroup<TValue> AddOption(TValue option)
     {
-        _options = [.._options, option];
+        return AddOption(option, option.ToString() ?? string.Empty);
+    }
+
+    public RadioGroup<TValue> AddOption(TValue value, string label)
+    {
+        _options.Add(new OptionItem(value, label));
         return this;
     }
 
-    public RadioGroup Required()
+    public RadioGroup<TValue> Required()
     {
         _isRequired = true;
         return this;
     }
 
-    public RadioGroup Default(string option)
+    public RadioGroup<TValue> Default(TValue option)
     {
-        var index = Array.FindIndex(_options, current => string.Equals(current, option, StringComparison.Ordinal));
-        if (index >= 0)
-        {
-            _selectedIndex = index;
-            _highlightedIndex = index;
-        }
+        TrySelectByValue(option);
 
         return this;
+    }
+
+    public RadioGroup<TValue> DefaultByLabel(string label)
+    {
+        TrySelectByLabel(label);
+
+        return this;
+    }
+
+    protected bool TrySelectByValue(TValue option)
+    {
+        var index = _options.FindIndex(current => EqualityComparer<TValue>.Default.Equals(current.Value, option));
+        if (index < 0)
+            return false;
+
+        _selectedIndex = index;
+        _highlightedIndex = index;
+        return true;
+    }
+
+    protected bool TrySelectByLabel(string label)
+    {
+        var index = _options.FindIndex(current => string.Equals(current.Label, label, StringComparison.Ordinal));
+        if (index < 0)
+            return false;
+
+        _selectedIndex = index;
+        _highlightedIndex = index;
+        return true;
     }
 
     public List<string> Validate()
@@ -78,12 +110,12 @@ public sealed class RadioGroup : Component, IValidatable, IValueComponent
         InputBox.WriteTopBorder(buf, Label, boxWidth, borderStyle);
         lines++;
 
-        for (var i = 0; i < _options.Length; i++)
+        for (var i = 0; i < _options.Count; i++)
         {
             var isSelected = i == _selectedIndex;
             var isHighlighted = IsFocused && i == _highlightedIndex;
             var marker = isSelected ? "(\u25cf) " : "(\u25cb) ";
-            var optionText = marker + _options[i];
+            var optionText = marker + _options[i].Label;
 
             Style optionStyle;
             if (isHighlighted)
@@ -97,7 +129,7 @@ public sealed class RadioGroup : Component, IValidatable, IValueComponent
             lines++;
         }
 
-        if (_options.Length == 0)
+        if (_options.Count == 0)
         {
             InputBox.WriteFixedContentRow(buf, boxWidth, borderStyle, l10n("components.radiogroup.no_options"), Style.Muted);
             lines++;
@@ -114,16 +146,16 @@ public sealed class RadioGroup : Component, IValidatable, IValueComponent
 
     public override bool ProcessKey(ConsoleKeyInfo key)
     {
-        if (_options.Length == 0)
+        if (_options.Count == 0)
             return false;
 
         switch (key.Key)
         {
             case ConsoleKey.UpArrow:
-                _highlightedIndex = (_highlightedIndex - 1 + _options.Length) % _options.Length;
+                _highlightedIndex = (_highlightedIndex - 1 + _options.Count) % _options.Count;
                 return true;
             case ConsoleKey.DownArrow:
-                _highlightedIndex = (_highlightedIndex + 1) % _options.Length;
+                _highlightedIndex = (_highlightedIndex + 1) % _options.Count;
                 return true;
             case ConsoleKey.Spacebar or ConsoleKey.Enter:
                 _selectedIndex = _highlightedIndex;
@@ -131,5 +163,20 @@ public sealed class RadioGroup : Component, IValidatable, IValueComponent
             default:
                 return false;
         }
+    }
+}
+
+public sealed class RadioGroup : RadioGroup<string>
+{
+    public RadioGroup(string label) : base(label)
+    {
+    }
+
+    public new RadioGroup Default(string option)
+    {
+        if (!TrySelectByValue(option))
+            TrySelectByLabel(option);
+
+        return this;
     }
 }

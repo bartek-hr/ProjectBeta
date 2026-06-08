@@ -122,6 +122,13 @@ public class Form : RootComponent
         return c;
     }
 
+    protected RadioGroup<TValue> RadioGroup<TValue>(string label) where TValue : notnull
+    {
+        var c = new RadioGroup<TValue>(label);
+        Add(c);
+        return c;
+    }
+
     protected DateInput DateInput(string label)
     {
         var c = new DateInput(label);
