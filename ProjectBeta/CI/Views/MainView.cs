@@ -46,14 +46,7 @@ public sealed class MainView : Form
                 locationView.SetUser(_user);
                 _appLoop.Display(locationView);
             }),
-            Button(l10n("main.dashboard.actions.movies")).OnClick(() =>
-            {
-                Console.Clear();
-                var locationPickerView = _serviceProvider.GetRequiredService<LocationPickerView>();
-                locationPickerView.SetUser(_user);
-                _appLoop.Display(locationPickerView);
-            }),
-            Button(l10n("main.dashboard.actions.reservation_history")).OnClick(() =>
+Button(l10n("main.dashboard.actions.reservation_history")).OnClick(() =>
             {
                 Console.Clear();
                 var reservationHistoryView = _serviceProvider.GetRequiredService<ReservationHistoryView>();
