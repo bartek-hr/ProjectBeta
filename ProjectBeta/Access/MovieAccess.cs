@@ -1,3 +1,4 @@
+using System.Runtime.ExceptionServices;
 using System.Text.Json;
 using ProjectBeta.Data;
 using ProjectBeta.Model;
@@ -6,6 +7,10 @@ namespace ProjectBeta.Access;
 
 public class MovieAccess
 {
+    private const string TrendingMoviesEndpoint = "titles?types=MOVIE&countryCodes=NL&sortBy=SORT_BY_POPULARITY&sortOrder=ASC";
+    private const string TrendingMoviesBackupFileName = "trending-movies-backup.json";
+    private const string ImdbApiHost = "api.imdbapi.dev";
+
     private static readonly object TrendingLock = new();
     private static IReadOnlyList<Movie>? _trendingCache;
 
@@ -36,17 +41,7 @@ public class MovieAccess
                 return _trendingCache;
             }
 
-            var response = _httpClient
-                .GetAsync("titles?types=MOVIE&countryCodes=NL&sortBy=SORT_BY_POPULARITY&sortOrder=ASC")
-                .GetAwaiter()
-                .GetResult();
-
-            response.EnsureSuccessStatusCode();
-
-            var content = response.Content
-                .ReadAsStringAsync()
-                .GetAwaiter()
-                .GetResult();
+            var content = GetTrendingMoviesResponseContent();
 
             var payload = JsonSerializer.Deserialize<TrendingTitlesResponse>(content, _jsonOptions)
                 ?? throw new JsonException("IMDb API returned an empty trending response.");
@@ -59,6 +54,71 @@ public class MovieAccess
 
             return _trendingCache;
         }
+    }
+
+    private string GetTrendingMoviesResponseContent()
+    {
+        try
+        {
+            var response = _httpClient
+                .GetAsync(TrendingMoviesEndpoint)
+                .GetAwaiter()
+                .GetResult();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var exception = new HttpRequestException(
+                    $"IMDb API returned {(int)response.StatusCode} ({response.ReasonPhrase}).",
+                    null,
+                    response.StatusCode);
+                return ReadTrendingMoviesBackupOrThrow(exception);
+            }
+
+            return response.Content
+                .ReadAsStringAsync()
+                .GetAwaiter()
+                .GetResult();
+        }
+        catch (HttpRequestException exception)
+        {
+            return ReadTrendingMoviesBackupOrThrow(exception);
+        }
+        catch (TaskCanceledException exception)
+        {
+            return ReadTrendingMoviesBackupOrThrow(exception);
+        }
+    }
+
+    private string ReadTrendingMoviesBackupOrThrow(Exception originalException)
+    {
+        if (!CanUseTrendingMoviesBackup())
+        {
+            ExceptionDispatchInfo.Capture(originalException).Throw();
+        }
+
+        var backupPath = GetTrendingMoviesBackupPath();
+        if (backupPath == null)
+        {
+            ExceptionDispatchInfo.Capture(originalException).Throw();
+        }
+
+        return File.ReadAllText(backupPath);
+    }
+
+    private bool CanUseTrendingMoviesBackup()
+    {
+        return string.Equals(_httpClient.BaseAddress?.Host, ImdbApiHost, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string? GetTrendingMoviesBackupPath()
+    {
+        var candidatePaths = new[]
+        {
+            Path.Combine(AppContext.BaseDirectory, "Data", TrendingMoviesBackupFileName),
+            Path.Combine(Directory.GetCurrentDirectory(), "Data", TrendingMoviesBackupFileName)
+        };
+
+        return candidatePaths.FirstOrDefault(File.Exists);
     }
 
     public Movie? GetMovieById(string id)
