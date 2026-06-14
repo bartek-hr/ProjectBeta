@@ -57,11 +57,11 @@ public sealed class SnackEditView : Form
         Add(table);
         Divider();
         Message(() => _statusMessage);
-        var backButton = Button("Back").OnClick(NavigateToMain);
+        var backButton = Button(l10n("snacks.editor.actions.back")).OnClick(NavigateToMain);
         backButton.Hidden(() => _confirmingDelete);
         Navigation(
-            Button("Delete").OnClick(OnDelete),
-            Button("Restock").OnClick(OnRestock),
+            Button(l10n("snacks.editor.actions.delete")).OnClick(OnDelete),
+            Button(l10n("snacks.editor.actions.restock")).OnClick(OnRestock),
             backButton);
     }
 

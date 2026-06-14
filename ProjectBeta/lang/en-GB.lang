@@ -579,6 +579,40 @@ legacy:
       empty: No users found.
       item: - :username (:role)
 snacks:
+  list:
+    heading: Snack Manager
+    search_placeholder: Search by name
+    empty: No snacks found.
+    table:
+      id: ID
+      name: Name
+      price: Price
+      quantity: Quantity
+      location_id: Location ID
+    actions:
+      search: Search
+      clear: Clear
+      add: Add Snack
+      back: Back
+  creator:
+    heading: Snack Creator
+    fields:
+      name:
+        label: Name
+      price:
+        label: Price
+      quantity:
+        label: Quantity
+    actions:
+      save: Save
+      cancel: Cancel
+    status:
+      success: Snack added successfully.
+  editor:
+    actions:
+      delete: Delete
+      restock: Restock
+      back: Back
   errors:
     add_unauthorized: Only admins can add snacks.
     update_unauthorized: Only admins can update snacks.

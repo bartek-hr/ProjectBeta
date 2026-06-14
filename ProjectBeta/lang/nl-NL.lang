@@ -579,6 +579,40 @@ legacy:
       empty: Geen gebruikers gevonden.
       item: - :username (:role)
 snacks:
+  list:
+    heading: Snackbeheer
+    search_placeholder: Zoeken op naam
+    empty: Geen snacks gevonden.
+    table:
+      id: ID
+      name: Naam
+      price: Prijs
+      quantity: Aantal
+      location_id: Locatie-ID
+    actions:
+      search: Zoeken
+      clear: Wissen
+      add: Snack toevoegen
+      back: Terug
+  creator:
+    heading: Snack aanmaken
+    fields:
+      name:
+        label: Naam
+      price:
+        label: Prijs
+      quantity:
+        label: Aantal
+    actions:
+      save: Opslaan
+      cancel: Annuleren
+    status:
+      success: Snack succesvol toegevoegd.
+  editor:
+    actions:
+      delete: Verwijderen
+      restock: Bijvullen
+      back: Terug
   errors:
     add_unauthorized: Alleen beheerders mogen snacks toevoegen.
     update_unauthorized: Alleen beheerders mogen snacks bijwerken.
