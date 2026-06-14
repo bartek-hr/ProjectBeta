@@ -76,6 +76,9 @@ namespace ProjectBeta
             services.AddTransient<AddAuditoriumsView>();
             services.AddTransient<SubscriptionView>();
             services.AddTransient<UserSubscriptionView>();
+            services.AddTransient<ManageMoviesView>();
+            services.AddTransient<MovieCreatorView>();
+            services.AddTransient<MovieEditView>();
             services.AddScoped<MainView>();
             var provider = services.BuildServiceProvider();
 

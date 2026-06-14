@@ -43,16 +43,16 @@ public sealed class SnacksView : Form
     private void InitializeForm()
     {
         List<Snack> snacks = _snackLogic.Search(_locationId, _searchQuery);
-        Heading("Snack Manager");
+        Heading(l10n("snacks.list.heading"));
 
-        var searchInput = TextInput("Search by name");
+        var searchInput = TextInput(l10n("snacks.list.search_placeholder"));
         Navigation(
-            Button("Search").OnClick(() =>
+            Button(l10n("snacks.list.actions.search")).OnClick(() =>
             {
                 _searchQuery = searchInput.Value ?? string.Empty;
                 RefreshView();
             }),
-            Button("Clear").OnClick(() =>
+            Button(l10n("snacks.list.actions.clear")).OnClick(() =>
             {
                 _searchQuery = string.Empty;
                 RefreshView();
@@ -60,13 +60,13 @@ public sealed class SnacksView : Form
 
         Divider();
         var table = new Table<Snack>(
-            "ID",
-            "Name",
-            "Price",
-            "Quantity",
-            "Location ID"
+            l10n("snacks.list.table.id"),
+            l10n("snacks.list.table.name"),
+            l10n("snacks.list.table.price"),
+            l10n("snacks.list.table.quantity"),
+            l10n("snacks.list.table.location_id")
         )
-        .EmptyMessage("No snacks found.")
+        .EmptyMessage(l10n("snacks.list.empty"))
         .OnSelect(OnSnackSelected);
 
         foreach (var snack in snacks)
@@ -84,9 +84,9 @@ public sealed class SnacksView : Form
         Add(table);
         Divider();
         Message(() => _statusMessage);
-        var addButton = Button("Add Snack").OnClick(NavigateToNewSnack);
+        var addButton = Button(l10n("snacks.list.actions.add")).OnClick(NavigateToNewSnack);
         addButton.Hidden(() => _confirmingDelete);
-        var backButton = Button("Back").OnClick(NavigateToMain);
+        var backButton = Button(l10n("snacks.list.actions.back")).OnClick(NavigateToMain);
         backButton.Hidden(() => _confirmingDelete);
         Navigation(addButton, backButton);
     }

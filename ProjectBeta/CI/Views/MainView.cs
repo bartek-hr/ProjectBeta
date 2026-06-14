@@ -39,7 +39,7 @@ public sealed class MainView : Form
 
         var actionButtons = new List<Button>
         {
-            Button("Locations").OnClick(() =>
+            Button(l10n("main.dashboard.actions.locations")).OnClick(() =>
             {
                 Console.Clear();
                 var locationView = _serviceProvider.GetRequiredService<LocationView>();
@@ -111,6 +111,14 @@ Button(l10n("main.dashboard.actions.reservation_history")).OnClick(() =>
                 var subscriptionView = _serviceProvider.GetRequiredService<SubscriptionView>();
                 subscriptionView.SetUser(_user);
                 _appLoop.Display(subscriptionView);
+            }));
+
+            actionButtons.Add(Button(l10n("main.dashboard.actions.manage_movies")).OnClick(() =>
+            {
+                Console.Clear();
+                var manageMoviesView = _serviceProvider.GetRequiredService<ManageMoviesView>();
+                manageMoviesView.SetUser(_user);
+                _appLoop.Display(manageMoviesView);
             }));
         }
 

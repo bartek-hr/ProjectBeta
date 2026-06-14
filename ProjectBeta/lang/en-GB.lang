@@ -88,6 +88,7 @@ main:
       locations: Locations
       subscriptions: Subscriptions
       my_subscription: My Subscription
+      manage_movies: Manage Movies
       back: Back
     status:
       reports_tbd: TBD
@@ -371,6 +372,58 @@ admin:
       invalid_age_range: Min age must be less than or equal to max age.
       invalid_date: Invalid date format. Use YYYY-MM-DD.
       name_required: Name is required.
+  movies:
+    list:
+      heading: Manage Movies
+      empty: No movies found.
+      table:
+        title: Title
+        genres: Genres
+        rating: Rating
+        runtime: Runtime (min)
+      actions:
+        add: Add Movie
+        search: Search
+        clear: Clear
+        back: Back
+    creator:
+      heading: Add Movie
+      fields:
+        title:
+          label: Title
+        description:
+          label: Description
+        genres:
+          label: "Genres (comma-separated)"
+        rating:
+          label: "Rating (0-10)"
+        runtime:
+          label: "Runtime (minutes)"
+      actions:
+        save: Save
+        cancel: Cancel
+      errors:
+        title_required: Title is required.
+        rating_invalid: Rating must be a number between 0 and 10.
+        runtime_invalid: Runtime must be a positive whole number (in minutes).
+      status:
+        added: "Movie added successfully."
+    editor:
+      heading: Edit Movie
+      actions:
+        save: Save
+        delete: Delete
+        back: Back
+        confirm_delete: "Yes, Delete"
+        cancel_delete: Cancel
+      errors:
+        title_required: Title is required.
+        rating_invalid: Rating must be a number between 0 and 10.
+        runtime_invalid: Runtime must be a positive whole number (in minutes).
+      status:
+        updated: "Movie updated successfully."
+        deleted: "Movie deleted."
+        confirm_delete: "Are you sure you want to delete \":title\"?"
   subscriptions:
     heading: Subscription Management
     instructions: View and manage subscription types.
@@ -526,6 +579,40 @@ legacy:
       empty: No users found.
       item: - :username (:role)
 snacks:
+  list:
+    heading: Snack Manager
+    search_placeholder: Search by name
+    empty: No snacks found.
+    table:
+      id: ID
+      name: Name
+      price: Price
+      quantity: Quantity
+      location_id: Location ID
+    actions:
+      search: Search
+      clear: Clear
+      add: Add Snack
+      back: Back
+  creator:
+    heading: Snack Creator
+    fields:
+      name:
+        label: Name
+      price:
+        label: Price
+      quantity:
+        label: Quantity
+    actions:
+      save: Save
+      cancel: Cancel
+    status:
+      success: Snack added successfully.
+  editor:
+    actions:
+      delete: Delete
+      restock: Restock
+      back: Back
   errors:
     add_unauthorized: Only admins can add snacks.
     update_unauthorized: Only admins can update snacks.
@@ -565,7 +652,9 @@ location:
     capacity: "Total capacity: :capacity"
     actions:
       movies: Movies
+      edit_location: Edit Location
       auditoriums: Auditoriums
+      opening_times: Opening Times
       snack_manager: Snack Manager
       reports: Reports
       back: Back

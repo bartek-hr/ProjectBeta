@@ -128,7 +128,23 @@ public sealed class MoviesView : Form
         }
         Add(table);
         Divider();
-        Button(l10n("movies.list.actions.back")).OnClick(NavigateToMain);
+
+        if (_user.IsAdmin())
+        {
+            Navigation(
+                Button(l10n("admin.movies.list.actions.add")).OnClick(() =>
+                {
+                    Console.Clear();
+                    var creatorView = _serviceProvider.GetRequiredService<MovieCreatorView>();
+                    creatorView.SetUser(_user);
+                    _appLoop.Display(creatorView);
+                }),
+                Button(l10n("movies.list.actions.back")).OnClick(NavigateToMain));
+        }
+        else
+        {
+            Button(l10n("movies.list.actions.back")).OnClick(NavigateToMain);
+        }
     }
     private int DetermineSpaceLeft(MovieSchedule schedule)
     {
@@ -153,9 +169,25 @@ public sealed class MoviesView : Form
     private void OnMovieSelected(MovieSchedule schedule)
     {
         Console.Clear();
-        var accountView = _serviceProvider.GetRequiredService<MovieSeatBookingView>();
-        accountView.SetView(_user, schedule, schedule.Auditorium, _locationId);
-        _appLoop.Display(accountView);
+        if (_user.IsAdmin())
+        {
+            var editView = _serviceProvider.GetRequiredService<MovieEditView>();
+            var locationId = _locationId;
+            editView.SetView(_user, schedule.Movie, onBack: () =>
+            {
+                Console.Clear();
+                var moviesView = _serviceProvider.GetRequiredService<MoviesView>();
+                moviesView.SetUser(_user, locationId);
+                _appLoop.Display(moviesView);
+            });
+            _appLoop.Display(editView);
+        }
+        else
+        {
+            var bookingView = _serviceProvider.GetRequiredService<MovieSeatBookingView>();
+            bookingView.SetView(_user, schedule, schedule.Auditorium, _locationId);
+            _appLoop.Display(bookingView);
+        }
     }
 
     private void NavigateToMain()
