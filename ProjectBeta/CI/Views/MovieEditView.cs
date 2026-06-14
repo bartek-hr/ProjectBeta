@@ -15,6 +15,7 @@ public sealed class MovieEditView : Form
     private string? _statusMessage;
     private bool _confirmingDelete;
     private Dictionary<string, string[]>? _fieldErrors;
+    private Action? _onBack;
 
     public MovieEditView(MovieAccess movieAccess, AppLoop appLoop, IServiceProvider serviceProvider)
     {
@@ -23,10 +24,11 @@ public sealed class MovieEditView : Form
         _serviceProvider = serviceProvider;
     }
 
-    public void SetView(User user, Movie movie)
+    public void SetView(User user, Movie movie, Action? onBack = null)
     {
         _user = user;
         _movie = movie;
+        _onBack = onBack;
         _confirmingDelete = false;
         _statusMessage = null;
         _fieldErrors = null;
@@ -154,6 +156,7 @@ public sealed class MovieEditView : Form
         _movieAccess.Update(_movie);
 
         Console.Clear();
+        if (_onBack != null) { _onBack(); return; }
         var manageView = _serviceProvider.GetRequiredService<ManageMoviesView>();
         manageView.SetUser(_user, l10n("admin.movies.editor.status.updated"));
         _appLoop.Display(manageView);
@@ -164,6 +167,7 @@ public sealed class MovieEditView : Form
         _movieAccess.Delete(_movie.Id);
 
         Console.Clear();
+        if (_onBack != null) { _onBack(); return; }
         var manageView = _serviceProvider.GetRequiredService<ManageMoviesView>();
         manageView.SetUser(_user, l10n("admin.movies.editor.status.deleted"));
         _appLoop.Display(manageView);
@@ -172,6 +176,11 @@ public sealed class MovieEditView : Form
     private void NavigateBack()
     {
         Console.Clear();
+        if (_onBack != null)
+        {
+            _onBack();
+            return;
+        }
         var manageView = _serviceProvider.GetRequiredService<ManageMoviesView>();
         manageView.SetUser(_user);
         _appLoop.Display(manageView);
