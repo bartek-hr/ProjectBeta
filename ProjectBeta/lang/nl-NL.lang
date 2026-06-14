@@ -618,7 +618,9 @@ location:
     capacity: "Totale capaciteit: :capacity"
     actions:
       movies: Films
+      edit_location: Locatie bewerken
       auditoriums: Zalen
+      opening_times: Openingstijden
       snack_manager: Snackbeheer
       reports: Rapporten
       back: Terug

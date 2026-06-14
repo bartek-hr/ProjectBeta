@@ -30,13 +30,13 @@ public sealed class LocationDetailView : Form
     private void InitializeForm()
     {
         Heading(_location.Name);
-        Label($"City: {_location.City}");
-        Label($"Address: {_location.Address}");
-        Label($"Total capacity: {_location.ComputedCapacity}");
+        Label(l10n("location.detail.city", new Dictionary<string, string> { ["city"] = _location.City }));
+        Label(l10n("location.detail.address", new Dictionary<string, string> { ["address"] = _location.Address }));
+        Label(l10n("location.detail.capacity", new Dictionary<string, string> { ["capacity"] = _location.ComputedCapacity.ToString() }));
 
         Divider();
 
-        Button("Movies").OnClick(() =>
+        Button(l10n("location.detail.actions.movies")).OnClick(() =>
         {
             Console.Clear();
             var moviesView = _serviceProvider.GetRequiredService<MoviesView>();
@@ -46,7 +46,7 @@ public sealed class LocationDetailView : Form
 
         if (_user.IsSuperAdmin())
         {
-            Button("Edit Location").OnClick(() =>
+            Button(l10n("location.detail.actions.edit_location")).OnClick(() =>
             {
                 Console.Clear();
                 var editView = _serviceProvider.GetRequiredService<LocationEditView>();
@@ -57,7 +57,7 @@ public sealed class LocationDetailView : Form
 
         if (_user.IsAdmin())
         {
-            Button("Opening Times").OnClick(() =>
+            Button(l10n("location.detail.actions.opening_times")).OnClick(() =>
             {
                 Console.Clear();
                 var openingTimesView = _serviceProvider.GetRequiredService<LocationOpeningTimesView>();
@@ -66,7 +66,7 @@ public sealed class LocationDetailView : Form
             });
         }
 
-        Button("Snack Manager").OnClick(() =>
+        Button(l10n("location.detail.actions.snack_manager")).OnClick(() =>
         {
             Console.Clear();
             var snacksView = _serviceProvider.GetRequiredService<SnacksView>();
@@ -74,7 +74,7 @@ public sealed class LocationDetailView : Form
             _appLoop.Display(snacksView);
         });
 
-        Button("Reports").OnClick(() =>
+        Button(l10n("location.detail.actions.reports")).OnClick(() =>
         {
             Console.Clear();
             var reportsView = _serviceProvider.GetRequiredService<ReportsView>();
@@ -84,7 +84,7 @@ public sealed class LocationDetailView : Form
 
         Divider();
         Message(() => _statusMessage);
-        Button("Back").OnClick(() =>
+        Button(l10n("location.detail.actions.back")).OnClick(() =>
         {
             Console.Clear();
             var locationView = _serviceProvider.GetRequiredService<LocationView>();

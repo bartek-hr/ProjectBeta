@@ -618,7 +618,9 @@ location:
     capacity: "Total capacity: :capacity"
     actions:
       movies: Movies
+      edit_location: Edit Location
       auditoriums: Auditoriums
+      opening_times: Opening Times
       snack_manager: Snack Manager
       reports: Reports
       back: Back
