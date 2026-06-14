@@ -112,6 +112,14 @@ Button(l10n("main.dashboard.actions.reservation_history")).OnClick(() =>
                 subscriptionView.SetUser(_user);
                 _appLoop.Display(subscriptionView);
             }));
+
+            actionButtons.Add(Button(l10n("main.dashboard.actions.manage_movies")).OnClick(() =>
+            {
+                Console.Clear();
+                var manageMoviesView = _serviceProvider.GetRequiredService<ManageMoviesView>();
+                manageMoviesView.SetUser(_user);
+                _appLoop.Display(manageMoviesView);
+            }));
         }
 
         Navigation(actionButtons.ToArray());

@@ -88,6 +88,7 @@ main:
       locations: Locaties
       subscriptions: Abonnementen
       my_subscription: Mijn Abonnement
+      manage_movies: Films beheren
       back: Terug
     status:
       reports_tbd: NOG TE DOEN
@@ -371,6 +372,58 @@ admin:
       invalid_age_range: Minimumleeftijd moet kleiner zijn dan of gelijk aan de maximumleeftijd.
       invalid_date: Ongeldig datumformaat. Gebruik JJJJ-MM-DD.
       name_required: Naam is verplicht.
+  movies:
+    list:
+      heading: Films beheren
+      empty: Geen films gevonden.
+      table:
+        title: Titel
+        genres: Genres
+        rating: Beoordeling
+        runtime: Speelduur (min)
+      actions:
+        add: Film toevoegen
+        search: Zoeken
+        clear: Wissen
+        back: Terug
+    creator:
+      heading: Film toevoegen
+      fields:
+        title:
+          label: Titel
+        description:
+          label: Beschrijving
+        genres:
+          label: "Genres (komma-gescheiden)"
+        rating:
+          label: "Beoordeling (0-10)"
+        runtime:
+          label: "Speelduur (minuten)"
+      actions:
+        save: Opslaan
+        cancel: Annuleren
+      errors:
+        title_required: Titel is verplicht.
+        rating_invalid: Beoordeling moet een getal zijn tussen 0 en 10.
+        runtime_invalid: Speelduur moet een positief geheel getal zijn (in minuten).
+      status:
+        added: "Film succesvol toegevoegd."
+    editor:
+      heading: Film bewerken
+      actions:
+        save: Opslaan
+        delete: Verwijderen
+        back: Terug
+        confirm_delete: "Ja, verwijderen"
+        cancel_delete: Annuleren
+      errors:
+        title_required: Titel is verplicht.
+        rating_invalid: Beoordeling moet een getal zijn tussen 0 en 10.
+        runtime_invalid: Speelduur moet een positief geheel getal zijn (in minuten).
+      status:
+        updated: "Film succesvol bijgewerkt."
+        deleted: "Film verwijderd."
+        confirm_delete: "Weet je zeker dat je \":title\" wilt verwijderen?"
   subscriptions:
     heading: Abonnementenbeheer
     instructions: Beheer en bekijk abonnementstypes.

@@ -182,6 +182,38 @@ public class MovieAccess
             .ToList();
     }
 
+    public List<Movie> GetAll()
+    {
+        return _context.Movies.OrderBy(m => m.Title).ToList();
+    }
+
+    public Movie Add(Movie movie)
+    {
+        if (string.IsNullOrWhiteSpace(movie.Id))
+            movie.Id = Guid.NewGuid().ToString();
+
+        _context.Movies.Add(movie);
+        _context.SaveChanges();
+        return movie;
+    }
+
+    public Movie Update(Movie movie)
+    {
+        _context.Movies.Update(movie);
+        _context.SaveChanges();
+        return movie;
+    }
+
+    public void Delete(string id)
+    {
+        var movie = _context.Movies.Find(id);
+        if (movie != null)
+        {
+            _context.Movies.Remove(movie);
+            _context.SaveChanges();
+        }
+    }
+
     public void EnsureMoviesPersisted(IEnumerable<Movie> movies)
     {
         var candidates = movies
